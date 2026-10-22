@@ -1,0 +1,3 @@
+interface:
+  display_name: "Humanized Prose Review"
+  short_description: "Audit and humanize prose through repeated review"

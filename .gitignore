@@ -1,0 +1,7 @@
+# Plan-execution workspaces and working plans
+.superpowers/
+
+.DS_Store
+
+# Local backlog that names private projects
+*.local.md
