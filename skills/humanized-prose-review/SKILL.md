@@ -22,6 +22,12 @@ word for word. Use Humanizer's guidance to find and remove the
 patterns; this skill adds the audit record and the final adversarial
 review.
 
+Whichever Humanizer catalog you use, also read [additional
+tells](references/additional-tells.md). It lists patterns found in review
+that Humanizer 3.1.0 does not: figurative *carry* and *seam*, label
+openers, mirrored scope pairs, forward-pointing closers, and
+personified abstractions used as a payoff.
+
 ## Required workflow
 
 1.  Read the whole source text before editing it.
@@ -73,7 +79,10 @@ Check the shape of each paragraph as well as each sentence:
 - inflated significance, sales language, borrowed authority, vague
   jargon, and abstract claims that never say how two things relate;
 - stock AI vocabulary, decorative bold labels, and formatting that adds
-  no information.
+  no information;
+- figurative *carry* and *seam*, label openers ("One gap:"), mirrored
+  scope pairs, forward-pointing closers, and abstractions personified
+  for a clever ending (see the additional tells).
 
 At the document level, look for closers or openings repeated across
 sections, a heading restated in its first sentence, narration about the
@@ -85,6 +94,24 @@ Keep a contrast when both halves matter or when the negative half
 corrects a belief the reader actually holds. Keep uncertainty that
 records a real limit. Keep technical hyphens, dashes, code, paths, and
 URLs that belong to the source or its syntax.
+
+## Editing an author's own draft
+
+When the user wrote the text and will publish it under their name, most
+tells enter through the sentences you add, not the ones you fix.
+
+- Prefer the smallest change inside the author's sentence to a new
+  sentence of your own.
+- When the author supplies wording, use it as written; fix only typos and
+  mechanics.
+- For a gap the author has not written, offer a short brief unless they
+  ask for prose: what the sentence must claim, what it must not
+  overclaim, and the evidence. Writing a sentence from a brief is quick
+  for the author; repairing a drafted paragraph is slower.
+- Screen review comments, outline bullets, and commit messages too.
+  Outline bullets become the author's prose.
+- When the author flags a new tell, add it to the additional tells so the
+  next session catches it.
 
 ## Output
 
