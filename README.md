@@ -149,6 +149,7 @@ two of those are for PureScript only.
 | Skill | Usefulness | What it does |
 |---|---|---|
 | [`humanized-prose-review`](skills/humanized-prose-review/SKILL.md) | Broad | Audit and rewrite prose to remove AI-writing tells, ending with an editorial pass. Builds on the open-source humanizer skill (MIT, credited). Good for READMEs, PR descriptions and docs. |
+| [`pandoc-markdown-reflow`](skills/pandoc-markdown-reflow/SKILL.md) | Niche | Reflow Markdown and set curly quotes with pandoc, without damaging front matter, code blocks, tables or HTML comments. |
 
 ## Settings the skills read from your project
 
