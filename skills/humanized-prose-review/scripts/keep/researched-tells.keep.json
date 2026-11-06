@@ -1,0 +1,117 @@
+[
+  {
+    "rule": "ai-word",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "caveat-shape",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "claude-idiom",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "claude-phrase",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "commit-formula",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "default-name",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "figurative-carry",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "ing-rider",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "load-bearing",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "name-verb",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "nominal-chain",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "participial-clause",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "placeholder",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "rather-than",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "research-word",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "scene-stock",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "shed-light",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "stock-frame",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "stock-phrase",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "triad",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "url-residue",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "verb-no",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  },
+  {
+    "rule": "waffle",
+    "all": true,
+    "reason": "user approved 2026-11-06: this catalog quotes the tell as an example"
+  }
+]

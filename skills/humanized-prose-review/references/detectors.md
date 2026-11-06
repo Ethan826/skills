@@ -6,10 +6,10 @@ same either way. There are three modes:
 | Mode | Backend | Text leaves the machine | Cost and terms | Locates the problem |
 |---|---|---|---|---|
 | None | `none` | No | Free | The lint and auditor do this |
-| Open source | `editlens` | No | Non-commercial only | Per window of about 500 tokens |
-| Open source | `sloptotal` | No | MIT code; check weight licenses | Per window of about 300 words |
-| Closed source | `pangram` | **Yes** | $0.05 per 100 words | Per scored window |
-| Closed source | `gptzero` | **Yes** | See GPTZero's site | Whole document only in this adapter |
+| Local | `editlens` | No | Non-commercial only | Per window of about 500 tokens |
+| Local | `sloptotal` | No | MIT code; check weight licenses | Per window of about 300 words |
+| Hosted | `pangram` | **Yes** | $0.05 per 100 words | Per scored window |
+| Hosted | `gptzero` | **Yes** | See GPTZero's site | Whole document only in this adapter |
 
 Originality.ai has no adapter yet.
 
@@ -67,13 +67,13 @@ to 180 words instead, with a baseline made the same way:
   --passages --baseline PASSAGES.json
 ```
 
-The result counts the passages above your human range, and `--json` gives every
-passage. An auditor can start there. That line is the 95th percentile of
+The result counts the passages above your human range, and `--json` lists every
+passage's score and first 80 characters. An auditor can start there. That line is the 95th percentile of
 human scores, so about one human passage in twenty lands above it, and a passage
 under it may still be AI-written. Hosted backends refuse this
 mode, because each passage would be a separate paid upload.
 
-## Open source: EditLens (Open Pangram)
+## Local: EditLens (Open Pangram)
 
 Pangram released this from its ICLR 2026 EditLens work. It scores from 0 to 1
 how much of a text looks AI-edited.
@@ -104,7 +104,7 @@ The Llama model scores better by Pangram's numbers (0.863 and 0.930), but the
 adapter refuses it. It needs a custom classification head and 4-bit loading
 that may not work on a Mac, and neither has been verified.
 
-## Open source: SlopTotal
+## Local: SlopTotal
 
 SlopTotal's MIT ensemble of 23 engines does not include Pangram's model. It reports 0.942 AUC on its own benchmark, catches humanized text about
 half the time, and is weak under about 80 words.
@@ -119,7 +119,7 @@ The code is MIT, but its third-party list leaves out the model weights, and the
 Docker image includes GPL-3.0 trafilatura. Check each model's license before
 commercial use.
 
-## Closed source: Pangram and GPTZero
+## Hosted: Pangram and GPTZero
 
 Sending text to these services discloses it to a third party. Get the user's
 approval for each document, and pass `--allow-upload` only after that. Never
@@ -132,8 +132,8 @@ GPTZERO_API_KEY=... python3 scripts/detect.py score DRAFT.md \
   --backend gptzero --allow-upload
 ```
 
-Pangram scores each window, gives its offsets in the text, and marks windows it
-reads as humanized. The adapter sends `pangram-4` unless `--model` says otherwise.
+Pangram scores each window and marks windows it reads as humanized. Its offsets
+point into the cleaned text the script sends, so they will not match your file. The adapter sends `pangram-4` unless `--model` says otherwise.
 Pangram's privacy page says content is stored while the account is active and
 is not used for training, but that page covers only the dashboard and extension.
 
@@ -142,7 +142,7 @@ paragraph and sentence results, but those field names are unconfirmed, so the ad
 reports the document only. The documentation pages do not state retention terms, so read
 GPTZero's privacy policy before uploading.
 
-If a vendor changes its reply, the script exits 2 with "unexpected".
+If a reply lacks what the adapter reads, the script exits 2 with "unexpected".
 
 ## What has been run
 
@@ -175,7 +175,8 @@ and the AI median 0.18, with three of the nine reports above the human range.
 AI reports did tend to score higher (AUC 0.77 on 19 files), but the band is too
 narrow to set a threshold. It took about 23 minutes on CPU for 19 files.
 
-EditLens gave a few high scores on short passages. Among passages of 110 to 180 words,
+EditLens gave a few high scores on short passages. Among runs of whole paragraphs totaling 110 to 180
+words,
 one of 61 from the author's posts reached 0.45, against none of 16 from the AI
 reports. Two of three sections of marketing copy of that length also
 reached it, though the same copy scored 0.21 in larger windows, and no human
@@ -183,7 +184,8 @@ marketing copy was tested. A high score on a short passage may be worth an
 auditor's attention. None of the 16 AI passages reached 0.45, so a low score
 does not clear a passage.
 
-A passage baseline from the same files (67 human and 40 AI passages) put the
+A baseline from the same files, cut into passages by the script (67 human and
+40 AI), put the
 human 95th percentile at 0.31 and the AI median at 0.15.
 
 ## Tests

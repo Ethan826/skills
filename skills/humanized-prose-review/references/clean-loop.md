@@ -128,9 +128,9 @@ exemption for a lint finding outside a quotation. Pass it to `init`, or to
 
 - A clean result means only that this process found nothing: the text may still
   be AI-written, and a detector may disagree.
-- Only the lint and a detector escape the blind spots that auditors share with a
-  writer from the same model family.
-- Rewriting can erase the author's voice as easily as a tell. When the user
+- The lint and a detector do not depend on an auditor's judgment, so they can
+  catch what an auditor from the writer's model family misses.
+- Rewriting can remove the author's voice. When the user
   wrote the draft, the skill's "Editing an author's own draft" section still
   applies.
 - Auditor names are self-reported, so a new name does not prove a new auditor.

@@ -165,6 +165,42 @@ class Pangram(unittest.TestCase):
                        self.client((200, {"stage": "STAGE_SUCCESS"})))
 
 
+class MalformedReplies(unittest.TestCase):
+    """A changed API exits 2 with a named message, never a traceback."""
+
+    def client(self, *replies):
+        return FakeTransport((200, {"task_id": "t1"}), *replies)
+
+    def test_pangram_list_reply(self):
+        with self.assertRaisesRegex(detect.DetectError, "unexpected"):
+            detect.run("pangram", LONG, options(), ENV, FakeTransport((200, [])))
+
+    def test_pangram_list_reply_while_polling(self):
+        with self.assertRaisesRegex(detect.DetectError, "unexpected"):
+            detect.run("pangram", LONG, options(), ENV, self.client((200, [])))
+
+    def test_pangram_unknown_stage(self):
+        with self.assertRaisesRegex(detect.DetectError, "unexpected"):
+            detect.run("pangram", LONG, options(), ENV, self.client((200, {"stage": "DONE"})))
+
+    def test_pangram_missing_stage(self):
+        with self.assertRaisesRegex(detect.DetectError, "unexpected"):
+            detect.run("pangram", LONG, options(), ENV, self.client((200, {})))
+
+    def test_pangram_null_window_text(self):
+        bad = dict(PANGRAM_DONE, windows=[dict(PANGRAM_DONE["windows"][0], text=None)])
+        with self.assertRaisesRegex(detect.DetectError, "unexpected"):
+            detect.run("pangram", LONG, options(), ENV, self.client((200, bad)))
+
+    def test_gptzero_list_reply(self):
+        with self.assertRaisesRegex(detect.DetectError, "unexpected"):
+            detect.run("gptzero", LONG, options(), ENV, FakeTransport((200, [])))
+
+    def test_sloptotal_list_reply(self):
+        with self.assertRaisesRegex(detect.DetectError, "unexpected"):
+            detect.run("sloptotal", LONG, options(), ENV, FakeTransport((200, [])))
+
+
 class GptZero(unittest.TestCase):
     def test_request_and_result(self):
         fake = FakeTransport((200, GPTZERO_DONE))

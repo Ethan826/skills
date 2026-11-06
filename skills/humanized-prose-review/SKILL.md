@@ -51,8 +51,8 @@ target is plain text, such as a commit message.
 4.  Rewrite from the audit record. When a paragraph's main point is buried,
     restructure the paragraph instead of patching single phrases.
 5.  Audit the rewrite for tells that survived and for new problems, and
-    fix them. Repeat until nothing actionable remains or the loop stops. For prose that
-    matters, such as a README or a published piece, do this with the
+    fix them. Repeat until nothing actionable remains or the loop stops. For prose with an
+    outside audience, such as a README or a published piece, do this with the
     [clean-read loop](references/clean-loop.md): a new auditor each
     round, a fixed definition of clean, and a script that decides when to
     stop. Only the user can exempt a finding that blocks the loop. Then read the result through at speaking pace; some rhythm
@@ -114,7 +114,7 @@ URLs that belong to the source or its syntax.
 
 You can skip the detector. If you use one, run it once after the loop
 ends clean, and never rewrite to lower a score. `scripts/detect.py` can run
-with a local open-source detector, a hosted one, or none. A hosted
+with a local detector, a hosted one, or none. A hosted
 detector sends the text to a third party, so get the user's approval for
 each document first. See [detectors](references/detectors.md) for setup,
 licenses, and calibration.

@@ -1,0 +1,12 @@
+[
+  {
+    "rule": "figurative-carry",
+    "all": true,
+    "reason": "user approved 2026-11-06: the skill names this tell as an example"
+  },
+  {
+    "rule": "participial-clause",
+    "all": true,
+    "reason": "user approved 2026-11-06: false positive on a list"
+  }
+]

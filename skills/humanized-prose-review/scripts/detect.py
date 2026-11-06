@@ -136,9 +136,15 @@ def pieces_of(text, by_passage, limit, count):
             for c in chunk(text, limit, count)]
 
 
+def expect_object(name, body):
+    if not isinstance(body, dict):
+        raise DetectError("unexpected %s reply: not an object" % name)
+
+
 def expect_ok(name, status, body):
     if status != 200:
         raise DetectError("%s returned %s: %s" % (name, status, str(body)[:200]))
+    expect_object(name, body)
 
 
 def require_key(env, name):
@@ -182,6 +188,8 @@ def run_pangram(text, opts, env, transport):
             raise DetectError("pangram failed: %s" % body.get("headline"))
         if body.get("stage") == "STAGE_SUCCESS":
             return read_pangram(body, model)
+        if not str(body.get("stage")).startswith("STAGE_"):
+            raise DetectError("unexpected pangram reply: stage %s" % body.get("stage"))
         time.sleep(POLL_SECONDS)
     raise DetectError("pangram timed out")
 
@@ -196,7 +204,7 @@ def read_pangram(body, model):
         return {"model": model, "version": body.get("version"),
                 "score": 1 - body["fraction_human"], "label": body["prediction_short"],
                 "windows": windows}
-    except (KeyError, TypeError):
+    except (AttributeError, KeyError, TypeError):
         raise DetectError("unexpected pangram reply: fields missing")
 
 
@@ -212,18 +220,20 @@ def run_gptzero(text, opts, env, transport):
         return {"model": opts["model"] or "gptzero", "version": body.get("version"),
                 "score": 1 - document["class_probabilities"]["human"],
                 "label": document["predicted_class"], "windows": []}
-    except (KeyError, IndexError, TypeError):
+    except (AttributeError, KeyError, IndexError, TypeError):
         raise DetectError("unexpected gptzero reply: fields missing")
 
 
 def slop_score(base, text, transport):
     status, body = transport("POST", base + "/api/analyze", {}, {"text": text})
+    expect_object("sloptotal", body)
     ticket = body.get("ticket_id")
     for _ in range(MAX_POLLS):
         if status != 202:
             break
         time.sleep(POLL_SECONDS)
         status, body = transport("GET", "%s/api/queue/ticket/%s" % (base, ticket), {}, None)
+        expect_object("sloptotal", body)
     expect_ok("sloptotal", status, body)
     if "overall_score" not in body:
         raise DetectError("unexpected sloptotal reply: no overall_score")
