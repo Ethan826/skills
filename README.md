@@ -148,7 +148,7 @@ two of those are for PureScript only.
 
 | Skill | Usefulness | What it does |
 |---|---|---|
-| [`humanized-prose-review`](skills/humanized-prose-review/SKILL.md) | Broad | Audit and rewrite prose to remove AI-writing tells, ending with an editorial pass. Includes a tell linter, a loop that repeats with a new reader until the text comes back clean, and optional AI-detector adapters. Builds on the open-source humanizer skill (MIT, credited). Good for READMEs, PR descriptions and docs. |
+| [`humanized-prose-review`](skills/humanized-prose-review/SKILL.md) | Broad | Audit and rewrite prose to remove AI-writing tells, ending with an editorial pass. Includes a tell linter, a loop that repeats with a new auditor until the text comes back clean, and optional AI-detector adapters. Builds on the open-source humanizer skill (MIT, credited). Good for READMEs, PR descriptions and docs. |
 | [`pandoc-markdown-reflow`](skills/pandoc-markdown-reflow/SKILL.md) | Niche | Reflow Markdown and set curly quotes with pandoc, without damaging front matter, code blocks, tables or HTML comments. |
 
 ## Settings the skills read from your project

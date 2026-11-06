@@ -36,7 +36,7 @@ MAX_POLLS = 60
 POLL_SECONDS = 2
 SLOP_WORDS = 300
 PASSAGE_MIN = 110  # scores shift with window size, so compare one length
-PASSAGE_MAX = 180  # fiat: the slice test that showed the effect used this range
+PASSAGE_MAX = 180  # fiat: the test that showed the effect used this range
 EDITLENS_TOKENS = 510  # the EditLens CLI says "must be <512" for RoBERTa
 EDITLENS_CHECKPOINT = "pangram/editlens_roberta-large"
 EDITLENS_BASE = "FacebookAI/roberta-large"
@@ -149,7 +149,7 @@ def require_key(env, name):
 
 def require_upload(opts, where):
     if not opts["allow_upload"]:
-        raise DetectError("this would send the text to %s; get the owner's approval, "
+        raise DetectError("this would send the text to %s; get the user's approval, "
                           "then pass --allow-upload" % where)
 
 
@@ -342,7 +342,7 @@ def interpret(result, baseline):
     if result["unit"] == "passage":
         full = [w for w in result["windows"] if not w["short"]]
         high = [w for w in full if w["score"] > baseline["human_p95"]]
-        return ("%d of %d passages above your human range: have a reader look at "
+        return ("%d of %d passages above your human range: have an auditor look at "
                 "those; a low score clears nothing" % (len(high), len(full)))
     if not baseline["separates"]:
         return "this detector does not separate your writing from AI text; ignore it"
@@ -406,7 +406,7 @@ def render(result):
 def add_backend_options(parser):
     parser.add_argument("--backend", choices=sorted(BACKENDS), required=True)
     parser.add_argument("--allow-upload", action="store_true",
-                        help="the owner approved sending this text to the service")
+                        help="the user approved sending this text to the service")
     parser.add_argument("--noncommercial", action="store_true",
                         help="this run is non-commercial, as Open Pangram's license requires")
     parser.add_argument("--url", help="SlopTotal address, default http://localhost:8000")

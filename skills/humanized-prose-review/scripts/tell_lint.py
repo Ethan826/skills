@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Flag AI-writing tells by span. Standard library only, Python 3.9 or later.
 
-A hit is a candidate for a reader to judge, not proof of AI authorship.
+A finding is a candidate for an auditor to judge, not proof of AI authorship.
 Exit codes: 0 nothing blocking, 1 blocking findings, 2 could not check.
 
 Blind spots: this is a text check that over-matches on purpose inside the
 scope of its word and phrase lists. It cannot see meaning, so it misses a
 tell spelled in a way the rules do not list, and everything marked
 "**Lint:** none" in references/researched-tells.md. An empty result means
-only that the listed spellings are absent, so a reader still has to audit.
+only that the listed spellings are absent, so an auditor still has to read it.
 """
 import argparse
 import json

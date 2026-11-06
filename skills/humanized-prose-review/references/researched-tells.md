@@ -11,7 +11,7 @@ can weigh it:
 - Editors: Wikipedia editors' observation from cleanup work.
 - Anecdote: forum or blog reports with no counts.
 
-`**Lint:**` gives the `tell_lint.py` rule, or says none when only a reader
+`**Lint:**` gives the `tell_lint.py` rule, or says none when only an auditor
 can judge the tell. No single entry proves anything. Word habits change with
 model releases, so distrust a vendor's word list sooner than a structural
 pattern.
@@ -23,8 +23,8 @@ pattern.
 **Evidence:** Measured. Instruction-tuned models use present participial
 clauses at 2 to 5 times the human rate (Reinhart et al.).
 **Watch for:** a clause after a comma that opens with an -ing verb, whatever
-the verb: "The job finished early, leaving the queue empty." §15 covers only
-riders that claim significance; this entry covers every such clause.
+the verb: "The job finished early, leaving the queue empty." §15 is limited to
+riders that claim significance.
 **Fix:** Give the second event its own subject and verb, or cut it. Keep a
 participle that says how or when something happened and reads naturally.
 **Lint:** `participial-clause`
@@ -103,7 +103,7 @@ before mid-2026.
 ### R10. Stock frames
 
 **Evidence:** Vendor. WriteHuman's list comes from 80,141 pairs that compare
-AI input with its own humanized output, not with human writing.
+AI input with its own humanized output. No human writing is in the comparison.
 **Watch for:** plays a role, crucial role in, role in shaping, ensuring that,
 while maintaining, aligns well with, is essential for, shaped by.
 **Fix:** Say how one thing acts on the other.
@@ -173,7 +173,7 @@ no local knowledge, no criticism of any view, relentless positivity.
 Wikipedia's editors, citing Geng and Trotta and Reinhart et al., list forms
 people use more: *there
 is a*, *wrote*, *died*, *very*, *perhaps*, *tends to*, *in order to*, *the
-fact that*. Leave these alone; they are not wordiness to clean up here.
+fact that*. Leave these alone.
 **Lint:** none
 
 ### R20. Saying a subject is minor, then praising it
@@ -225,14 +225,13 @@ inconvenience").
 ### R22. Citation and template residue
 
 **Evidence:** Editors. An invalid ISBN checksum is a very likely sign. A
-`utm_source=chatgpt.com` link shows a chatbot found the source, not that it
-wrote the text.
+`utm_source=chatgpt.com` link shows only that a chatbot found the source.
 **Watch for:** invalid ISBNs; DOIs that fail to resolve or lead elsewhere;
 `utm_source=openai`, `utm_source=chatgpt.com`, `utm_source=copilot.com`,
 `referrer=grok.com`; placeholders such as `2026-xx-xx`,
 `INSERT_SOURCE_URL_HERE`, `[Describe the section here]`.
 **Fix:** Check every citation against its source, and remove what fails. The
-lint checks ISBNs and strings only, so a reader must resolve DOIs.
+lint checks ISBNs and strings only, so an auditor must resolve DOIs.
 **Lint:** `url-residue`, `placeholder`, `isbn-checksum`
 
 ## Reading the evidence
@@ -244,7 +243,7 @@ lint checks ISBNs and strings only, so a reader must resolve DOIs.
 - Sources disagree. Pangram says AI avoids semicolons, while explainx,
 which sells training, lists semicolon antithesis as a Claude habit. WriteHuman found semicolon rates and
   sentence length barely changed by humanizing. Treat rhythm metrics as
-  prompts for a reader.
+  prompts for an auditor.
 
 ## Sources
 

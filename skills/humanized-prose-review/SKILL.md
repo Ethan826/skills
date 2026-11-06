@@ -1,6 +1,6 @@
 ---
 name: humanized-prose-review
-description: Audits and rewrites prose so it reads as direct, natural writing by a person. Catalogs every AI-writing tell, rewrites from the catalog, re-audits until nothing actionable remains, and finishes with an adversarial editorial review drawing on Garner, Fowler, Orwell, and Williams that keeps every fact and qualification. Use it whenever an agent writes or revises prose another person will read, such as plans, READMEs, explanatory docs, review notes, commit messages, and PR descriptions, and whenever someone asks to tighten, clean up, or de-AI a draft, even if they never say "humanize". Not for code, data, commands, or text whose exact wording must stay.
+description: Audits and rewrites prose so it reads as direct, natural writing by a person. Records every AI-writing tell, rewrites from that audit record, re-audits until nothing actionable remains, and finishes with an adversarial editorial review drawing on Garner, Fowler, Orwell, and Williams that keeps every fact and qualification. Use it whenever an agent writes or revises prose another person will read, such as plans, READMEs, explanatory docs, review notes, commit messages, and PR descriptions, and whenever someone asks to tighten, clean up, or de-AI a draft, even if they never say "humanize". Not for code, data, commands, or text whose exact wording must stay.
 license: MIT
 ---
 
@@ -32,10 +32,9 @@ published studies and practitioner reports and grades the evidence for
 each.
 
 `scripts/tell_lint.py` checks the catalog's listed phrases. Run it on
-every draft; it needs only Python 3.9 or later. A hit is a candidate
-for you to judge, though in the loop only the owner can exempt a
-blocking one, and an empty result shows only that those phrases
-are absent, so it never replaces the audit. Add `--plain` when the
+every draft; it needs only Python 3.9 or later. Judge each finding
+yourself. An empty result shows only that those phrases are
+absent, so the lint never replaces the audit. Add `--plain` when the
 target is plain text, such as a commit message.
 
 ## Required workflow
@@ -49,14 +48,14 @@ target is plain text, such as a commit message.
     - the exact passage;
     - the pattern or tell;
     - why it weakens this text or makes the reader work harder.
-4.  Rewrite from the catalog. When a paragraph's main point is buried,
+4.  Rewrite from the audit record. When a paragraph's main point is buried,
     restructure the paragraph instead of patching single phrases.
 5.  Audit the rewrite for tells that survived and for new problems, and
     fix them. Repeat until nothing actionable remains or the loop stops. For prose that
     matters, such as a README or a published piece, do this with the
-    [clean-read loop](references/clean-loop.md): a new reader each
+    [clean-read loop](references/clean-loop.md): a new auditor each
     round, a fixed definition of clean, and a script that decides when to
-stop. Then read the result through at speaking pace; some rhythm
+    stop. Only the user can exempt a finding that blocks the loop. Then read the result through at speaking pace; some rhythm
     problems show up only that way.
 6.  Run a final adversarial editorial review. Challenge the draft with
     the clear-style and usage principles of Bryan A. Garner, H. W.
@@ -107,19 +106,18 @@ the reader already supplied. Every sentence that stays should add
 information, a needed qualification, or a deliberate choice of voice.
 
 Keep a contrast when both halves matter or when the negative half
-corrects a belief the reader actually holds. Keep uncertainty that
+corrects a belief the reader holds. Keep uncertainty that
 records a real limit. Keep technical hyphens, dashes, code, paths, and
 URLs that belong to the source or its syntax.
 
 ## Detectors
 
-A detector is optional and advisory, and the skill is complete without
-one. Run it once after the loop ends clean, and never rewrite to lower
-a score. `scripts/detect.py` can run with a local
-open-source detector, a hosted one, or none. A hosted detector sends the text to a third
-party, so get the owner's approval for each document first. See
-[detectors](references/detectors.md) for setup, licenses, and
-calibration.
+You can skip the detector. If you use one, run it once after the loop
+ends clean, and never rewrite to lower a score. `scripts/detect.py` can run
+with a local open-source detector, a hosted one, or none. A hosted
+detector sends the text to a third party, so get the user's approval for
+each document first. See [detectors](references/detectors.md) for setup,
+licenses, and calibration.
 
 ## Editing an author's own draft
 
@@ -141,7 +139,7 @@ a brief faster than repair a drafted paragraph.
 
 ## Output
 
-For pasted prose, return the audit catalog and then the final rewrite,
+For pasted prose, return the audit record and then the final rewrite,
 unless the user asks for the rewrite alone. For long text, add a short
 note on any patterns left in on purpose or still weak.
 
@@ -150,7 +148,7 @@ inline code, commands, paths, YAML metadata, data, and link targets
 unchanged. Write only the final prose to the file, then give the user a
 short summary. For embedded text such as a PR description or commit
 message, return only the final text, unless the surrounding task has a
-place for the catalog.
+place for the audit record.
 
 ## Keep a record of the review
 
@@ -159,13 +157,13 @@ who cannot tell what was already checked. When the prose lives in a
 repository, record the review where it survives:
 
 - In the commit that applies the rewrite, give the ten or so most
-  significant catalog entries in the body, one line each: the pattern and
+  significant audit entries in the body, one line each: the pattern and
   what changed. A reviewer can then check the rewrite against its reasons.
 - For a document that is reviewed repeatedly, such as a README or a
   policy, keep the patterns deliberately left in (and why) in a short note
   beside it or in the project's instruction file, so the next pass does
   not undo them.
 - When an agent you dispatched did the review, ask it to return the
-  catalog in its report, and check the rewrite against it before you
+  audit record in its report, and check the rewrite against it before you
   accept it.
-- Keep the catalog out of the prose itself.
+- Keep the audit record out of the prose itself.

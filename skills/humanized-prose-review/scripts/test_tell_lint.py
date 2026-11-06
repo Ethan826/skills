@@ -46,7 +46,7 @@ class RuleProbes(unittest.TestCase):
 
     def test_rule_inventory_floor_and_named_member(self):
         rules = lint.load_rules()
-        self.assertGreaterEqual(len(rules), 58)
+        self.assertGreaterEqual(len(rules), 64)
         self.assertIn("not-just", [r["id"] for r in rules])
 
     def test_every_rule_catches_its_probe_exactly_once(self):

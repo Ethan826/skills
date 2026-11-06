@@ -2,13 +2,13 @@
 """Keep the record of a review loop and decide when it ends.
 
 The agent runs the audits and rewrites. This script refuses audits it cannot
-tie to the current text or to a new reader, reruns the lint, compares facts
+tie to the current text or to a new auditor, reruns the lint, compares facts
 with the round-0 source, and states the verdict, so a loop cannot end on the
 writer's own say-so.
 Exit codes: 0 CLEAN, 1 CONTINUE, 2 could not record, 3 stopped without CLEAN.
 
 Blind spots: the fact floor sees numbers, URLs, code spans and mid-sentence
-capitalized words, not changed meaning, so a reader still compares the
+capitalized words, not changed meaning, so an auditor still compares the
 claims. Auditor names are self-reported, so the script can catch a reused
 name but cannot prove the agent behind a new name had no context.
 """
@@ -55,7 +55,7 @@ def fact_floor(source, text):
 
 
 def locate(text, span):
-    """Where a span starts, ignoring line wraps. A reader quotes a sentence
+    """Where a span starts, ignoring line wraps. An auditor quotes a sentence
     on one line even when the file wraps it."""
     pattern = r"\s+".join(re.escape(word) for word in span.split())
     match = re.search(pattern, text)
@@ -86,7 +86,7 @@ def check_audit(state, text, audit):
 
 
 def blocking_audit(text, findings):
-    """The lint's rule, applied to the reader's findings."""
+    """The lint's rule, applied to the auditor's findings."""
     company = {}
     for finding in findings:
         paragraph = tell_lint.paragraph_of(text, locate(text, finding["span"]))
@@ -113,7 +113,7 @@ def decide(state, this_round):
 
 
 def reopen(state):
-    """One more round after CLEAN, against the same source and readers. A
+    """One more round after CLEAN, against the same source and auditors. A
     stopped loop stays stopped, so this cannot be used to get past a cap."""
     if state["ended"] != "CLEAN":
         raise LoopError("only a CLEAN loop can be reopened")
@@ -178,7 +178,7 @@ def main(argv=None):
     step.add_argument("--state", required=True)
     step.add_argument("--text", required=True)
     step.add_argument("--audit", required=True)
-    step.add_argument("--keep", help="the owner's reviewed keep list, replacing any earlier one")
+    step.add_argument("--keep", help="the user's reviewed keep list, replacing any earlier one")
     again = commands.add_parser("reopen", help="allow one more round after CLEAN")
     again.add_argument("--state", required=True)
     args = parser.parse_args(argv)
