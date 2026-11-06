@@ -12,6 +12,12 @@ Humanizer's patterns are drawn from Wikipedia's
 maintained by WikiProject AI Cleanup. No text from that page is reproduced
 here; the link is given as credit for the ideas.
 
+`references/researched-tells.md` summarizes findings from the sources it
+links, in its own words. `scripts/detect.py` calls Open Pangram (EditLens),
+SlopTotal, Pangram and GPTZero when a user installs or subscribes to them.
+None of their code or weights are included here. EditLens is CC BY-NC-SA 4.0,
+so its code must not be copied into this skill.
+
 The original is distributed under the following license:
 
 ```

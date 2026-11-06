@@ -26,7 +26,16 @@ Whichever Humanizer catalog you use, also read [additional
 tells](references/additional-tells.md). It lists patterns found in review
 that Humanizer 3.1.0 does not: figurative *carry* and *seam*, label
 openers, mirrored scope pairs, forward-pointing closers, and
-personified abstractions used as a payoff.
+personified abstractions used as a payoff. Also read [researched
+tells](references/researched-tells.md), which adds patterns from
+published studies and practitioner reports and grades the evidence for
+each.
+
+`scripts/tell_lint.py` checks the catalog's listed spellings. Run it on
+every draft; it needs only Python 3.9 or later. A hit is a candidate
+for you to judge, and an empty result shows only that those spellings
+are absent, so it never replaces the audit. Add `--plain` when the
+target is plain text, such as a commit message.
 
 ## Required workflow
 
@@ -42,9 +51,12 @@ personified abstractions used as a payoff.
 4.  Rewrite from the catalog. When a paragraph's main point is buried,
     restructure the paragraph instead of patching single phrases.
 5.  Audit the rewrite for tells that survived and for new problems, and
-    fix them. Repeat until nothing actionable remains. Then read the
-    result through at speaking pace; some rhythm problems show up only
-    that way.
+    fix them. Repeat until nothing actionable remains. For prose that
+    matters, such as a README or a published piece, do this with the
+    [clean-read loop](references/clean-loop.md): a new reader each
+    round, a fixed definition of clean, and a script that states the
+    verdict. Then read the result through at speaking pace; some rhythm
+    problems show up only that way.
 6.  Run a final adversarial editorial review. Challenge the draft with
     the clear-style and usage principles of Bryan A. Garner, H. W.
     Fowler, George Orwell, Joseph M. Williams, and comparable
@@ -82,7 +94,10 @@ Check the shape of each paragraph as well as each sentence:
   no information;
 - figurative *carry* and *seam*, label openers ("One gap:"), mirrored
   scope pairs, forward-pointing closers, and abstractions personified
-  for a clever ending (see the additional tells).
+  for a clever ending (see the additional tells);
+- participial clauses, nominalization chains, long sentences joined by
+  *and*, Claude's stock phrases and word swaps, the edit-summary formula
+  in commit messages, and absent specifics (see the researched tells).
 
 At the document level, look for closers or openings repeated across
 sections, a heading restated in its first sentence, narration about the
@@ -94,6 +109,16 @@ Keep a contrast when both halves matter or when the negative half
 corrects a belief the reader actually holds. Keep uncertainty that
 records a real limit. Keep technical hyphens, dashes, code, paths, and
 URLs that belong to the source or its syntax.
+
+## Detectors
+
+A detector is optional and advisory, and the skill is complete without
+one. Run it once after the loop ends clean, and never rewrite to lower
+a score. `scripts/detect.py` supports no detector, local open-source
+ones, and hosted ones. A hosted detector sends the text to a third
+party, so get the owner's approval for each document first. See
+[detectors](references/detectors.md) for setup, licenses, and
+calibration.
 
 ## Editing an author's own draft
 
