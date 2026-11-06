@@ -31,9 +31,10 @@ tells](references/researched-tells.md), which adds patterns from
 published studies and practitioner reports and grades the evidence for
 each.
 
-`scripts/tell_lint.py` checks the catalog's listed spellings. Run it on
+`scripts/tell_lint.py` checks the catalog's listed phrases. Run it on
 every draft; it needs only Python 3.9 or later. A hit is a candidate
-for you to judge, and an empty result shows only that those spellings
+for you to judge, though in the loop only the owner can exempt a
+blocking one, and an empty result shows only that those phrases
 are absent, so it never replaces the audit. Add `--plain` when the
 target is plain text, such as a commit message.
 
@@ -51,11 +52,11 @@ target is plain text, such as a commit message.
 4.  Rewrite from the catalog. When a paragraph's main point is buried,
     restructure the paragraph instead of patching single phrases.
 5.  Audit the rewrite for tells that survived and for new problems, and
-    fix them. Repeat until nothing actionable remains. For prose that
+    fix them. Repeat until nothing actionable remains or the loop stops. For prose that
     matters, such as a README or a published piece, do this with the
     [clean-read loop](references/clean-loop.md): a new reader each
-    round, a fixed definition of clean, and a script that states the
-    verdict. Then read the result through at speaking pace; some rhythm
+    round, a fixed definition of clean, and a script that decides when to
+stop. Then read the result through at speaking pace; some rhythm
     problems show up only that way.
 6.  Run a final adversarial editorial review. Challenge the draft with
     the clear-style and usage principles of Bryan A. Garner, H. W.
@@ -114,8 +115,8 @@ URLs that belong to the source or its syntax.
 
 A detector is optional and advisory, and the skill is complete without
 one. Run it once after the loop ends clean, and never rewrite to lower
-a score. `scripts/detect.py` supports no detector, local open-source
-ones, and hosted ones. A hosted detector sends the text to a third
+a score. `scripts/detect.py` can run with a local
+open-source detector, a hosted one, or none. A hosted detector sends the text to a third
 party, so get the owner's approval for each document first. See
 [detectors](references/detectors.md) for setup, licenses, and
 calibration.
@@ -123,16 +124,16 @@ calibration.
 ## Editing an author's own draft
 
 When the user wrote the text and will publish it under their name, most
-tells enter through the sentences you add, not the ones you fix.
+tells enter through the sentences you add.
 
-- Prefer the smallest change inside the author's sentence to a new
-  sentence of your own.
+- Make the smallest change inside the author's sentence instead of
+  adding a sentence of your own.
 - When the author supplies wording, use it as written; fix only typos and
   mechanics.
 - For a gap the author has not written, offer a short brief unless they
   ask for prose: what the sentence must claim, what it must not
-  overclaim, and the evidence. Writing a sentence from a brief is quick
-  for the author; repairing a drafted paragraph is slower.
+  overclaim, and the evidence. An author can write a sentence from
+a brief faster than repair a drafted paragraph.
 - Screen review comments, outline bullets, and commit messages too.
   Outline bullets become the author's prose.
 - When the author flags a new tell, add it to the additional tells so the
@@ -167,4 +168,4 @@ repository, record the review where it survives:
 - When an agent you dispatched did the review, ask it to return the
   catalog in its report, and check the rewrite against it before you
   accept it.
-- Keep the catalog out of the prose itself, in the record around it.
+- Keep the catalog out of the prose itself.

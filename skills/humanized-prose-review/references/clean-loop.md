@@ -3,11 +3,10 @@
 Each round lists every tell first, fixes from the list, and hands the result
 to a reader who has not seen it. The loop ends when a new reader finds
 nothing to act on, or when it stops making progress. `scripts/clean_loop.py`
-states the verdict, so the writer cannot end the loop by declaring the draft
-done.
+decides which, so the writer cannot end the loop by declaring the draft done.
 
-Use the loop for prose that matters: a README, a published post, a long PR
-description. A one-line commit message needs only the lint.
+Use the loop for prose with an outside audience: a README, a published post, a
+long PR description. A one-line commit message skips the loop, and gets the lint and an ordinary audit.
 
 ## Why a list, and why a new reader
 
@@ -22,8 +21,8 @@ the `fork` type, which inherits the conversation.
 
 ## One round
 
-Before the first round, record the source. The state file holds the only
-copy of the original, so keep it outside the repository.
+Before the first round, record the source. The state file keeps a copy of the
+original. Keep it outside the repository.
 
 ```bash
 python3 scripts/clean_loop.py init --state STATE.json --text DRAFT.md
@@ -32,17 +31,17 @@ python3 scripts/clean_loop.py init --state STATE.json --text DRAFT.md
 Add `--plain` for a plain-text target, `--keep KEEP.json` for reviewed
 exceptions, and `--max-rounds N` to change the cap of 5.
 
-1. **Lint.** Run `python3 scripts/tell_lint.py DRAFT.md`. Pass `--keep` and
+1. Run `python3 scripts/tell_lint.py DRAFT.md`. Pass `--keep` and
    `--plain` here too, to match `init`.
-2. **Audit.** Dispatch a new reader with the brief below. Replace the
+2. Dispatch a new reader with the brief below. Replace the
    placeholders; never add your reasons for the current wording.
-3. **Record.** Save the reader's JSON as `AUDIT.json` and run:
+3. Save the reader's JSON as `AUDIT.json` and run:
 
    ```bash
    python3 scripts/clean_loop.py record --state STATE.json --text DRAFT.md --audit AUDIT.json
    ```
 
-4. **Fix.** On `CONTINUE`, rewrite from the list and the lint output. Restructure
+4. On `CONTINUE`, rewrite from the list and the lint output. Restructure
    a paragraph when patching would leave it awkward. Do not change anything
    else, and do not add a fact. Then return to step 1.
 
@@ -61,7 +60,7 @@ Give the reader this, and the file path:
 > reach for one to seem thorough.
 >
 > Mark a finding `strong` if it justifies an edit on one sighting, and `weak`
-> if the catalog marks it weak alone or it is a matter of taste. Copy each
+> if Humanizer marks it weak alone or it is a matter of taste. Copy each
 > `span` exactly from the text, on one line.
 >
 > Reply with only this JSON:
@@ -78,12 +77,12 @@ to be fixed in advance. `CLEAN` requires all of these:
 - the reader has no strong finding, and no weak finding with a different
   tell in the same paragraph;
 - every number, URL, code span and mid-sentence name in the source is still
-  present, or the audit file lists it in `accepted_losses` with a reason.
+  present, or the audit file lists it in `accepted_losses`, in the form
+  `[{"item": "...", "reason": "..."}]`.
 
-Facts are compared with the round-0 source, not the previous round, so small
-losses cannot accumulate. This is a floor. Before finishing, also compare the
-final text with the source claim by claim, because the script cannot see a
-changed meaning.
+The script compares facts with the round-0 source, not the previous round, so
+small losses cannot accumulate. It cannot see a changed meaning, so before
+finishing, compare the final text with the source claim by claim.
 
 ## How the loop stops without CLEAN
 
@@ -93,13 +92,14 @@ changed meaning.
 | `STOP_RECURRING` | The same finding came back in three rounds | The fix is not working, or the reader is wrong; ask the owner |
 | `STOP_OSCILLATION` | The text returned to an earlier version | Two rules are pulling against each other; ask the owner |
 
-Each of these ends the loop. Give the owner the open findings and the current
+Give the owner the open findings and the current
 text. Never describe a stopped loop as clean.
 
 ## Keeping something on purpose
 
 A keep list holds tells the owner reviewed and wants left in. It is the only
-exemption channel.
+exemption for a lint finding outside a quotation. Pass it to `init`, or to
+`record` with `--keep` if the owner approves it later.
 
 ```json
 [
@@ -111,23 +111,23 @@ exemption channel.
 - `text` must appear on the finding's line, and `count` is exact, so a new use
   still blocks. An entry that no longer matches fails the lint.
 - Only the owner adds an entry. An agent that disagrees with a finding reports
-  it rather than widening the list.
+  it to the owner.
 - The keep list covers lint rules only. For a reader's finding, tell the next
   reader nothing, and let the owner decide if it recurs.
 
 ## Finishing
 
 1. On `CLEAN`, run the final adversarial editorial review from the skill's
-   workflow; it looks for different faults. If it changes the text, run one
-   more round.
+   workflow, which checks grammar, ambiguity and unsupported claims. If it changes the text, run
+   `clean_loop.py reopen --state STATE.json` and one more round.
 2. If a detector is configured, run it once, as
    [detectors.md](detectors.md) describes.
 3. Record the review as the skill's "Keep a record" section says.
 
 ## What the loop cannot show
 
-- A clean result means this process found nothing. It does not show that a
-  person wrote the text, or that a detector would agree.
+- A clean result means only that this process found nothing: the text may still
+  be AI-written, and a detector may disagree.
 - Readers from the same model family share blind spots with the writer. The
   lint and a detector are the only checks that do not.
 - Rewriting can erase the author's voice as easily as a tell. When the owner

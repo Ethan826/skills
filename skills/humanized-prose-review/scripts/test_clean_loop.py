@@ -168,6 +168,61 @@ class Stopping(unittest.TestCase):
         self.assertEqual(verdicts, ["CONTINUE", "CONTINUE", "STOP_RECURRING"])
 
 
+class Reopen(unittest.TestCase):
+    def clean_state(self):
+        state = loop.new_state(SOURCE, max_rounds=1)
+        loop.record(state, CLEAN, audit(CLEAN, "a1"))
+        return state
+
+    def test_a_clean_loop_takes_one_more_round_against_the_same_source(self):
+        state = self.clean_state()
+        loop.reopen(state)
+        text = "The cache held rows in 2024. See `cache.py` and Redis for details.\n"
+        round_ = loop.record(state, text, audit(text, "a2"))
+        self.assertEqual(round_["round"], 2)
+        self.assertEqual(round_["lost"], ["120"])
+
+    def test_a_used_reader_is_still_refused_after_reopening(self):
+        state = self.clean_state()
+        loop.reopen(state)
+        text = CLEAN + "\nMore.\n"
+        with self.assertRaisesRegex(loop.LoopError, "auditor a1 already"):
+            loop.record(state, text, audit(text, "a1"))
+
+    def test_a_stopped_loop_cannot_be_reopened(self):
+        state = loop.new_state(SOURCE, max_rounds=1)
+        loop.record(state, CLEAN, audit(CLEAN, "a1", [finding("The cache")]))
+        with self.assertRaisesRegex(loop.LoopError, "only a CLEAN loop"):
+            loop.reopen(state)
+
+    def test_a_running_loop_cannot_be_reopened(self):
+        with self.assertRaisesRegex(loop.LoopError, "only a CLEAN loop"):
+            loop.reopen(loop.new_state(SOURCE))
+
+
+class Malformed(unittest.TestCase):
+    def setUp(self):
+        self.state = loop.new_state(SOURCE)
+
+    def test_a_plain_string_accepted_loss_is_a_named_error(self):
+        with self.assertRaisesRegex(loop.LoopError, "needs item and reason"):
+            loop.record(self.state, CLEAN, audit(CLEAN, "a1", accepted_losses=["120"]))
+
+    def test_a_plain_string_finding_is_a_named_error(self):
+        with self.assertRaisesRegex(loop.LoopError, "finding"):
+            loop.record(self.state, CLEAN, audit(CLEAN, "a1", ["The cache"]))
+
+
+class OwnerKeep(unittest.TestCase):
+    def test_record_can_take_an_owner_keep_list(self):
+        text = SOURCE + "\nLet's dive in to the rest.\n"
+        state = loop.new_state(SOURCE)
+        keep = [{"rule": "staged-opener", "text": "Let's dive", "count": 1, "reason": "owner"}]
+        round_ = loop.record(state, text, audit(text, "a1"), keep=keep)
+        self.assertEqual(round_["verdict"], "CLEAN")
+        self.assertEqual(state["keep"], keep)
+
+
 class Cli(unittest.TestCase):
     def run_cli(self, *args):
         return subprocess.run([sys.executable, "-I", str(HERE / "clean_loop.py"), *args],
@@ -203,6 +258,27 @@ class Cli(unittest.TestCase):
                                 str(room / "draft.md"), "--audit", str(room / "audit.json"))
             self.assertEqual(done.returncode, 1)
             self.assertIn("CONTINUE", done.stdout)
+
+    def test_reopen_then_record_takes_another_round(self):
+        with tempfile.TemporaryDirectory() as room:
+            room = Path(room)
+            (room / "draft.md").write_text(CLEAN, encoding="utf-8")
+            (room / "a1.json").write_text(json.dumps(audit(CLEAN, "a1")), encoding="utf-8")
+            (room / "a2.json").write_text(json.dumps(audit(CLEAN, "a2")), encoding="utf-8")
+            state = str(room / "state.json")
+            draft = str(room / "draft.md")
+            self.run_cli("init", "--state", state, "--text", draft)
+            self.run_cli("record", "--state", state, "--text", draft,
+                         "--audit", str(room / "a1.json"))
+            done = self.run_cli("record", "--state", state, "--text", draft,
+                                "--audit", str(room / "a2.json"))
+            self.assertEqual(done.returncode, 2)
+            self.assertIn("already ended", done.stderr)
+            done = self.run_cli("reopen", "--state", state)
+            self.assertEqual(done.returncode, 0, done.stderr)
+            done = self.run_cli("record", "--state", state, "--text", draft,
+                                "--audit", str(room / "a2.json"))
+            self.assertEqual(done.returncode, 0, done.stderr)
 
     def test_init_refuses_to_overwrite_a_running_loop(self):
         with tempfile.TemporaryDirectory() as room:

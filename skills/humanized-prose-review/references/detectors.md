@@ -1,7 +1,7 @@
 # Detectors
 
 A detector is an optional last check, run once on finished text. The loop
-works the same with or without one, so there are three ways to run it:
+works the same with or without one, so there are three ways to run a detector:
 
 | Mode | Backend | Text leaves the machine | Cost and terms | Locates the problem |
 |---|---|---|---|---|
@@ -11,8 +11,7 @@ works the same with or without one, so there are three ways to run it:
 | Closed source | `pangram` | **Yes** | $0.05 per 100 words | Per scored window |
 | Closed source | `gptzero` | **Yes** | See GPTZero's site | Whole document only in this adapter |
 
-Originality.ai has no adapter yet, because its endpoints are not on the
-documentation pages a script can fetch.
+Originality.ai has no adapter yet.
 
 ## How to use a score
 
@@ -50,8 +49,9 @@ python3 scripts/detect.py score DRAFT.md --backend sloptotal --baseline BASELINE
 `HUMAN_DIR` holds at least five `.md` or `.txt` files you wrote before 2023,
 and `AI_DIR` at least five samples of raw model output of the same kind. Each
 needs 80 words or more. The baseline records the 95th percentile of your human
-scores and the median AI score. If those overlap, the script reports that the
-detector does not separate your writing, and you should ignore it. Calibrating
+scores and the median AI score. If the 95th percentile is not below the median,
+document scoring reports that the detector does not separate your writing, and
+you should ignore it. Passage scoring gives no such warning. Calibrating
 with a closed backend uploads every sample, and costs money.
 
 ## Scoring passages
@@ -61,15 +61,15 @@ Scores shift a lot with window size: one section of copy scored 0.53 alone and
 to 180 words instead, with a baseline made the same way:
 
 ```bash
-python3 scripts/detect.py calibrate --backend editlens --noncommercial --passages \
+~/.venvs/editlens/bin/python scripts/detect.py calibrate --backend editlens --noncommercial --passages \
   --human HUMAN_DIR --ai AI_DIR --out PASSAGES.json
-python3 scripts/detect.py score DRAFT.md --backend editlens --noncommercial \
+~/.venvs/editlens/bin/python scripts/detect.py score DRAFT.md --backend editlens --noncommercial \
   --passages --baseline PASSAGES.json
 ```
 
-The result counts the passages above your human range. That is a list of places
-for a reader to look. About one human passage in twenty lands there by
-construction, and a passage below it clears nothing. Hosted backends refuse this
+The result counts the passages above your human range, and `--json` gives every
+passage. A reader can start there. About one human passage in twenty lands above
+that line by construction, and a passage at or under it clears nothing. Hosted backends refuse this
 mode, because each passage would be a separate paid upload.
 
 ## Open source: EditLens (Open Pangram)
@@ -111,7 +111,7 @@ half the time, and is weak under about 80 words.
 Start it with `docker run -p 8000:8000 ghcr.io/pablocaeg/sloptotal`, or from
 source on Python 3.10 or later. It needs about 9 GB of models and 8 GB of
 memory. Then run `python3 scripts/detect.py score DRAFT.md --backend sloptotal`.
-The default address is `http://localhost:8000`. An address on another host
+The default address is `http://localhost:8000`. A `--url` on another host
 counts as an upload.
 
 The code is MIT, but its third-party list leaves out the model weights, and the
@@ -160,15 +160,15 @@ As of November 2026:
 Treat a backend as unproven until it has run for real, and update this table
 when it does.
 
-The one calibration so far failed. On ten of the owner's blog posts from 2019
+The first EditLens calibration failed. On ten of the owner's blog posts from 2019
 and 2020 and nine Claude agent reports, the RoBERTa model gave a human 95th
 percentile of 0.21 and an AI median of 0.15, with only two of the nine reports
 above the human range. The human posts and the reports are different genres,
 so this is one small test. It still shows that this model cannot be trusted
 on this author's technical prose. A paragraph of generic marketing copy scored
 1.00, so the model is not broken. Why it failed here is untested: the reports
-are a different genre, were written under project style rules, and come from
-newer models than its training data. None of this tests Pangram's paid model.
+also followed project style rules and came from newer models than its training
+data. None of this tests Pangram's paid model.
 
 SlopTotal did little better on the same samples. It scored all 19 files between
 0.12 and 0.22, far below its own 0.45 flag. The human 95th percentile was 0.19
@@ -176,9 +176,9 @@ and the AI median 0.18, with three of the nine reports above the human range.
 AI reports did tend to score higher (AUC 0.77 on 19 files), but the band is too
 narrow to set a threshold. It took about 23 minutes on CPU for 19 files.
 
-EditLens did show some use on short passages. Scoring 110 to 180-word slices,
-one of 61 slices from the owner's posts reached 0.45, against none of 16 from
-the AI reports. Two of three sections of marketing copy of that length also
+EditLens gave a few high scores on short passages. Among slices of 110 to 180 words,
+one of 61 from the owner's posts reached 0.45, against none of 16 from the AI
+reports. Two of three sections of marketing copy of that length also
 reached it, though the same copy scored 0.21 in larger windows, and no human
 marketing copy was tested. A high score on a short passage may be worth a
 reader's attention, but a low score shows nothing: it missed every known AI
@@ -186,9 +186,6 @@ slice at that level.
 
 A passage baseline from the same files (67 human and 40 AI passages) put the
 human 95th percentile at 0.31 and the AI median at 0.15.
-
-For this author's technical prose, use no detector as a judge of authorship.
-Passage scores can suggest where a reader should look, and nothing more.
 
 ## Tests
 

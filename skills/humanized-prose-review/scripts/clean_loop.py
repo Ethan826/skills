@@ -72,6 +72,8 @@ def check_audit(state, text, audit):
         raise LoopError("auditor %s already read this loop; use a fresh one"
                         % audit["auditor"])
     for finding in audit["findings"]:
+        if not isinstance(finding, dict):
+            raise LoopError("finding must be an object: %s" % json.dumps(finding))
         if finding.get("tier") not in ("strong", "weak"):
             raise LoopError("finding has unknown tier: %s" % json.dumps(finding))
         if not finding.get("pattern") or not finding.get("span"):
@@ -79,7 +81,7 @@ def check_audit(state, text, audit):
         if locate(text, finding["span"]) is None:
             raise LoopError("span not in text: %s" % finding["span"])
     for loss in audit.get("accepted_losses", []):
-        if not loss.get("item") or not loss.get("reason"):
+        if not isinstance(loss, dict) or not loss.get("item") or not loss.get("reason"):
             raise LoopError("accepted loss needs item and reason: %s" % json.dumps(loss))
 
 
@@ -110,10 +112,21 @@ def decide(state, this_round):
     return "CONTINUE"
 
 
-def record(state, text, audit):
+def reopen(state):
+    """One more round after CLEAN, against the same source and readers. A
+    stopped loop stays stopped, so this cannot be used to get past a cap."""
+    if state["ended"] != "CLEAN":
+        raise LoopError("only a CLEAN loop can be reopened")
+    state["ended"] = None
+    state["max_rounds"] = max(state["max_rounds"], len(state["rounds"]) + 1)
+
+
+def record(state, text, audit, keep=None):
     if state["ended"]:
-        raise LoopError("loop already ended: %s" % state["ended"])
+        raise LoopError("loop already ended: %s; use reopen after CLEAN" % state["ended"])
     check_audit(state, text, audit)
+    if keep is not None:
+        state["keep"] = keep
     lint = tell_lint.scan(text, state["plain"], state["keep"])
     accepted = {loss["item"] for r in state["rounds"] for loss in r["accepted_losses"]}
     accepted |= {loss["item"] for loss in audit.get("accepted_losses", [])}
@@ -165,8 +178,17 @@ def main(argv=None):
     step.add_argument("--state", required=True)
     step.add_argument("--text", required=True)
     step.add_argument("--audit", required=True)
+    step.add_argument("--keep", help="the owner's reviewed keep list, replacing any earlier one")
+    again = commands.add_parser("reopen", help="allow one more round after CLEAN")
+    again.add_argument("--state", required=True)
     args = parser.parse_args(argv)
     try:
+        if args.command == "reopen":
+            state = load_json(args.state, "state")
+            reopen(state)
+            Path(args.state).write_text(json.dumps(state, indent=2), encoding="utf-8")
+            print("loop reopened at round %d" % (len(state["rounds"]) + 1))
+            return 0
         text = tell_lint.read_text(args.text)
         if args.command == "init":
             if Path(args.state).exists():
@@ -177,7 +199,8 @@ def main(argv=None):
             print("loop started; text sha256 %s" % sha(text))
             return 0
         state = load_json(args.state, "state")
-        this_round = record(state, text, load_json(args.audit, "audit"))
+        keep = tell_lint.read_keep(args.keep) if args.keep else None
+        this_round = record(state, text, load_json(args.audit, "audit"), keep)
         Path(args.state).write_text(json.dumps(state, indent=2), encoding="utf-8")
     except (LoopError, tell_lint.LintError) as error:
         print("clean_loop: %s" % error, file=sys.stderr)

@@ -5,13 +5,13 @@ writing in November 2026. Humanizer 3.1.0 and the additional tells do not
 list them, or list only part of them. Each entry gives its evidence, so you
 can weigh it:
 
-- **Measured:** a study with a stated corpus and method.
-- **Vendor:** measured by a company that sells detection or humanizing,
+- Measured: a study with a stated corpus and method.
+- Vendor: measured by a company that sells detection or humanizing,
   with little method published.
-- **Editors:** Wikipedia editors' observation from cleanup work.
-- **Anecdote:** forum or blog reports with no counts.
+- Editors: Wikipedia editors' observation from cleanup work.
+- Anecdote: forum or blog reports with no counts.
 
-`**Lint:**` names the `tell_lint.py` rule, or says none when only a reader
+`**Lint:**` gives the `tell_lint.py` rule, or says none when only a reader
 can judge the tell. No single entry proves anything. Word habits change with
 model releases, so distrust a vendor's word list sooner than a structural
 pattern.
@@ -24,7 +24,7 @@ pattern.
 clauses at 2 to 5 times the human rate (Reinhart et al.).
 **Watch for:** a clause after a comma that opens with an -ing verb, whatever
 the verb: "The job finished early, leaving the queue empty." §15 covers only
-riders that claim significance. This covers the habit itself.
+riders that claim significance; this entry covers every such clause.
 **Fix:** Give the second event its own subject and verb, or cut it. Keep a
 participle that says how or when something happened and reads naturally.
 **Lint:** `participial-clause`
@@ -41,8 +41,9 @@ human text.
 
 ### R3. A "that" clause as the subject
 
-**Evidence:** Measured, read from a summary of the paper's appendix; check
-the table before quoting it. Reported at 173 to 331 percent of the human rate.
+**Evidence:** Measured. Reinhart et al. give 173 to 331 percent of the human
+rate, read here from a summary of the paper's appendix, so check its Table 3
+before quoting this.
 **Watch for:** "That the build failed suggests..."
 **Fix:** Start with the fact: "The build failed, which suggests..."
 **Lint:** none
@@ -50,8 +51,8 @@ the table before quoting it. Reported at 173 to 331 percent of the human rate.
 ### R4. Long sentences joined by "and"
 
 **Evidence:** Measured. Models write long sentences with little variety in
-length, with fewer commas and semicolons than people and hardly any
-parentheses, and "and" is their most overused word (The Economist, 55,940
+length. They use fewer commas and semicolons than people, hardly any
+parentheses, and "and" more than any other word (The Economist, 55,940
 sentences, read through an excerpt). GPT-4o avoided clausal coordination in
 Reinhart et al., so this varies by model.
 **Watch for:** three or more *and*s in one sentence, and the sentence metrics
@@ -64,10 +65,10 @@ that says how the parts relate.
 
 ### R6. Claude's stock phrases
 
-**Evidence:** Anecdote, but widely repeated in Hacker News threads, Claude
-forums and a Claude Code issue. Extends A1 and §12.
+**Evidence:** Anecdote from Hacker News threads, Claude forums and a Claude
+Code issue. Extends A1 and §12.
 **Watch for:** load-bearing (figurative), worth stating plainly, carry the
-argument, full stop (as a closer), and the trap, the crux, first-class
+argument, full stop (as a closer), "and the trap", the crux, first-class
 citizen, honest take, the honest answer, sit with that, belt and suspenders,
 smoking gun.
 **Fix:** Say what the thing does. Keep *load-bearing* for walls.
@@ -97,7 +98,7 @@ before mid-2026.
 **Watch for:** "does not establish", "should not be confused with", and
 "rather than" used as a caveat.
 **Fix:** State the limit directly, or cut a caveat nobody needs.
-**Lint:** `caveat-shape`
+**Lint:** `caveat-shape`, `rather-than`
 
 ### R10. Stock frames
 
@@ -105,7 +106,7 @@ before mid-2026.
 AI input with its own humanized output, not with human writing.
 **Watch for:** plays a role, crucial role in, role in shaping, ensuring that,
 while maintaining, aligns well with, is essential for, shaped by.
-**Fix:** Name what the thing does to the other thing.
+**Fix:** Say how one thing acts on the other.
 **Lint:** `stock-frame`
 
 ### R11. Reminder and insight phrases
@@ -122,10 +123,11 @@ moreover, multifaceted, nuanced, camaraderie, palpable, profoundly.
 
 ### R12. Stock scenes and reviews
 
-**Evidence:** Vendor. Mostly fiction and reviews, so rare in technical prose.
+**Evidence:** Vendor (Pangram's phrase lists). Mostly fiction and reviews, so
+rare in technical prose.
 **Watch for:** took a slow sip, weight of unspoken, recently had the
 pleasure, highly recommend, game-changer.
-**Fix:** Write what actually happened.
+**Fix:** Write what happened.
 **Lint:** `scene-stock`
 
 ### R13. Default names
@@ -168,7 +170,8 @@ experts"); vendor for the rest (Pangram).
 **Watch for:** no quoted person, few proper nouns, no first-hand experience,
 no local knowledge, no criticism of any view, relentless positivity.
 **Fix:** Ask the author for the detail. Never invent one to fill the gap.
-Wikipedia's editors, citing other studies, list forms people use more: *there
+Wikipedia's editors, citing Geng and Trotta and Reinhart et al., list forms
+people use more: *there
 is a*, *wrote*, *died*, *very*, *perhaps*, *tends to*, *in order to*, *the
 fact that*. Leave these alone; they are not wordiness to clean up here.
 **Lint:** none
@@ -203,7 +206,7 @@ commit message, email or other plain-text target.
 
 ### R16. The template essay
 
-**Evidence:** Vendor.
+**Evidence:** Vendor (Pangram's guide to AI writing patterns).
 **Watch for:** paragraphs of near-equal length, a long conclusion opening
 *Overall* or *In summary*, a first sentence that repeats the request.
 **Fix:** End on the last new fact. Let paragraphs run as long as their point.
@@ -238,12 +241,10 @@ lint checks ISBNs and strings only, so a reader must resolve DOIs.
   above the human rate, and Pangram found Gemini 3 Pro below it. §8 still
   applies as a style rule, but a clean dash count says little about other
   models.
-- Sources disagree. Pangram says AI avoids semicolons, while Claude
-  reports describe semicolon antithesis. WriteHuman found semicolon rates and
+- Sources disagree. Pangram says AI avoids semicolons, while explainx,
+which sells training, lists semicolon antithesis as a Claude habit. WriteHuman found semicolon rates and
   sentence length barely changed by humanizing. Treat rhythm metrics as
   prompts for a reader.
-- Not adopted, for lack of evidence: more than one colon per 200 words,
-  ranges in place of numbers, and "such as A, B, etc."
 
 ## Sources
 
@@ -251,7 +252,7 @@ lint checks ISBNs and strings only, so a reader must resolve DOIs.
 - Shaib et al., [Measuring AI "Slop" in Text](https://arxiv.org/html/2509.19163)
 - The Economist, ["How to spot AI writing"](https://www.economist.com/culture/2026/07/30/how-to-spot-ai-writing), read through [an excerpt](https://daringfireball.net/linked/2026/08/11/economist-ai-writing)
 - Pangram, [9 Signs of AI Writing](https://www.pangram.com/signs-of-ai-writing), [spotting patterns](https://www.pangram.com/blog/comprehensive-guide-to-spotting-ai-writing-patterns), [overused phrases](https://www.pangram.com/blog/walking-through-ai-phrases)
-- [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), credited by link; no text reproduced
+- [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)
 - [WriteHuman](https://writehuman.ai/blog/ai-tells-in-2026), which sells a humanizer
 - [Poynter](https://www.poynter.org/reporting-editing/2026/ai-changing-human-writing-editors-em-dash/)
 - [explainx](https://explainx.ai/blog/claude-opus-5-load-bearing-claudisms-writing-tells-2026) and [a Hacker News summary](https://zeli.app/en/story/49461817), both anecdotal
