@@ -30,7 +30,7 @@ types record requirements and errors.
 
 | Tool or package | Version |
 |---|---|
-| effect | 4.1.1 |
+| effect | 4.1.4 |
 | typescript | 5.9.3 |
 
 The TypeScript examples in typescript.md compile against these versions.
