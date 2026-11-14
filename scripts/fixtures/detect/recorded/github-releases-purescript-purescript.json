@@ -1,0 +1,32 @@
+[
+  {
+    "draft": false,
+    "html_url": "https://github.com/purescript/purescript/releases/tag/v0.15.18-0",
+    "prerelease": true,
+    "tag_name": "v0.15.18-0"
+  },
+  {
+    "draft": false,
+    "html_url": "https://github.com/purescript/purescript/releases/tag/v0.15.17",
+    "prerelease": false,
+    "tag_name": "v0.15.17"
+  },
+  {
+    "draft": false,
+    "html_url": "https://github.com/purescript/purescript/releases/tag/v0.15.17-3",
+    "prerelease": true,
+    "tag_name": "v0.15.17-3"
+  },
+  {
+    "draft": false,
+    "html_url": "https://github.com/purescript/purescript/releases/tag/v0.15.17-2",
+    "prerelease": true,
+    "tag_name": "v0.15.17-2"
+  },
+  {
+    "draft": false,
+    "html_url": "https://github.com/purescript/purescript/releases/tag/v0.15.17-1",
+    "prerelease": true,
+    "tag_name": "v0.15.17-1"
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "location": {
+    "githubOwner": "purescript",
+    "githubRepo": "purescript-prelude"
+  },
+  "published": {
+    "3.0.0": {
+      "publishedTime": "2017-03-25T22:32:31.000Z"
+    },
+    "3.1.0": {
+      "publishedTime": "2017-06-27T17:03:34.000Z"
+    },
+    "3.1.1": {
+      "publishedTime": "2017-11-01T19:37:15.000Z"
+    },
+    "3.2.0": {
+      "publishedTime": "2018-04-07T17:09:01.000Z"
+    },
+    "3.3.0": {
+      "publishedTime": "2018-04-13T21:33:55.000Z"
+    },
+    "4.0.0": {
+      "publishedTime": "2018-05-22T20:39:31.000Z"
+    },
+    "4.0.1": {
+      "publishedTime": "2018-06-07T08:48:39.000Z"
+    },
+    "4.1.0": {
+      "publishedTime": "2018-07-17T21:18:31.000Z"
+    },
+    "4.1.1": {
+      "publishedTime": "2019-04-20T17:50:43.000Z"
+    },
+    "5.0.0": {
+      "publishedTime": "2021-02-26T01:38:40.000Z"
+    },
+    "5.0.1": {
+      "publishedTime": "2021-05-11T21:10:31.000Z"
+    },
+    "6.0.0": {
+      "publishedTime": "2022-04-27T13:37:39.000Z"
+    },
+    "6.0.1": {
+      "publishedTime": "2022-08-18T20:04:00.000Z"
+    },
+    "6.0.2": {
+      "publishedTime": "2025-02-15T18:25:08.000Z"
+    },
+    "6.0.3": {
+      "publishedTime": "2026-10-17T19:13:58.585Z"
+    }
+  },
+  "unpublished": {}
+}
