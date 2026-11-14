@@ -26,8 +26,11 @@ how to make the enforcing tests in the last section trustworthy.
 Every API name below was checked against effect 4.1.1 by reading
 the package's own source (`node_modules/effect/src`) and the
 documentation it ships (`node_modules/effect/AGENTS.md` and
-`node_modules/effect/ai-docs`). The `@effect/vitest` names were checked
-against the 4.1.1 examples only, not against that package's source.
+`node_modules/effect/ai-docs`). Every code block compiles against effect
+4.1.1 with TypeScript 5.9.3 under `strict` and
+`exactOptionalPropertyTypes`, given stub declarations for the domain
+names a fragment leaves out. The `@effect/vitest` names were checked by
+compiling a use of each against `@effect/vitest` 4.1.1.
 
 Before relying on a name here, confirm it in the version you have
 installed: search `node_modules/effect/src/<Module>.ts` for
@@ -101,7 +104,7 @@ When you reach for a statement, find the combinator that replaces it.
 | `pipe(f(input), g)` | `pipe(input, f, g)` |
 | `try`/`catch` | `Effect.try`, `Effect.tryPromise`, then `Effect.catchTag` |
 | `throw` | `return yield* new SomeError(...)`, or `Effect.fail` |
-| `await somePromise` | `Effect.tryPromise({ try, catch })` with a typed error |
+| `await somePromise` | `Effect.tryPromise({ try, catch })` with a typed error; `Effect.promise` only for a Promise that cannot reject |
 | `x as T` | a `Schema` decode at the boundary |
 | `if`/`switch`/`instanceof` on a tagged union | `Match.tag`, or `Effect.catchTag` for errors |
 | a `??` chain or a hand-written merge | `Struct.makeCombiner`, `Option.makeReducer`, `Combiner.last` |
@@ -145,15 +148,23 @@ a failure into a defect, which no typed handler sees, so use them only
 for what cannot happen when the code is correct. If the process must
 stop on a defect, stop it once, in the entrypoint.
 
-These throw or hide a failure, and a lint can ban them by syntax:
+These throw or hide a failure. A lint can ban all but one of them by
+syntax, and the exception says how to gate it:
 
 - `Schema.decodeUnknownSync`, `Schema.decodeSync` and the other `*Sync`
   decoders and encoders. Use the `Effect`, `Result` or `Option` variant.
 - `Option.getOrThrow`, `Result.getOrThrow` and their `With` forms. Use
   `match` or `getOrElse`, or lift into the Effect.
-- `Effect.promise` on a Promise that can reject. A rejection becomes a
-  defect. Use `Effect.tryPromise` with a `catch` that returns a tagged
-  error.
+- `Effect.promise` on a Promise that can reject. `Effect.promise` is
+  only for a Promise that cannot reject. If it rejects anyway, the
+  rejection becomes a defect, not a typed failure, so no `Effect.catch`
+  or `Effect.catchTag` sees it. Anything that can reject goes through
+  `Effect.tryPromise({ try, catch })`, with a `catch` that returns a
+  tagged error. The one-argument form fails with `Cause.UnknownError`,
+  which no domain handler names. No syntax check can tell whether a
+  Promise can reject, so the lint flags every `Effect.promise`, and each
+  one kept goes in the gate's allowlist with the reason it cannot
+  reject.
 - `JSON.parse` and `JSON.stringify`. Use `Schema.fromJsonString` with a
   decode or encode.
 - `instanceof` on errors, a `switch` on `_tag`, `x._tag === "..."` and
@@ -166,6 +177,8 @@ Inside an Effect, an `Option` or a `Result` is not branched on. It is
 lifted, and the absence or the failure ends the pipeline:
 
 ```ts
+import { Data, Effect } from "effect"
+
 class TaskNotFound extends Data.TaggedError("TaskNotFound")<{
   readonly taskId: string
 }> {}
@@ -199,6 +212,8 @@ environment variable, another process's output) is `unknown` until a
 deeper re-checks it.
 
 ```ts
+import { Schema } from "effect"
+
 const Config = Schema.Struct({
   pollSeconds: Schema.Int,
   label: Schema.optional(Schema.String),
@@ -225,6 +240,8 @@ Read a tagged union with `Match`, which checks that every case is
 handled:
 
 ```ts
+import { Match } from "effect"
+
 const describe = (event: TaskEvent) =>
   Match.value(event).pipe(
     Match.tag("Started", describeStarted),
@@ -246,14 +263,25 @@ algebraic instances in `effect` instead of `??` chains and reduce loops.
 `combineAll`.
 
 ```ts
-const Totals = Struct.makeReducer<Totals>({
+import { Combiner, Number, Option, Struct } from "effect"
+
+interface Totals {
+  readonly runs: number
+  readonly failures: number
+  readonly lastError: Option.Option<string>
+}
+
+const TotalsReducer = Struct.makeReducer<Totals>({
   runs: Number.ReducerSum,
   failures: Number.ReducerSum,
   lastError: Option.makeReducer(Combiner.last<string>()),
 })
 
-const total = Totals.combineAll(perRunTotals)
+const total = TotalsReducer.combineAll(perRunTotals)
 ```
+
+`Number` here is Effect's module, imported from `effect`, and it shadows
+the global `Number` in that file.
 
 `Option.makeReducer` skips `None` and combines the `Some` values.
 `Option.makeReducerFailFast` returns `None` as soon as one input is
@@ -305,7 +333,7 @@ requirements, `R`, and never constructs it.
 import { Context, Effect, FileSystem, Layer, Option } from "effect"
 
 export class TaskStore extends Context.Service<TaskStore, {
-  find(taskId: string): Option.Option<Task>
+  readonly find: (taskId: string) => Option.Option<Task>
   readonly save: (task: Task) => Effect.Effect<void, StoreError>
 }>()("supervisor/TaskStore") {
   static readonly layer = Layer.effect(
@@ -355,6 +383,8 @@ service it depends on. It does not reach past the code to replace
 means a dependency was never injected; fix the injection.
 
 ```ts
+import { Effect, Layer, Option } from "effect"
+
 const StoreWithOneTask = Layer.mock(TaskStore, {
   find: (taskId) => taskId === "t1" ? Option.some(sampleTask) : Option.none(),
 })
@@ -390,8 +420,8 @@ A rule written only in prose decays. Within months the forbidden pattern
 is back in a file nobody reviewed with it in mind. For each rule above
 that a machine can check, add a test that fails the build:
 
-- Bans (sync decoders, `getOrThrow`, `instanceof` on errors, reads
-  of `_tag`, `JSON.parse`): an ESLint rule or a test that walks the
+- Bans (sync decoders, `getOrThrow`, `Effect.promise`, `instanceof` on
+  errors, reads of `_tag`, `JSON.parse`): an ESLint rule or a test that walks the
   TypeScript syntax tree, not a text search. A text search misses
   aliased imports and matches inside comments.
 - Global doubles: fail on `vi.stubGlobal`, `vi.spyOn(globalThis,
