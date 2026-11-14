@@ -106,6 +106,7 @@ Original skills for how an agent works in any project.
 | [`gate-integrity`](skills/gate-integrity/SKILL.md) | Broad | Make checks trustworthy: gates that are seen to fail, checkers with their own tests, every exemption inventoried, and stated limits. |
 | [`dependency-intake`](skills/dependency-intake/SKILL.md) | Broad | Decide whether to take on a library, vendored file, agent skill or service, and how; review upgrades. |
 | [`decisions-as-issues`](skills/decisions-as-issues/SKILL.md) | Situational | Keep decisions, findings and handoff state in records a reader with no memory of the conversation can trust. |
+| [`skill-update`](skills/skill-update/SKILL.md) | Niche | Act on approved items from this repository's skill-drift issue (port upstream changes into forks, bump checked tool versions, upgrade installed skills) and register every new skill in `anchors.json`. Needs this repository's anchor setup. |
 
 ### Data and operations
 
@@ -208,19 +209,50 @@ replaces, so an agent can make the match.
 | [`landing-a-branch`](skills/landing-a-branch/SKILL.md) | `finishing-a-development-branch` |
 | [`isolated-workspaces`](skills/isolated-workspaces/SKILL.md) | `using-git-worktrees` |
 
-## Keeping the forks in sync with upstream
+## Keeping the skills current
 
-Each fork's `NOTICE.md` records the superpowers commit it was last synced
-with. To see what upstream has changed since then:
+`anchors.json` records what each skill is anchored to: the upstream
+commit a fork was rewritten from, the release a vendored file came from,
+the tool versions a skill's claims were checked against, the commit or
+folder hash of a third-party skill installed unmodified, or `none` with a
+reason. Every skill must have an entry.
+
+Four GitHub Actions workflows read it:
+
+- `gates.yml` runs `scripts/anchors_gate.py`, the tests of the scripts
+  under `scripts/`, and the checker tests of `humanized-prose-review` and
+  `agent-baseline` on every push and pull request. The gate fails when a
+  skill has no entry, or when a `NOTICE.md`, a `THIRD_PARTY.md` row or a
+  skill's Versions table disagrees with `anchors.json`.
+- `check-effect-v4.yml` and `check-purescript-gotchas.yml` run the check
+  harnesses under `checks/` when their skill, their check or
+  `anchors.json` changes. `checks/effect-v4` compiles the TypeScript examples in `effect-v4` and
+  `readable-functional-code` against the pinned versions;
+  `checks/purescript-gotchas` compiles one small module set per claim in
+  `purescript-gotchas` and compares the compiler's diagnostics with what
+  the skill says. Both include code that must fail to compile, and each
+  `README.md` lists what the check cannot catch.
+- `skill-drift.yml` runs on the first of each month, or by hand. It asks
+  each upstream and registry what has moved since its anchor and keeps
+  one open issue labeled `skill-drift` up to date, with a checklist item
+  per change. It never edits the repository and runs no model.
+
+To take an update, tick its item in the issue, then ask an agent to "do
+the approved skill updates". The agent follows the
+[`skill-update`](skills/skill-update/SKILL.md) skill. It ports upstream
+changes into a fork one at a time, moves a tool version only after the
+check passes, and records each decline with its reason so the item is
+not reported again. The same skill covers registering a new skill.
+
+The forks were rewritten rather than patched, so an upstream diff can't
+be applied as it stands, and each change is ported by hand. To see what
+upstream changed in a fork's original without waiting for the issue,
+with the fork's `commit` from `anchors.json` as `<pinned-commit>`:
 
 ```bash
 git clone https://github.com/obra/superpowers /tmp/superpowers
 git -C /tmp/superpowers diff <pinned-commit> HEAD -- skills/<original-name>
 ```
-
-The forks were rewritten rather than patched, so upstream changes can't
-be applied as diffs. Port each change by hand, then update the commit in
-`NOTICE.md` and `THIRD_PARTY.md`.
 
 ## License
 
