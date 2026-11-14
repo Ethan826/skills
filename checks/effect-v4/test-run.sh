@@ -134,20 +134,34 @@ sed -i.bak 's/^const viaPromise = await Effect.runPromiseExit(Effect.promise(rej
 expect fail 'CLAIM FAILS' \
   "runtime claim broken" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
+# The effect pin, read from package.json so these cases follow a version bump,
+# and another published version to move it to (4.1.2, or 4.1.3 if the pin is
+# 4.1.2). A planted edit that matches nothing leaves the case passing, so the
+# pin is checked to be a plain version first.
+pin=$(sed -n 's/^ *"effect": "\([0-9]*\.[0-9]*\.[0-9]*\)",\{0,1\}$/\1/p' "$here/package.json")
+case $pin in
+  [0-9]*.[0-9]*.[0-9]*) ;;
+  *) echo "FAIL  cannot read the effect pin from package.json"; exit 1 ;;
+esac
+other=4.1.2
+[ "$pin" = 4.1.2 ] && other=4.1.3
+pin_re=$(printf '%s' "$pin" | sed 's/\./\\./g')
+other_re=$(printf '%s' "$other" | sed 's/\./\\./g')
+
 setup anchor-bumped
-sed -i.bak 's/"id": "effect-v4\/effect", \(.*\)"version": "4\.1\.1"/"id": "effect-v4\/effect", \1"version": "4.1.2"/' "$r/anchors.json"
-expect fail 'anchors\.json effect-v4/effect says 4\.1\.2, package\.json pins 4\.1\.1' \
+sed -i.bak "s/\"id\": \"effect-v4\/effect\", \(.*\)\"version\": \"$pin_re\"/\"id\": \"effect-v4\/effect\", \1\"version\": \"$other\"/" "$r/anchors.json"
+expect fail "anchors\\.json effect-v4/effect says $other_re, package\\.json pins $pin_re" \
   "anchors.json bumped, package.json not" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup package-bumped-deps
-sed -i.bak 's/"effect": "4\.1\.1"/"effect": "4.1.2"/' "$c/package.json"
-sed -i.bak 's/"version": "4\.1\.1", "row": "effect"/"version": "4.1.2", "row": "effect"/g' "$r/anchors.json"
-expect fail 'installed effect is 4\.1\.1, package\.json pins 4\.1\.2' \
+sed -i.bak "s/\"effect\": \"$pin_re\"/\"effect\": \"$other\"/" "$c/package.json"
+sed -i.bak "s/\"version\": \"$pin_re\", \"row\": \"effect\"/\"version\": \"$other\", \"row\": \"effect\"/g" "$r/anchors.json"
+expect fail "installed effect is $pin_re, package\\.json pins $other_re" \
   "package.json and anchors bumped, deps not (reused deps)" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup package-bumped-fresh
-sed -i.bak 's/"effect": "4\.1\.1"/"effect": "4.1.2"/' "$c/package.json"
-sed -i.bak 's/"version": "4\.1\.1", "row": "effect"/"version": "4.1.2", "row": "effect"/g' "$r/anchors.json"
+sed -i.bak "s/\"effect\": \"$pin_re\"/\"effect\": \"$other\"/" "$c/package.json"
+sed -i.bak "s/\"version\": \"$pin_re\", \"row\": \"effect\"/\"version\": \"$other\", \"row\": \"effect\"/g" "$r/anchors.json"
 expect fail 'bun install --frozen-lockfile failed' \
   "package.json and anchors bumped, bun.lock not (fresh install)" "$c/run.sh" --repo "$r"
 
