@@ -38,14 +38,14 @@ print the work directory's size at the end.
 
 `cases.json` lists one entry per directory under `cases/`. If a directory
 has no entry, or an entry has no directory, the check fails. Each entry
-names the skill section and claim, and lists the exact errors and
-warnings expected, each with its code and module, plus a line and
-message fragments where those matter. A case passes only when the
+gives the skill section and the claim it checks. It lists the exact
+errors and warnings expected, each with its code and module, and adds a
+line and message fragments where those matter. A case passes only when the
 compiler's diagnostics match those lists exactly. Fragments are compared
 after collapsing whitespace. A missing fragment is reported as `wording
 changed`, a separate failure, since the skill quotes the compiler.
 `codeGuessed` marks the codes the plan was unsure of before the first run.
-`control` names the case that shows the same module compiling once the
+`control` is the case that shows the same module compiling once the
 defect is removed.
 
 Some cases also have a `run` step. `purs-graph-json` calls `purs graph`
@@ -58,8 +58,8 @@ purs 0.15.16 leaves `moduleName` null for parse errors,
 `MissingClassMember` and `NonAssociativeError`. For those the runner
 reads the module name from the reported file's `module` header.
 
-`test_runner.py` tests the runner without a compiler, using hand-written
-`--json-errors` output in `fixtures/`. The tests cover wrong codes,
+`test_runner.py` tests the runner without a compiler. It feeds the
+runner hand-written `--json-errors` output from `fixtures/`. The tests cover wrong codes,
 modules and lines, unexpected success, missing and extra warnings,
 changed wording, exact hole counts, unparseable output, the manifest
 inventory in both directions, the scan floor, version mismatches against

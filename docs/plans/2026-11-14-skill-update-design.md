@@ -1,6 +1,6 @@
 # Skill updates: drift detection and the skill-update skill
 
-2026-11-14. Status: DRAFT for the owner's approval. Nothing is built.
+2026-11-14. Status: APPROVED (owner, 2026-11-14); built on branch skill-update.
 
 ## Problem
 

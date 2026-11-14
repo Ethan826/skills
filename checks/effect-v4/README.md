@@ -11,7 +11,7 @@ checks/effect-v4/test-run.sh       # the check's own tests (planted defects)
 ```
 
 `run.sh` installs into a temporary directory, with bun's cache inside it, and
-removes the directory on exit. About 240 MB is used at peak. It fails when:
+removes the directory on exit. A run uses about 240 MB at peak. It fails when:
 
 - `package.json` pins a range, or its versions differ from the `anchors.json`
   `tool` entries whose `check` is `checks/effect-v4`, or from what is installed;
