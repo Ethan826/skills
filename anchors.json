@@ -22,9 +22,9 @@
     {"id": "purescript-gotchas/purs", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "github-release", "package": "purescript/purescript", "version": "0.15.17", "row": "purs", "check": "checks/purescript-gotchas"},
     {"id": "purescript-gotchas/spago", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "npm", "package": "spago", "version": "1.0.5", "row": "spago", "check": "checks/purescript-gotchas"},
     {"id": "purescript-gotchas/purs-tidy", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "npm", "package": "purs-tidy", "version": "0.11.1", "row": "purs-tidy", "check": "checks/purescript-gotchas"},
-    {"id": "purescript-gotchas/registry package set", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package-set", "package": "registry", "version": "81.0.0", "row": "registry package set", "check": "checks/purescript-gotchas"},
-    {"id": "purescript-gotchas/prelude", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package", "package": "prelude", "version": "6.0.2", "row": "prelude", "check": "checks/purescript-gotchas"},
-    {"id": "purescript-gotchas/quickcheck", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package", "package": "quickcheck", "version": "8.0.1", "row": "quickcheck", "check": "checks/purescript-gotchas"},
+    {"id": "purescript-gotchas/registry package set", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package-set", "package": "registry", "version": "82.1.1", "row": "registry package set", "check": "checks/purescript-gotchas"},
+    {"id": "purescript-gotchas/prelude", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package", "package": "prelude", "version": "6.0.3", "row": "prelude", "check": "checks/purescript-gotchas"},
+    {"id": "purescript-gotchas/quickcheck", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package", "package": "quickcheck", "version": "8.0.2", "row": "quickcheck", "check": "checks/purescript-gotchas"},
     {"id": "purescript-gotchas/quickcheck-laws", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package", "package": "quickcheck-laws", "version": "7.0.0", "row": "quickcheck-laws", "check": "checks/purescript-gotchas"},
     {"id": "purescript-gotchas/js-bigints", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package", "package": "js-bigints", "version": "2.2.1", "row": "js-bigints", "check": "checks/purescript-gotchas"},
     {"id": "purescript-gotchas/bigints", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "purescript-package", "package": "bigints", "version": "7.0.1", "row": "bigints", "check": "checks/purescript-gotchas"},
@@ -52,6 +52,9 @@
   ],
   "declined": [
     {"repo": "obra/superpowers", "path": "skills/diagnosing-superpowers", "reason": "not adopted (owner, 2026-11-14)"},
-    {"repo": "obra/superpowers", "path": "skills/using-superpowers", "reason": "not adopted (owner, 2026-11-14)"}
+    {"repo": "obra/superpowers", "path": "skills/using-superpowers", "reason": "not adopted (owner, 2026-11-14)"},
+    {"anchor": "purescript-gotchas/quickcheck-laws", "to": "7.0.1", "reason": "not in package set 82.1.1 (owner, 2026-11-14)"},
+    {"anchor": "purescript-gotchas/js-bigints", "to": "2.2.2", "reason": "not in package set 82.1.1 (owner, 2026-11-14)"},
+    {"anchor": "purescript-gotchas/bigints", "to": "7.0.2", "reason": "not in package set 82.1.1 (owner, 2026-11-14)"}
   ]
 }

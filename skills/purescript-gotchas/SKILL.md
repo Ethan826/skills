@@ -18,12 +18,12 @@ Every claim below was checked against these versions:
 
 | Tool or package | Version |
 |---|---|
-| purs | 0.15.17 (the package set allows 0.15.15 up to 0.16.0) |
+| purs | 0.15.17 (the package set allows 0.15.17 up to 0.16.0) |
 | spago | 1.0.5 |
 | purs-tidy | 0.11.1 |
-| registry package set | 81.0.0 |
-| prelude | 6.0.2 |
-| quickcheck | 8.0.1 |
+| registry package set | 82.1.1 |
+| prelude | 6.0.3 |
+| quickcheck | 8.0.2 |
 | quickcheck-laws | 7.0.0 |
 | js-bigints | 2.2.1 |
 | bigints | 7.0.1 |
@@ -135,7 +135,7 @@ values.
 
 ## Prelude surprises
 
-These hold as of prelude 6.0.2.
+These hold as of prelude 6.0.3.
 
 **`Number` and `Int` have no `Semigroup` or `Monoid`.** Addition and
 multiplication are both candidates, and the Prelude declines to choose.
@@ -179,7 +179,7 @@ law must hold.
 ## Operators
 
 **`===` and `<?>` from `Test.QuickCheck` cannot be chained** (as of
-quickcheck 8.0.1). Both are `infix 2`, which is non-associative, so
+quickcheck 8.0.2). Both are `infix 2`, which is non-associative, so
 `x === y <?> "msg"` fails with `NonAssociativeError`. Nor do they compose
 by type: `===` returns a `Result`, and `<?>` takes a `Boolean`. You do not
 need the message anyway, because `===` prints both values when it fails.
@@ -203,7 +203,7 @@ module it puts a test dependency into library code. So use the `Gen`
 variants. They run in `Effect`, so wrap them in `liftEffect` inside a
 `Spec`.
 
-**`Arbitrary Number` is `uniform`** (as of quickcheck 8.0.1), which
+**`Arbitrary Number` is `uniform`** (as of quickcheck 8.0.2), which
 generates only values in `[0.0, 1.0)`. A property over bare `Number`
 never sees a negative value or two values more than 1 apart. Write a
 generator whose spread matches the values the code will meet.
