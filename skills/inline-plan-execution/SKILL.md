@@ -26,8 +26,8 @@ Between tool calls, narrate at most one short line. The ledger and the
 tool results carry the record.
 
 **Dependencies.** This skill's scripts are self-contained: `scripts/`
-carries its own copies of the workspace, brief and review-package helpers,
-identical to subagent-plan-execution's. The final review uses
+carries its own copies of the repository, workspace, brief and
+review-package helpers, identical to subagent-plan-execution's. The final review uses
 requesting-review's `code-reviewer.md`, and the steps below load
 test-first, verify-before-claiming, root-cause-debugging,
 isolated-workspaces and landing-a-branch by name. Install those skills
@@ -185,8 +185,9 @@ same directory and the same format, so a plan can switch executors
 midway and the new one resumes from the same ledger.
 
 - Each plan owns a workspace. At skill start, run this skill's
-  `scripts/sdd-workspace PLAN_FILE`. It prints
-  the plan's git-ignored directory
+  `scripts/sdd-workspace PLAN_FILE` by its absolute path, from the
+  working tree you're executing in. It prints the plan's git-ignored
+  directory
   (`<repo-root>/.superpowers/sdd/<plan-basename>/`), which holds every
   artifact for this plan: ledger, briefs and review packages. Another
   plan's directory is never yours to read or write.
@@ -233,13 +234,24 @@ plan.
 
 ### 1. Take the task
 
-- Run this skill's `scripts/task-start PLAN_FILE N`. In one call it
-  prints the brief's path and BASE, the commit the task's range is cut
-  from. The brief opens with the plan's Global Constraints, verbatim, and
-  then the task's own text; both bind the task. If task-start fails
-  because the plan's constraints heading cannot be parsed, fix the
-  heading in the plan (a ruling, in the ledger) and run it again. Read
-  the brief for every task, including tasks you remember from
+- Run this skill's `scripts/task-start PLAN_FILE N` by its absolute
+  path, from the working tree you're executing in. N is the task's ID as
+  its heading spells it (`3`, `6b`, `A1`). In one call it prints the
+  brief's path and BASE, the commit the task's range is cut from. The
+  brief opens with the plan's Global Constraints, verbatim, and then the
+  task's own text; both bind the task. If task-start fails, its exit
+  status and message say why. Fix the cause and run it again,
+  recording any change to the plan as a ruling in the ledger:
+  - exit 2: a usage error, or the current directory is not inside a git
+    working tree with at least one commit. The message says which.
+  - exit 3: no `Task N` heading. When the plan's task headings use
+    another word (`Tarea 1`), or a code fence left open hides the
+    heading, the message says so.
+  - exit 4: the plan's constraints heading cannot be parsed.
+  - exit 5: a code fence that never closes hides where the task ends.
+    Close the fence.
+
+  Read the brief for every task, including tasks you remember from
   setup. What you remember is a summary; the brief has the exact values,
   signatures and test cases.
 - Mark the task's todo in progress.
@@ -304,7 +316,8 @@ item is missing, the task is not complete: finish it.
 ### 4. Complete the task
 
 Run this skill's `scripts/task-done PLAN_FILE N BASE -- <test command>`
-with the test command the brief names for the whole task. It runs the
+by its absolute path, from the working tree you're executing in, with
+the test command the brief names for the whole task. It runs the
 tests, keeps the full output in the workspace, prints the tail and, only
 if the tests pass, appends the completion line to the ledger:
 
@@ -315,8 +328,9 @@ line is recorded, mark the todo complete and take the next task.
 
 ## Final Review
 
-Run this skill's `scripts/review-package PLAN_FILE MERGE_BASE HEAD`
-(MERGE_BASE is the commit the branch started from, for example
+Run this skill's `scripts/review-package PLAN_FILE MERGE_BASE HEAD` by
+its absolute path, from the working tree you're executing in (MERGE_BASE
+is the commit the branch started from, for example
 `git merge-base main HEAD`) and review from the file it prints.
 
 **With a subagent tool:** dispatch the reviewer on the most capable model

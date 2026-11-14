@@ -22,3 +22,10 @@ jobs:
         run: skills/agent-baseline/scripts/test-baseline.sh
       - name: subagent-plan-execution helper tests
         run: skills/subagent-plan-execution/scripts/test-helpers.sh
+      - name: inline-plan-execution helper tests
+        run: skills/inline-plan-execution/scripts/test-helpers.sh
+      - name: shared plan-execution helpers are identical copies
+        run: |
+          for f in sdd-repo sdd-workspace task-brief review-package test-helpers.sh; do
+            cmp skills/subagent-plan-execution/scripts/$f skills/inline-plan-execution/scripts/$f || exit 1
+          done
