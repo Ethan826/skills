@@ -166,7 +166,8 @@ completed tasks, which is the most expensive failure this process has
 seen. Track progress in a ledger file as well as in todos.
 
 - Each plan owns a workspace. At skill start, run this skill's
-  `bash scripts/sdd-workspace PLAN_FILE`. It prints the plan's git-ignored
+  `bash scripts/sdd-workspace PLAN_FILE` by its absolute path, from the
+  working tree you're executing in. It prints the plan's git-ignored
   directory (under `<repo-root>/.superpowers/sdd/`), which holds every
   artifact for this plan: ledger, briefs, reports, review packages.
   Another plan's directory is never yours to read or write.
@@ -269,12 +270,23 @@ omitted one inherits your session's, usually the most expensive. Read
 [Model selection](#model-selection) before your
 first dispatch.
 
-- **Task brief.** Run this skill's `bash scripts/task-brief PLAN_FILE N`.
-  It writes the plan's Global Constraints section, verbatim, followed by
-  the task's full text to a uniquely named file and prints the path. If
-  it exits 4, the plan has a constraints heading it cannot place; fix the
-  heading in the plan and run it again, and never dispatch without the
-  constraints. Write the dispatch so the brief stays the single source of
+- **Task brief.** Run this skill's `bash scripts/task-brief PLAN_FILE N`
+  by its absolute path, from the working tree you're executing in. It
+  writes the plan's Global Constraints section, verbatim, followed by the
+  task's full text to a uniquely named file and prints the path. N is the
+  task's ID as its heading spells it (`3`, `6b`, `A1`). When it fails,
+  fix the cause and run it again; never dispatch without a brief:
+  - exit 2: a usage error, or the current directory is not inside a git
+    working tree. The message says which.
+  - exit 3: no `Task N` heading. When the plan's task headings use
+    another word (`Tarea 1`), or a code fence left open hides the
+    heading, the message says so.
+  - exit 4: the plan has a constraints heading it cannot place. Never
+    dispatch without the constraints.
+  - exit 5: a code fence that never closes hides where the task ends, so
+    the brief would have run on into later tasks. Close the fence.
+
+  Write the dispatch so the brief stays the single source of
   requirements. The dispatch contains:
   1. one line on where this task fits in the project;
   2. the brief path, introduced as "read this first: it is your
@@ -343,8 +355,10 @@ once, at the end. Never skip it, and never accept a review that lacks
 either verdict (spec compliance and task quality). The implementer's
 self-review is no substitute.
 
-- Hand the reviewer its diff as a file. From this skill's directory, run
-  `bash scripts/review-package PLAN_FILE BASE HEAD` and pass the reviewer the unique path it prints. Without bash, redirect `git log --oneline`,
+- Hand the reviewer its diff as a file. Run
+  `bash scripts/review-package PLAN_FILE BASE HEAD` by its absolute path,
+  from the working tree you're executing in, and pass the reviewer the
+  unique path it prints. Without bash, redirect `git log --oneline`,
   `git diff --stat` and `git diff -U10` for the range into one uniquely
   named file. The output never enters your own context, and the reviewer
   sees the commit list, the stat summary and the full diff with context in

@@ -5,8 +5,9 @@ is complete, before you dispatch the final reviewer.
 
 ## Final review
 
-Run `bash scripts/review-package PLAN_FILE MERGE_BASE HEAD` (MERGE_BASE is
-the commit the branch started from, for example `git merge-base main HEAD`)
+Run `bash scripts/review-package PLAN_FILE MERGE_BASE HEAD` by its
+absolute path, from the working tree you're executing in (MERGE_BASE is
+the commit the branch started from, for example `git merge-base main HEAD`),
 and put the printed path in the final review dispatch, so the reviewer
 reads one file instead of re-deriving the branch diff. Dispatch it on the
 most capable model available (see
@@ -47,7 +48,8 @@ same rules. Don't dispatch one fixer per finding: each would rebuild
 context and re-run suites, and in one real session a final-review fix wave
 done that way cost more than all the tasks together. Then run exactly one
 scoped re-review of the fix wave
-(`bash scripts/review-package PLAN_FILE FIX_BASE HEAD` over the fix range,
+(`bash scripts/review-package PLAN_FILE FIX_BASE HEAD` by its absolute
+path, from the working tree you're executing in, over the fix range,
 [re-review-prompt.md](../re-review-prompt.md)). Adjudicate any residual
 findings as in the fix loop's breaker ([fix-loop.md](fix-loop.md)): park
 them with rulings, or rule on the load-bearing ones and ledger what you

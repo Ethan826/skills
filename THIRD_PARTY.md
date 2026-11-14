@@ -13,7 +13,7 @@ single skill copies only that skill's folder.
 | root-cause-debugging | obra/superpowers `systematic-debugging` @ `22f0b46` (its pressure scenarios kept outside the skill, in `tests/root-cause-debugging/`) | MIT, (c) 2025 Jesse Vincent |
 | test-first | obra/superpowers `test-driven-development` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | dispatching-agents | obra/superpowers `dispatching-parallel-agents` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
-| subagent-plan-execution | obra/superpowers `subagent-driven-development` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
+| subagent-plan-execution | obra/superpowers `subagent-driven-development` @ `22f0b46` | MIT, (c) 2025 Jesse Vincent |
 | inline-plan-execution | obra/superpowers `executing-plans` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | requesting-review | obra/superpowers `requesting-code-review` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | receiving-review | obra/superpowers `receiving-code-review` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
