@@ -137,6 +137,10 @@ of correctness. The planning skills above invoke the first two.
 Five original skills, opinionated and narrower than the rest. One is
 about architecture in any language; four are for functional code, two
 of those for PureScript only and one for TypeScript with Effect v4.
+`decision-core-architecture` ships a generator for its layer drawing,
+which a project points at its own layers. `effect-v4` ships a reference
+ESLint config in `lint/` that a project copies and gives its own layer
+table and closed vocabularies.
 
 | Skill | Usefulness | What it does |
 |---|---|---|
@@ -217,7 +221,7 @@ the tool versions a skill's claims were checked against, the commit or
 folder hash of a third-party skill installed unmodified, or `none` with a
 reason. Every skill must have an entry.
 
-Four GitHub Actions workflows read it:
+Six GitHub Actions workflows run the gate and the checks:
 
 - `gates.yml` runs `scripts/anchors_gate.py`, the tests of the scripts
   under `scripts/`, and the checker tests of `humanized-prose-review` and
@@ -232,6 +236,14 @@ Four GitHub Actions workflows read it:
   `purescript-gotchas` and compares the compiler's diagnostics with what
   the skill says. Both include code that must fail to compile, and each
   `README.md` lists what the check cannot catch.
+- `check-effect-v4-lint.yml` runs `checks/effect-v4-lint`, which lints
+  must-fail fixtures with the reference ESLint config in
+  `skills/effect-v4/lint/` at pinned versions and requires each fixture
+  to report its expected rule. A planted-defect suite shows that
+  removing a rule fails the check.
+- `check-decision-core-diagram.yml` runs `checks/decision-core-diagram`,
+  which requires the onion drawing in `decision-core-architecture` to
+  equal its generator's output byte for byte.
 - `skill-drift.yml` runs on the first of each month, or by hand. It asks
   each upstream and registry what has moved since its anchor and keeps
   one open issue labeled `skill-drift` up to date, with a checklist item
