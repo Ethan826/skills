@@ -10,7 +10,7 @@ single skill copies only that skill's folder.
 | design-brainstorming | obra/superpowers `brainstorming` @ `22f0b46` (visual companion not included) | MIT, (c) 2025 Jesse Vincent |
 | implementation-planning | obra/superpowers `writing-plans` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | verify-before-claiming | obra/superpowers `verification-before-completion` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
-| root-cause-debugging | obra/superpowers `systematic-debugging` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
+| root-cause-debugging | obra/superpowers `systematic-debugging` @ `22f0b46` (its pressure scenarios kept outside the skill, in `tests/root-cause-debugging/`) | MIT, (c) 2025 Jesse Vincent |
 | test-first | obra/superpowers `test-driven-development` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | dispatching-agents | obra/superpowers `dispatching-parallel-agents` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | subagent-plan-execution | obra/superpowers `subagent-driven-development` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |

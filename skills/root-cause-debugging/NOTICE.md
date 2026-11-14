@@ -1,7 +1,7 @@
 # Notice
 
 This skill is a modified version of `systematic-debugging` from
-[obra/superpowers](https://github.com/obra/superpowers) at commit `2ce8aa1` (v7.0.1).
+[obra/superpowers](https://github.com/obra/superpowers) at commit `22f0b46` (v7.0.2).
 It has been rewritten and extended. The modifications are
 Copyright (c) 2026 Ethan Kent and are released under the same MIT License.
 
