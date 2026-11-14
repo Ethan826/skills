@@ -189,7 +189,9 @@ its check is what shows it.
      `spago.lock`. The anchored packages (prelude, quickcheck and the
      rest) come from the package set, so they move only when the set
      does. If no set contains the new version yet, leave the item for a
-     later run or decline it.
+     later run or decline it. `test_runner.py` holds the same versions
+     as a correctly installed toolchain would report (`TOOLS_OK`,
+     `LOCK_OK`); its tests fail until those move as well.
 
 3. In the same working tree, change `version` in `anchors.json` and the
    row in the skill's Versions table. Both harnesses compare their pins
