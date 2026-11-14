@@ -26,6 +26,16 @@ Related skills: decision-core-architecture says where pure functions go
 in an application, and purescript-rows-and-newtypes covers how their
 types record requirements and errors.
 
+## Versions
+
+| Tool or package | Version |
+|---|---|
+| effect | 4.1.1 |
+| typescript | 5.9.3 |
+
+The TypeScript examples in typescript.md compile against these versions.
+`checks/effect-v4` in this repository checks them.
+
 ## Lint, or review
 
 Rules 2 and 10, marked "review", and the writing conventions need a

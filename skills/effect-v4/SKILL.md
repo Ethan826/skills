@@ -24,6 +24,12 @@ how to make the enforcing tests in the last section trustworthy.
 
 ## Versions
 
+| Tool or package | Version |
+|---|---|
+| effect | 4.1.1 |
+| @effect/vitest | 4.1.1 |
+| typescript | 5.9.3 |
+
 Every API name below was checked against effect 4.1.1 by reading
 the package's own source (`node_modules/effect/src`) and the
 documentation it ships (`node_modules/effect/AGENTS.md` and

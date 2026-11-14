@@ -1,0 +1,22 @@
+name: gates
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Python version
+        run: python3 --version
+      - name: Repository script tests
+        run: python3 -m unittest discover -s scripts -v
+      - name: Anchors gate
+        run: python3 scripts/anchors_gate.py
+      - name: humanized-prose-review checker tests
+        run: cd skills/humanized-prose-review && python3 -m unittest discover -s scripts
+      - name: agent-baseline checker tests
+        run: skills/agent-baseline/scripts/test-baseline.sh

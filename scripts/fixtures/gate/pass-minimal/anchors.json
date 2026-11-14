@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "anchors": [
+    {"id": "forky", "skill": "forky", "kind": "fork",
+     "repo": "obra/superpowers", "path": "skills/original",
+     "commit": "2ce8aa15d05bd57213e6f746f953aafb7ded7a8b", "release": "v7.0.1"},
+    {"id": "vendy", "skill": "vendy", "kind": "vendored",
+     "repo": "someone/upstream", "path": "SKILL.md",
+     "local": "references/up-1.2.3.md", "version": "1.2.3", "tag": "v1.2.3",
+     "commit": "225a6f39ac85f76ee48dbad772ea4abe4ed6c9d8"},
+    {"id": "tooly/widget", "skill": "tooly", "kind": "tool",
+     "ecosystem": "npm", "package": "widget", "version": "4.1.1",
+     "row": "widget", "check": "checks/x"},
+    {"id": "plain", "skill": "plain", "kind": "none",
+     "reason": "Fixture skill with nothing external."}
+  ],
+  "declined": [
+    {"repo": "obra/superpowers", "path": "skills/other", "reason": "Fixture decline."}
+  ]
+}
