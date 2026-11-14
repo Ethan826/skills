@@ -18,8 +18,8 @@ Every claim below was checked against these versions:
 
 | Tool or package | Version |
 |---|---|
-| purs | 0.15.16 (the package set allows 0.15.15 up to 0.16.0) |
-| spago | 1.0.4 |
+| purs | 0.15.17 (the package set allows 0.15.15 up to 0.16.0) |
+| spago | 1.0.5 |
 | purs-tidy | 0.11.1 |
 | registry package set | 81.0.0 |
 | prelude | 6.0.2 |
@@ -117,7 +117,7 @@ no `Eq`. If the inner type lacks the instance on purpose, write the outer
 instance by hand and unwrap.
 
 **`Generic` on a hidden constructor draws a `HiddenConstructors`
-warning** (as of purs 0.15.16). It is a warning, not an error, so the
+warning** (as of purs 0.15.17). It is a warning, not an error, so the
 derive compiles. The warning gives the reason: `to` and `from` match and
 build values of the type, so a type that exports `Percent` without `(..)`
 but derives `Generic` has in effect made its constructor public.
@@ -216,7 +216,7 @@ it, and the local context. It is the fastest way to scaffold a definition
 and have the compiler say what fills it. The build stays red until every
 hole is gone.
 
-As of purs 0.15.16, the type checker stops at the first declaration in a
+As of purs 0.15.17, the type checker stops at the first declaration in a
 module that fails. Holes in the same declaration are reported together,
 but holes in separate declarations appear one compile at a time.
 
