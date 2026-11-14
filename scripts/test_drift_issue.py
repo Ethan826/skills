@@ -536,26 +536,75 @@ class Workflow(unittest.TestCase):
 
     PATH = HERE.parent / ".github" / "workflows" / "skill-drift.yml"
 
+    UPLOAD = ("actions/upload-artifact@"
+              "cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2")
+    DOWNLOAD = ("actions/download-artifact@"
+                "9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2")
+    CHECKOUT = ("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+                " # v7.0.1")
+
+    def jobs(self, lines):
+        """name -> its lines, for the two-space job keys under jobs:."""
+        at = lines.index("jobs:")
+        jobs, name = {}, None
+        for line in lines[at + 1:]:
+            if line.startswith("  ") and not line.startswith("   ") and \
+                    line.endswith(":"):
+                name = line.strip()[:-1]
+                jobs[name] = []
+            elif line and not line.startswith(" "):
+                break
+            elif name:
+                jobs[name].append(line)
+        return jobs
+
+    def block(self, lines, header):
+        """The stripped lines indented under header (exact line)."""
+        at = lines.index(header)
+        indent = len(header) - len(header.lstrip()) + 2
+        out = []
+        for line in lines[at + 1:]:
+            if not line.startswith(" " * indent):
+                break
+            out.append(line.strip())
+        return out
+
     def test_permissions_and_triggers(self):
+        """Detection, which reads upstream content, holds no write token;
+        the job that writes the issue gets the artifact and no network
+        reads beyond GitHub."""
         lines = self.PATH.read_text().split("\n")
         self.assertEqual([l for l in lines if "permissions" in l],
-                         ["permissions:"])
-        at = lines.index("permissions:")
-        block = []
-        for line in lines[at + 1:]:
-            if not line.startswith("  "):
-                break
-            block.append(line.strip())
-        self.assertEqual(block, ["contents: read", "issues: write"])
+                         ["permissions: {}", "    permissions:",
+                          "    permissions:"])
+        jobs = self.jobs(lines)
+        self.assertEqual(list(jobs), ["detect", "issue"])
+        detect, issue = jobs["detect"], jobs["issue"]
+        self.assertEqual(self.block(detect, "    permissions:"),
+                         ["contents: read"])
+        self.assertEqual(self.block(issue, "    permissions:"),
+                         ["contents: read", "issues: write"])
+        self.assertIn("    needs: detect", issue)
+        detect_text, issue_text = "\n".join(detect), "\n".join(issue)
+        self.assertIn("scripts/detect_drift.py", detect_text)
+        self.assertNotIn("drift_issue.py", detect_text)
+        self.assertNotIn("GH_TOKEN", detect_text)
+        self.assertIn("scripts/drift_issue.py", issue_text)
+        self.assertNotIn("detect_drift.py", issue_text)
+        self.assertNotIn("GITHUB_TOKEN", issue_text)
+        self.assertEqual([l.strip() for l in detect if "uses:" in l],
+                         ["- uses: " + self.CHECKOUT,
+                          "- uses: " + self.UPLOAD])
+        self.assertEqual([l.strip() for l in issue if "uses:" in l],
+                         ["- uses: " + self.CHECKOUT,
+                          "- uses: " + self.DOWNLOAD])
+        self.assertEqual(issue_text.count("persist-credentials: false"), 1)
+        self.assertEqual(detect_text.count("persist-credentials: false"), 1)
         self.assertIn('    - cron: "17 6 1 * *"', lines)
         self.assertIn("  workflow_dispatch: {}", lines)
         text = self.PATH.read_text()
         for absent in ("secrets.", "write-all", "&", "*", "pull_request"):
             self.assertNotIn(absent, text.replace('"17 6 1 * *"', ""))
-        uses = [l.strip() for l in lines if "uses:" in l]
-        self.assertEqual(uses, [
-            "- uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
-            " # v7.0.1"])
 
 
 # ----------------------------------------------------------------- mutant

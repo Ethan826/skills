@@ -87,8 +87,11 @@ upstream diff or release notes.
 A GitHub Actions workflow in this repository: monthly, plus a manual
 trigger. It runs the detection script, then opens one issue labeled
 `skill-drift`, or updates the open one in place, with a checklist item
-per drift item. Its token has `contents: read` and `issues: write` and
-nothing else. Third-party actions are pinned to a commit SHA.
+per drift item. Detection runs in a job whose token has only
+`contents: read` and hands `drift.json` to a second job as an artifact;
+that job's token has `contents: read` (for the checkout) and
+`issues: write`, and it reads nothing upstream. Third-party actions are
+pinned to a commit SHA.
 
 It never edits the repository, never runs a model and spends no Claude
 or Codex allowance. Running an agent in CI would need an API key; the
@@ -165,3 +168,24 @@ rejected.
 5. The scheduled workflow and issue writer.
 6. The `skill-update` skill, a README row and an update to the README's
    sync section.
+
+## Follow-ups
+
+Recorded from the whole-branch review of `skill-update` (2026-11-14);
+not yet done.
+
+- An issue body over GitHub's 65,536-character limit should be cut down
+  rather than fail. Today `render` in `scripts/drift_issue.py` raises
+  `WriterError` and the run makes no write, so a month with a very long
+  drift report leaves the issue stale. Truncation has to keep every key
+  comment and tick, so the cut falls on detail lines first.
+- A fork whose upstream path is gone at HEAD should be reported as
+  `anchor-missing`, not as drift. `detect_commit_anchor` in
+  `scripts/detect_drift.py` checks that the path exists at the anchor
+  but not at HEAD, so a deleted or moved upstream skill shows up as a
+  fork item whose newest commit is the deletion.
+- GitHub disables scheduled workflows in a public repository after 60
+  days without repository activity. A quiet stretch would stop the
+  monthly `skill-drift` run without any failure to see. Options: a
+  note in the README's sync section to re-enable it, or a check run by
+  hand that the workflow is still enabled.

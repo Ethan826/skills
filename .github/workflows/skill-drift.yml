@@ -2,23 +2,26 @@ name: skill-drift
 
 # Monthly drift detection into one issue labeled skill-drift, updated in
 # place (scripts/drift_issue.py). Never edits the repository, runs no model
-# and uses no secret beyond the job's own token.
+# and uses no secret beyond the job's own token. Two jobs: detect reads
+# upstream content with a read-only token and hands drift.json over as an
+# artifact; issue holds the only write permission (issues) and reads
+# nothing upstream.
 on:
   schedule:
     - cron: "17 6 1 * *"
   workflow_dispatch: {}
 
-permissions:
-  contents: read
-  issues: write
+permissions: {}
 
 concurrency:
   group: skill-drift
   cancel-in-progress: false
 
 jobs:
-  drift:
+  detect:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -27,7 +30,28 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python3 scripts/detect_drift.py --root . --out "$RUNNER_TEMP/drift.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: drift
+          path: ${{ runner.temp }}/drift.json
+          if-no-files-found: error
+          retention-days: 7
+  issue:
+    needs: detect
+    runs-on: ubuntu-24.04
+    # contents: read is for the checkout of scripts/drift_issue.py.
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: drift
+          path: ${{ runner.temp }}/drift
       - name: Update the skill-drift issue
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 scripts/drift_issue.py "$RUNNER_TEMP/drift.json"
+        run: python3 scripts/drift_issue.py "$RUNNER_TEMP/drift/drift.json"
