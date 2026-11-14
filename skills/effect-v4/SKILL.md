@@ -39,7 +39,9 @@ TypeScript 7.0.2 under `strict` and `exactOptionalPropertyTypes`, given
 stub declarations for the domain names a fragment leaves out, and a
 search of the export statements in `node_modules/effect/src` covered the
 table of v3 names below. The `@effect/vitest` names were checked by
-compiling a use of each against `@effect/vitest` 4.1.4.
+compiling a use of each against `@effect/vitest` 4.1.4. The names in the
+native-method and null-check rows of "Reach for the combinator" were
+checked against the export statements of 4.1.4 source.
 
 Before relying on a name here, confirm it in the version you have
 installed: search `node_modules/effect/src/<Module>.ts` for
@@ -100,7 +102,12 @@ Result").
 
 ## Reach for the combinator
 
-When you reach for a statement, find the combinator that replaces it.
+When you reach for a statement or a native method, find the combinator
+that replaces it. The table covers native array and string methods as
+well as loops, so core code writes `Array.filter(xs, f)` where it might
+have written `xs.filter(f)`. The module functions are dual, so they work
+in a pipe, and where a native method returns `undefined` for a missing
+element, the module function returns an `Option`.
 
 | Instead of | Write |
 |---|---|
@@ -109,8 +116,13 @@ When you reach for a statement, find the combinator that replaces it.
 | `array[0]` | `Array.head`, which returns an `Option` |
 | `array.length === 0` | `Array.isReadonlyArrayEmpty`, `Array.isReadonlyArrayNonEmpty` |
 | `array.push(x)` | `Array.append`, `Array.appendAll` |
+| `xs.map`, `xs.filter`, `xs.some`, `xs.every`, `xs.reduce`, `xs.flatMap`, `xs.forEach` | `Array.map`, `Array.filter`, `Array.some`, `Array.every`, `Array.reduce`, `Array.flatMap`, `Effect.forEach` |
+| `xs.find`, `xs.findIndex`, `xs.at(i)` | `Array.findFirst`, `Array.findFirstIndex`, `Array.get`, which return an `Option` |
+| `xs.includes`, `xs.slice`, `xs.concat`, `xs.join`, `xs.sort`, `xs.reverse` | `Array.contains`, `Array.take` and `Array.drop`, `Array.appendAll`, `Array.join`, `Array.sort` with an `Order`, `Array.reverse` |
+| `str.split`, `str.trim`, `str.toLowerCase`, `str.startsWith`, `str.replace`, `str.padStart` and the other string methods | `String.split`, `String.trim`, `String.toLowerCase`, `String.startsWith`, `String.replace`, `String.padStart` |
+| `new Set(xs).size` to test for duplicates | `Array.dedupe`, or `HashSet` |
 | `record[key]` that may be missing | `Record.get`, which returns an `Option` |
-| `x !== null`, `x !== undefined` | `Option.fromNullishOr`, then `Option.match` |
+| `x === undefined`, `x !== null`, `x == null` | `Option.fromNullishOr` where the value enters the core, then `Option.match`; `Predicate.isNullish` as a guard at the boundary |
 | `str === ""` | `String.isEmpty`, `String.isNonEmpty` |
 | `low <= x && x <= high` | `Number.between`, `Order.isBetween` |
 | `() => value` | `constant(value)` from `effect/Function` |
@@ -123,6 +135,7 @@ When you reach for a statement, find the combinator that replaces it.
 | `JSON.stringify` | `Schema.fromJsonString` with `Schema.encodeEffect` |
 | `x as T` | a `Schema` decode at the boundary |
 | `if`/`switch`/`instanceof` on a tagged union | `Match.tag`, or `Effect.catchTag` for errors |
+| a string-literal field tested in a lambda, `each.verdict === "fails"` | a tagged union, filtered with `Predicate.isTagged("Fails")` and read with `Match.tag` |
 | a `??` chain or a hand-written merge | `Struct.makeCombiner`, `Option.makeReducer`, `Combiner.last` |
 | `isString`-style helpers you write yourself | `Predicate.isString`, `Predicate.isObject` and the rest of `Predicate` |
 | `Date.now()`, `new Date()` | `DateTime.now` or `Clock.currentTimeMillis`, which a test can control |
@@ -201,9 +214,10 @@ syntax, and the exception says how to gate it:
   away from a boundary. The table in "Reach for the combinator" gives
   the replacement for each.
 
-Test files may relax the loop, mutation and parsing rules, since
-mutable fixtures and parsing test data are normal there. They keep the
-rest.
+Test files may relax the loop, mutation, parsing and native-method
+rules, since mutable fixtures, parsing test data and plain array helpers
+are normal there.
+They keep the rest.
 
 ## Lift Option and Result into Effect
 
@@ -503,6 +517,16 @@ that a machine can check, add a test that fails the build:
   package exports no stable compiler API, only `unstable/*` entry points;
   the TypeScript team publishes the 6.0 API as `@typescript/typescript6`
   for tools that still need it.
+- Native methods and null checks in core code: native array and string
+  methods called on anything but an Effect module, and `===`, `!==`,
+  `==` or `!=` against `null` or `undefined`. ESLint's core
+  `no-restricted-properties` rule (checked in ESLint 9.39.2) does the
+  first with `allowObjects` set to the names of the Effect modules. It matches names and not types, so
+  a local variable named like a module escapes. `no-restricted-syntax`
+  does the second. A lint config copied from another project must be
+  checked against the table in "Reach for the combinator" row by row. One
+  that bans only `array[0]`, `.push` and `.length` lets every native
+  `.filter` and `.map` through.
 - Global doubles: fail on `vi.stubGlobal`, `vi.spyOn(globalThis,
   ...)` and assignment to a global anywhere except the one adapter's own
   test. Check for the act in all three spellings.
