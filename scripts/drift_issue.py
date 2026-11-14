@@ -14,8 +14,11 @@ owner's and is kept byte for byte. Inside it, one checklist line per item,
   - [ ] **<name>** (<kind>): <from> -> <to>. [<label>](<link>) <!-- key:<id> to:<to> -->
 
 <name> is the skill, or the item id when it differs (a skill with several
-tool anchors has one line per package); <label> is "diff" for a GitHub
-compare link and "link" otherwise (a release page, a repository).
+tool anchors has one line per package); a name with any character outside
+[A-Za-z0-9._/ -] is shown in a code span, since upstream directory names
+reach it. <label> is "diff" for a GitHub compare link and "link"
+otherwise (a release page, a repository); an item whose link is null
+(unregistered, a release without a page) has no link.
 
 followed by the item's detail lines, each indented and in a code span (so
 upstream commit subjects cannot @-mention anyone or close the region). id
@@ -26,7 +29,11 @@ Reconciliation (plan D12 to D14):
   the region. It is kept while the item's to is unchanged. When to changes,
   a ticked line is unticked and notes "(approval cleared: target moved from
   <old> to <new>)" (the key comment records cleared:<old>, so the note
-  survives later runs); an unticked line just takes the new target.
+  survives later runs); an unticked line just takes the new target. When
+  the owner ticks the line again at that target, the note and cleared:
+  go: the tick is a fresh approval.
+- The body is read with CRLF and CR line endings turned into LF (GitHub's
+  web editor can send CRLF back).
 - An item detection no longer reports is dropped with its tick. That
   includes an item the owner declined in anchors.json (D13): detection
   skips a declined (id, to) until upstream moves past it.
@@ -79,6 +86,7 @@ ITEM_KEYS = {"id", "skill", "kind", "from", "to", "link", "detail"}
 KEY_LINE = re.compile(r"^- \[([ xX])\] .*<!-- key:(\S+) to:(\S*)"
                       r"(?: cleared:(\S*))? -->[ \t]*$")
 SAFE = "/@.+_~-"
+SAFE_NAME = re.compile(r"[A-Za-z0-9._/ -]+")
 # GitHub refuses an issue body over 65,536 characters; a long upstream
 # history is cut to this many detail lines per item.
 MAX_DETAIL = 20
@@ -131,9 +139,12 @@ def load_items(path: Path) -> list:
         if not isinstance(entry, dict) or set(entry) != ITEM_KEYS:
             raise WriterError(f"{where}: keys must be {sorted(ITEM_KEYS)}")
         for key in ("id", "skill", "link"):
+            if key == "link" and entry[key] is None:
+                continue
             if not isinstance(entry[key], str) or not entry[key] or \
                     "\n" in entry[key]:
-                raise WriterError(f"{where}: {key} must be a one-line string")
+                raise WriterError(f"{where}: {key} must be a one-line string"
+                                  + (" or null" if key == "link" else ""))
         if entry["kind"] not in KINDS:
             raise WriterError(f"{where}: unknown kind {entry['kind']!r}")
         for key in ("from", "to"):
@@ -168,9 +179,22 @@ def code_span(text: str) -> str:
     return "`" + plain(text).replace("`", "'") + "`"
 
 
+def name_text(name: str) -> str:
+    """A skill name or item id as shown. Upstream directory names reach
+    here (new-upstream-skill), so anything outside SAFE_NAME goes in a
+    code span, where GitHub renders no mention, link or HTML."""
+    return plain(name) if SAFE_NAME.fullmatch(name) else code_span(name)
+
+
+def normalize(body: str) -> str:
+    """LF line endings; GitHub's web editor can return CRLF."""
+    return body.replace("\r\n", "\n").replace("\r", "\n")
+
+
 def split(body: str):
     """(head, region, tail, balanced). Unbalanced: head is the whole body
     with stray markers removed, region and tail empty."""
+    body = normalize(body)
     if body.count(START) == 1 and body.count(END) == 1 and \
             body.index(START) < body.index(END):
         start, end = body.index(START), body.index(END) + len(END)
@@ -188,6 +212,7 @@ def parse_ticks(body: str) -> dict:
     """id -> Tick for each keyed checklist line; the region only when it
     is intact, else the whole body. The first line for a key wins."""
     _, region, _, balanced = split(body)
+    body = normalize(body)
     ticks = {}
     for line in (region if balanced else body).split("\n"):
         found = KEY_LINE.match(line)
@@ -209,18 +234,23 @@ def render_item(entry: dict, old: Optional[Tick]) -> list:
         if old.to != to:
             cleared = old.to if ticked else None
             ticked = False
+        elif ticked:
+            cleared = None  # re-ticked at this target: a fresh approval
     note = ""
     key = f"key:{encode(entry['id'])} to:{encode(to)}"
     if cleared is not None:
         note = (f" (approval cleared: target moved from "
                 f"{display(cleared or None)} to {display(entry['to'])})")
         key += f" cleared:{encode(cleared)}"
-    link = quote(entry["link"], safe=":/?#[]@!$&'*+,;=%.~-_")
-    label = "diff" if "/compare/" in link else "link"
+    link, label, shown = "", "link", ""
+    if entry["link"] is not None:
+        link = quote(entry["link"], safe=":/?#[]@!$&'*+,;=%.~-_")
+        label = "diff" if "/compare/" in link else "link"
+        shown = f" [{label}]({link})"
     name = entry["skill"] if entry["id"] == entry["skill"] else entry["id"]
-    lines = [f"- [{'x' if ticked else ' '}] **{plain(name)}** "
+    lines = [f"- [{'x' if ticked else ' '}] **{name_text(name)}** "
              f"({entry['kind']}): {display(entry['from'])} -> "
-             f"{display(entry['to'])}. [{label}]({link}){note} "
+             f"{display(entry['to'])}.{shown}{note} "
              f"<!-- {key} -->"]
     detail = entry["detail"]
     lines += [f"  - {code_span(d)}" for d in detail[:MAX_DETAIL]]
@@ -313,7 +343,7 @@ class GhClient:
                 entry = json.loads(line)
                 if not entry.get("pull_request"):
                     found.append(Issue(entry["number"],
-                                       entry.get("body") or ""))
+                                       normalize(entry.get("body") or "")))
         return sorted(found, key=lambda i: i.number)
 
     def create(self, title: str, body: str, label: str) -> int:

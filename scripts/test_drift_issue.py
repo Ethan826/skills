@@ -223,6 +223,78 @@ class Render(unittest.TestCase):
                       again)
         self.assertNotIn("from v2", again)
 
+    def test_reticked_line_drops_the_cleared_note(self):
+        """A re-tick at an unchanged target is a fresh approval of that
+        target, so the note about the old one goes (SKILL.md, step 2)."""
+        body = tick(drift_issue.render([item("a", to="v2")], None), "a")
+        moved = drift_issue.render([item("a", to="v3")], body)
+        self.assertIn("approval cleared", moved)
+        again = drift_issue.render([item("a", to="v3")], tick(moved, "a"))
+        self.assertEqual(ticked(again), {"a"})
+        self.assertNotIn("approval cleared", again)
+        self.assertNotIn("cleared:", again)
+        self.assertEqual(drift_issue.render([item("a", to="v3")], again),
+                         again)
+
+    def test_crlf_body_keeps_ticks(self):
+        """GitHub's web editor can send the body back with CRLF endings."""
+        items = [item("a"), item("b")]
+        body = tick("Owner note.\n\n" + drift_issue.render(items, None), "a")
+        crlf = body.replace("\n", "\r\n")
+        self.assertEqual(ticked(crlf), {"a"})
+        again = drift_issue.render(items, crlf)
+        self.assertEqual(ticked(again), {"a"})
+        self.assertEqual(again, body)
+        self.assertNotIn("\r", again)
+
+    def test_null_link_renders_no_link(self):
+        """detect_drift.py documents link as str | null (unregistered
+        items always, a GitHub release without a page)."""
+        entry = {"id": "unregistered/stray", "skill": "stray",
+                 "kind": "unregistered", "from": None, "to": None,
+                 "link": None, "detail": ["no anchors.json entry"]}
+        with tempfile.TemporaryDirectory() as room:
+            path = Path(room) / "drift.json"
+            path.write_text(json.dumps({"version": 1, "items": [entry]}))
+            loaded = drift_issue.load_items(path)
+        body = drift_issue.render(loaded, None)
+        self.assertIn("- [ ] **unregistered/stray** (unregistered): none -> "
+                      "none. "
+                      "<!-- key:unregistered/stray to: -->", body)
+        self.assertNotIn("](", body)
+
+    def test_empty_link_still_rejected(self):
+        entry = dict(item("a"), link="")
+        with tempfile.TemporaryDirectory() as room:
+            path = Path(room) / "drift.json"
+            path.write_text(json.dumps({"version": 1, "items": [entry]}))
+            with self.assertRaises(drift_issue.WriterError):
+                drift_issue.load_items(path)
+
+    def test_upstream_names_cannot_mention_link_or_inject_html(self):
+        """New upstream skill names come from git ls-tree, so any
+        directory name upstream reaches the body."""
+        hostile = ["@someone", "[x](https://e)", "<img src=x>", "a`b"]
+        items = [item(f"new-upstream-skill/o/r/{n}", skill=n,
+                      kind="new-upstream-skill") for n in hostile]
+        for entry in items:
+            entry["id"] = entry["skill"]
+        body = drift_issue.render(items, None)
+        for line in body.split("\n"):
+            if "<!-- key:" not in line:
+                continue
+            shown = line[:line.index("<!-- key:")]
+            outside = "".join(shown.split("`")[0::2])
+            self.assertNotIn("@someone", outside, line)
+            self.assertNotIn("[x]", outside, line)
+            self.assertNotIn("<img", outside, line)
+        self.assertIn("**`@someone`**", body)
+        self.assertIn("**`a'b`**", body)
+        self.assertEqual(set(drift_issue.parse_ticks(body)),
+                         {e["id"] for e in items})
+        self.assertIn("- [ ] **x** (fork)",
+                      drift_issue.render([item("x")], None))
+
     def test_untick_target_move_adds_no_note(self):
         body = drift_issue.render([item("a", to="v2")], None)
         moved = drift_issue.render([item("a", to="v3")], body)
@@ -417,6 +489,11 @@ class Gh(unittest.TestCase):
         argv = runner.calls[0][0]
         self.assertIn("repos/o/r/issues?state=open&labels=skill-drift"
                       "&per_page=100", argv)
+
+    def test_find_open_normalizes_crlf(self):
+        line = json.dumps({"number": 3, "body": "a\r\nb\rc\n"})
+        gh, _ = self.client([(["gh", "api", "--paginate"], line + "\n")])
+        self.assertEqual(gh.find_open("skill-drift")[0].body, "a\nb\nc\n")
 
     def test_writes_send_json_on_stdin(self):
         gh, runner = self.client([(["gh", "api"], '{"number": 12}')])

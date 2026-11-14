@@ -56,7 +56,7 @@ class Release(NamedTuple):
     tag: str
     prerelease: bool
     draft: bool
-    url: str
+    url: Optional[str]  # None when the release has no html_url
 
 
 class Sources(Protocol):
@@ -97,7 +97,7 @@ def parse_releases(document) -> list:
                  isinstance(entry.get("tag_name"), str), "release entry")
         releases.append(Release(entry["tag_name"], bool(entry["prerelease"]),
                                 bool(entry["draft"]),
-                                entry.get("html_url") or ""))
+                                entry.get("html_url") or None))
     return releases
 
 

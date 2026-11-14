@@ -586,6 +586,50 @@ class Unregistered(Case):
         self.assertEqual(self.detect(), [])
 
 
+# --------------------------------------------------------------- contract
+
+class WriterContract(Case):
+    """Real detect() output, every kind, goes through the issue writer's
+    validation and rendering (drift_issue.load_items and render)."""
+
+    def test_every_detected_kind_is_accepted_by_the_writer(self):
+        import drift_issue
+        up, anchor = superpowers_with_anchor(self)
+        up.commit("alpha v2", {"skills/alpha/SKILL.md": "alpha v2\n"})
+        up.commit("add gamma", {"skills/gamma/SKILL.md": "g\n"})
+        vend = self.upstream("someone/vendor")
+        v1 = vend.commit("v1", {"SKILL.md": "v1\n"})
+        vend.commit("v2", {"SKILL.md": "v2\n"})
+        inst = self.upstream("someone/installed")
+        c1 = inst.commit("add skill", {"skills/s/SKILL.md": "1\n"})
+        inst.commit("skill v2", {"skills/s/SKILL.md": "2\n"})
+        self.npm("effect", ["4.1.1", "4.1.2"])
+        # A GitHub release without html_url: detection must say null.
+        self.fixture("github-releases/purescript__purescript.json", [
+            {"tag_name": "v0.15.17", "prerelease": False, "draft": False}])
+        self.write_root([
+            fork("a", "skills/alpha", anchor),
+            fork("b", "skills/beta", anchor),
+            fork("m", "skills/alpha", "f" * 40),
+            vendored("h", "SKILL.md", v1),
+            installed("s", "skills/s", inst.tree(c1, "skills/s")),
+            tool("e", "npm", "effect", "4.1.1"),
+            tool("p", "github-release", "purescript/purescript", "0.15.16"),
+        ], extra_skills=["stray"])
+        items = self.detect()
+        self.assertEqual({i["kind"] for i in items}, set(drift_issue.KINDS))
+        release = next(i for i in items if i["id"] == "p/purescript/purescript")
+        self.assertIsNone(release["link"])
+        path = self.room / "drift.json"
+        path.write_text(detect_drift.render(items), encoding="utf-8")
+        loaded = drift_issue.load_items(path)
+        body = drift_issue.render(loaded, None)
+        self.assertEqual(set(drift_issue.parse_ticks(body)),
+                         {i["id"] for i in items})
+        self.assertNotIn("(None)", body)
+        self.assertNotIn("]()", body)
+
+
 # -------------------------------------------------------------------- CLI
 
 class Cli(Case):
