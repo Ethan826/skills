@@ -2,7 +2,7 @@
 
 Compiles the TypeScript examples in `skills/effect-v4/SKILL.md` and
 `skills/readable-functional-code/typescript.md` against the versions in
-`package.json` and `bun.lock` (effect 4.1.1, @effect/vitest 4.1.1,
+`package.json` and `bun.lock` (effect 4.1.4, @effect/vitest 4.1.4,
 vitest 5.1.0, TypeScript 5.9.3).
 
 ```bash

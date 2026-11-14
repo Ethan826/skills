@@ -1,5 +1,5 @@
 // Checks the @effect/vitest names the skill mentions (it.effect, layer)
-// against @effect/vitest 4.1.1 by compiling a use of each.
+// against @effect/vitest 4.1.4 by compiling a use of each.
 import { expect, it, layer } from "@effect/vitest"
 import { Context, Effect, Layer } from "effect"
 

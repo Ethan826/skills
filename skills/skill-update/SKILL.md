@@ -223,7 +223,7 @@ its check is what shows it.
    no such list and a name changed, add one.
 
 7. Update the version strings no gate sees: the skill's description
-   and prose (effect-v4's "Checked against effect 4.1.1"), its README
+   and prose (effect-v4's "Checked against effect <version>"), its README
    row, and the check's `README.md`. Find them with
    `git grep -n -F '<old version>'` and read each hit; not every hit is
    this anchor.
