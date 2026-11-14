@@ -230,6 +230,7 @@ Dispatch a subagent (any general-purpose agent your platform offers):
   [SKILL.md](SKILL.md#model-selection)
 - `[task name]`, `N`: the task's name and number from the plan
 - `[BRIEF_FILE]`: the path `bash scripts/task-brief PLAN_FILE N` printed
+  (run by its absolute path, from the working tree you're executing in)
 - `[GLOBAL_CONSTRAINTS_NOTE]`: usually empty, since task-brief puts the
   plan's Global Constraints at the top of the brief. When the binding
   requirements live somewhere the script does not read (the spec, or a
