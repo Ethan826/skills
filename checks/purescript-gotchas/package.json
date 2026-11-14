@@ -1,0 +1,9 @@
+{
+  "name": "purescript-gotchas-check",
+  "private": true,
+  "devDependencies": {
+    "purescript": "0.15.16",
+    "spago": "1.0.4"
+  },
+  "trustedDependencies": ["purescript"]
+}

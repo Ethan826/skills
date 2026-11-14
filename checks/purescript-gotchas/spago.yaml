@@ -1,0 +1,15 @@
+package:
+  name: gotchas-check
+  dependencies:
+    - bigints
+    - console
+    - effect
+    - js-bigints
+    - orders
+    - prelude
+    - quickcheck
+    - quickcheck-laws
+    - tuples
+workspace:
+  packageSet:
+    registry: 81.0.0

@@ -1,0 +1,1 @@
+{"warnings":[{"position":{"startLine":5,"startColumn":1,"endLine":5,"endColumn":35},"message":"  An instance of Generic is derived for a type whose constructors are not exported.\n","errorCode":"HiddenConstructors","errorLink":"","filename":"cases/x/Percent.purs","moduleName":"X.Percent","suggestion":null,"allSpans":[]}],"errors":[]}

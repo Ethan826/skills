@@ -1,0 +1,1 @@
+{"warnings":[],"errors":[{"position":{"startLine":1,"startColumn":16,"endLine":1,"endColumn":21},"message":"  Cannot export unknown type Thing\n","errorCode":"UnknownExport","errorLink":"https://github.com/purescript/documentation/blob/master/errors/UnknownExport.md","filename":"cases/x/Facade.purs","moduleName":"X.Facade","suggestion":null,"allSpans":[]}]}

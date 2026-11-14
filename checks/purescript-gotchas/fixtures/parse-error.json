@@ -1,0 +1,1 @@
+{"warnings":[],"errors":[{"position":{"startLine":3,"startColumn":10,"endLine":3,"endColumn":11},"message":"  Unable to parse module:\n  Unexpected token ','\n","errorCode":"ErrorParsingModule","errorLink":"","filename":"fixtures/parse-error/Parse.purs","moduleName":null,"suggestion":null,"allSpans":[]}]}

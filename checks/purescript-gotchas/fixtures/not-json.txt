@@ -1,0 +1,2 @@
+purs compile: internal error
+[1 of 1] Compiling X.Main

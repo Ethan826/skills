@@ -1,0 +1,526 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "reexport-individual",
+      "section": "Modules and exports",
+      "claim": "An individually imported name cannot be re-exported; fails with \"Cannot export unknown type Thing\".",
+      "errors": [
+        {
+          "code": "UnknownExport",
+          "module": "ReexportIndividual.Facade",
+          "line": 1,
+          "includes": [
+            "Cannot export unknown type Thing"
+          ]
+        }
+      ],
+      "warnings": [],
+      "codeGuessed": true,
+      "control": "reexport-individual-control"
+    },
+    {
+      "name": "reexport-individual-control",
+      "section": "Modules and exports",
+      "claim": "Control: the same facade re-exporting the whole module with `module X` compiles.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "facade-hides-ctor",
+      "section": "Modules and exports",
+      "claim": "A whole-module re-export carries exactly what the facade imported; `import Money (Cents(..))` then `Cents 1` gets \"Unknown data constructor Cents\".",
+      "errors": [
+        {
+          "code": "UnknownName",
+          "module": "FacadeHidesCtor.Caller",
+          "line": 6,
+          "includes": [
+            "Unknown data constructor Cents"
+          ]
+        }
+      ],
+      "warnings": [],
+      "codeGuessed": true,
+      "control": "facade-hides-ctor-control"
+    },
+    {
+      "name": "facade-hides-ctor-control",
+      "section": "Modules and exports",
+      "claim": "Control: the same caller importing `Cents(..)` from the submodule, not the facade, compiles.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "facade-keeps-type-and-fn",
+      "section": "Modules and exports",
+      "claim": "Callers of the facade get the type `Cents` and the function `fromInt`.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "export-forms",
+      "section": "Modules and exports",
+      "claim": "Export forms: `T` exports the type alone, `T(..)` every constructor, `T(A, B)` the named constructors.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "export-forms-hidden",
+      "section": "Modules and exports",
+      "claim": "Export forms: a constructor left out of `T(A)` is not exported.",
+      "errors": [
+        {
+          "code": "UnknownName",
+          "module": "ExportFormsHidden.Use",
+          "line": 6
+        }
+      ],
+      "warnings": [],
+      "codeGuessed": true,
+      "control": "export-forms"
+    },
+    {
+      "name": "purs-graph-json",
+      "section": "Modules and exports",
+      "claim": "`purs graph` prints the import graph as JSON.",
+      "errors": [],
+      "warnings": [],
+      "run": {
+        "kind": "graph",
+        "module": "PursGraphJson.Main",
+        "depends": [
+          "Prelude"
+        ]
+      }
+    },
+    {
+      "name": "cycle-point-free",
+      "section": "Modules and exports",
+      "claim": "A point-free definition inside a recursive binding group is a CycleInDeclaration; the error names `one`, while the culprit is `go`.",
+      "errors": [
+        {
+          "code": "CycleInDeclaration",
+          "module": "CyclePointFree.Main",
+          "line": 10,
+          "includes": [
+            "The value of one is undefined here, so this reference is not allowed."
+          ]
+        }
+      ],
+      "warnings": [],
+      "control": "cycle-fixed"
+    },
+    {
+      "name": "cycle-fixed",
+      "section": "Modules and exports",
+      "claim": "The fix `go es = concatMap one es` compiles.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "cycle-nonrecursive",
+      "section": "Modules and exports",
+      "claim": "The same point-free definition compiles until the group becomes recursive.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "orphan-instance",
+      "section": "Instances",
+      "claim": "No orphan instances: `instance Eq Price` outside the class's and the type's module fails with OrphanInstance.",
+      "errors": [
+        {
+          "code": "OrphanInstance",
+          "module": "OrphanInstance.Instances",
+          "line": 7
+        }
+      ],
+      "warnings": [],
+      "control": "orphan-instance-control"
+    },
+    {
+      "name": "orphan-instance-control",
+      "section": "Instances",
+      "claim": "Control: the same instance in the type's module compiles.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "newtype-derive-inner",
+      "section": "Instances",
+      "claim": "`derive newtype instance Eq Price` over `Cents` with no `Eq` fails with \"No type class instance was found for Eq Cents\".",
+      "errors": [
+        {
+          "code": "NoInstanceFound",
+          "module": "NewtypeDeriveInner.Main",
+          "line": 9,
+          "includes": [
+            "No type class instance was found for",
+            "Eq Cents"
+          ]
+        }
+      ],
+      "warnings": [],
+      "control": "newtype-derive-inner-control"
+    },
+    {
+      "name": "newtype-derive-inner-control",
+      "section": "Instances",
+      "claim": "Control: once `Cents` has `Eq`, the derive compiles.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "generic-hidden-ctor",
+      "section": "Instances",
+      "claim": "`Generic` on a hidden constructor draws a HiddenConstructors warning, not an error.",
+      "errors": [],
+      "warnings": [
+        {
+          "code": "HiddenConstructors",
+          "module": "GenericHiddenCtor.Percent"
+        }
+      ]
+    },
+    {
+      "name": "constrained-ctor",
+      "section": "Instances",
+      "claim": "Constrained data constructors do not exist: `data Range a = Ord a => Range a a` fails to parse with \"Unexpected token '=>'\".",
+      "errors": [
+        {
+          "code": "ErrorParsingModule",
+          "module": "ConstrainedCtor.Main",
+          "line": 5,
+          "includes": [
+            "Unexpected token '=>'"
+          ]
+        }
+      ],
+      "warnings": [],
+      "codeGuessed": true,
+      "control": "constrained-ctor-control"
+    },
+    {
+      "name": "constrained-ctor-control",
+      "section": "Instances",
+      "claim": "Control: `data Range a = Range a a` parses.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "semigroup-number",
+      "section": "Prelude surprises",
+      "claim": "`Number` has no Semigroup: deriving through a newtype fails with \"No type class instance was found for Semigroup Number\".",
+      "errors": [
+        {
+          "code": "NoInstanceFound",
+          "module": "SemigroupNumber.Main",
+          "line": 7,
+          "includes": [
+            "Semigroup Number"
+          ]
+        }
+      ],
+      "warnings": [],
+      "control": "additive-wrapper"
+    },
+    {
+      "name": "semigroup-int",
+      "section": "Prelude surprises",
+      "claim": "`Int` has no Semigroup either.",
+      "errors": [
+        {
+          "code": "NoInstanceFound",
+          "module": "SemigroupInt.Main",
+          "line": 7,
+          "includes": [
+            "Semigroup Int"
+          ]
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "additive-wrapper",
+      "section": "Prelude surprises",
+      "claim": "Wrapping the value in `Data.Monoid.Additive` gives Semigroup and Monoid.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "semiring-four-members",
+      "section": "Prelude surprises",
+      "claim": "`Semiring` is four operations, not one: an instance with only `add` and `zero` is incomplete.",
+      "errors": [
+        {
+          "code": "MissingClassMember",
+          "module": "SemiringFourMembers.Main",
+          "line": 7
+        }
+      ],
+      "warnings": [],
+      "codeGuessed": true,
+      "control": "semiring-four-members-control"
+    },
+    {
+      "name": "semiring-four-members-control",
+      "section": "Prelude surprises",
+      "claim": "Control: the instance with `add`, `zero`, `mul` and `one` compiles.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "between-explicit",
+      "section": "Prelude surprises",
+      "claim": "`between` is in Prelude; an explicit import `import Ranges (between)` shadows it with a ScopeShadowing warning.",
+      "errors": [],
+      "warnings": [
+        {
+          "code": "ScopeShadowing",
+          "module": "BetweenExplicit.Main"
+        }
+      ]
+    },
+    {
+      "name": "between-open",
+      "section": "Prelude surprises",
+      "claim": "An open import `import Ranges` makes any use of `between` a ScopeConflict error.",
+      "errors": [
+        {
+          "code": "ScopeConflict",
+          "module": "BetweenOpen.Main",
+          "line": 8
+        }
+      ],
+      "warnings": [],
+      "control": "between-open-control"
+    },
+    {
+      "name": "between-open-control",
+      "section": "Prelude surprises",
+      "claim": "Control: the same open import compiles when `between` is not used (with the compiler's ImplicitImport warning for each of the two open imports).",
+      "errors": [],
+      "warnings": [
+        {
+          "code": "ImplicitImport",
+          "module": "BetweenOpenControl.Main",
+          "line": 3
+        },
+        {
+          "code": "ImplicitImport",
+          "module": "BetweenOpenControl.Main",
+          "line": 5
+        }
+      ]
+    },
+    {
+      "name": "abs-not-in-prelude",
+      "section": "Prelude surprises",
+      "claim": "With only `import Prelude`, `abs` is \"Unknown value abs\".",
+      "errors": [
+        {
+          "code": "UnknownName",
+          "module": "AbsNotInPrelude.Main",
+          "line": 6,
+          "includes": [
+            "Unknown value abs"
+          ]
+        }
+      ],
+      "warnings": [],
+      "control": "abs-from-data-ord"
+    },
+    {
+      "name": "abs-from-data-ord",
+      "section": "Prelude surprises",
+      "claim": "`abs` and `signum` are in `Data.Ord`.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "no-tuple-syntax",
+      "section": "Prelude surprises",
+      "claim": "There is no tuple syntax: `(a, b)` fails to parse with \"Unexpected token ','\".",
+      "errors": [
+        {
+          "code": "ErrorParsingModule",
+          "module": "NoTupleSyntax.Main",
+          "line": 3,
+          "includes": [
+            "Unexpected token ','"
+          ]
+        }
+      ],
+      "warnings": [],
+      "codeGuessed": true,
+      "control": "no-tuple-syntax-control"
+    },
+    {
+      "name": "no-tuple-syntax-control",
+      "section": "Prelude surprises",
+      "claim": "Control: a pair is `Tuple a b` from `Data.Tuple`.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "number-add-nonassoc",
+      "section": "Prelude surprises",
+      "claim": "Addition on `Number` is not associative: the groupings differ on between a sixth and a quarter of random triples, at every magnitude tried.",
+      "errors": [],
+      "warnings": [],
+      "run": {
+        "kind": "node",
+        "module": "NumberAddNonassoc.Main",
+        "assert": "fractions-between",
+        "low": 0.16666666666666666,
+        "high": 0.25,
+        "keys": [
+          "1",
+          "1000",
+          "1000000",
+          "1000000000"
+        ]
+      }
+    },
+    {
+      "name": "quickcheck-chain",
+      "section": "Operators",
+      "claim": "`===` and `<?>` are both infix 2, so `x === y <?> \"msg\"` fails with NonAssociativeError.",
+      "errors": [
+        {
+          "code": "NonAssociativeError",
+          "module": "QuickcheckChain.Main",
+          "line": 8
+        }
+      ],
+      "warnings": [],
+      "control": "quickcheck-types-control"
+    },
+    {
+      "name": "quickcheck-types",
+      "section": "Operators",
+      "claim": "Nor do they compose by type: `===` returns a Result and `<?>` takes a Boolean.",
+      "errors": [
+        {
+          "code": "TypesDoNotUnify",
+          "module": "QuickcheckTypes.Main",
+          "line": 8
+        }
+      ],
+      "warnings": [],
+      "codeGuessed": true,
+      "control": "quickcheck-types-control"
+    },
+    {
+      "name": "quickcheck-types-control",
+      "section": "Operators",
+      "claim": "Control: `(x == y) <?> \"msg\"` compiles.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "bigints-npm",
+      "section": "Packages",
+      "claim": "`Data.BigInt` from `bigints` imports the npm package `big-integer`; without it the program fails at runtime with ERR_MODULE_NOT_FOUND.",
+      "errors": [],
+      "warnings": [],
+      "run": {
+        "kind": "node",
+        "module": "BigintsNpm.Main",
+        "assert": "fails-with",
+        "stderrIncludes": [
+          "ERR_MODULE_NOT_FOUND",
+          "big-integer"
+        ]
+      },
+      "control": "js-bigints-native"
+    },
+    {
+      "name": "js-bigints-native",
+      "section": "Packages",
+      "claim": "`JS.BigInt` from `js-bigints` has no npm dependency.",
+      "errors": [],
+      "warnings": [],
+      "run": {
+        "kind": "node",
+        "module": "JsBigintsNative.Main",
+        "assert": "exits-zero"
+      }
+    },
+    {
+      "name": "laws-gen-variant",
+      "section": "Packages",
+      "claim": "quickcheck-laws has `checkSemigroupGen :: Gen s -> Effect Unit`.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "laws-proxy-needs-arbitrary",
+      "section": "Packages",
+      "claim": "`checkSemigroup` takes a Proxy and needs an `Arbitrary s` instance.",
+      "errors": [
+        {
+          "code": "NoInstanceFound",
+          "module": "LawsProxyNeedsArbitrary.Main",
+          "line": 15,
+          "includes": [
+            "Arbitrary"
+          ]
+        }
+      ],
+      "warnings": [],
+      "control": "laws-proxy-needs-arbitrary-control"
+    },
+    {
+      "name": "laws-proxy-needs-arbitrary-control",
+      "section": "Packages",
+      "claim": "Control: with an `Arbitrary` instance, `checkSemigroup` compiles.",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "arbitrary-number-uniform",
+      "section": "Packages",
+      "claim": "`Arbitrary Number` is `uniform`, values in [0.0, 1.0). A sample supports this; it cannot prove it.",
+      "errors": [],
+      "warnings": [],
+      "run": {
+        "kind": "node",
+        "module": "ArbitraryNumberUniform.Main",
+        "assert": "unit-interval-sample",
+        "count": 10000
+      }
+    },
+    {
+      "name": "hole-one-decl",
+      "section": "Typed holes",
+      "claim": "Holes in the same declaration are reported together.",
+      "errors": [
+        {
+          "code": "HoleInferredType",
+          "module": "HoleOneDecl.Main",
+          "line": 6
+        },
+        {
+          "code": "HoleInferredType",
+          "module": "HoleOneDecl.Main",
+          "line": 6
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "hole-two-decls",
+      "section": "Typed holes",
+      "claim": "Holes in separate declarations appear one compile at a time.",
+      "errors": [
+        {
+          "code": "HoleInferredType",
+          "module": "HoleTwoDecls.Main"
+        }
+      ],
+      "warnings": []
+    }
+  ]
+}
