@@ -60,10 +60,10 @@ def case(**overrides) -> dict:
 
 SKILL_TABLE = runner.versions_table(REPO)
 LOCK_OK = {
-    "workspace": {"package_set": {"address": {"registry": "81.0.0"}}},
+    "workspace": {"package_set": {"address": {"registry": "82.1.1"}}},
     "packages": {
-        "prelude": {"type": "registry", "version": "6.0.2"},
-        "quickcheck": {"type": "registry", "version": "8.0.1"},
+        "prelude": {"type": "registry", "version": "6.0.3"},
+        "quickcheck": {"type": "registry", "version": "8.0.2"},
         "quickcheck-laws": {"type": "registry", "version": "7.0.0"},
         "js-bigints": {"type": "registry", "version": "2.2.1"},
         "bigints": {"type": "registry", "version": "7.0.1"},
@@ -285,7 +285,7 @@ class Versions(unittest.TestCase):
 
     def test_anchor_mismatch_fails(self):
         anchors = [{"kind": "tool", "check": "checks/purescript-gotchas",
-                    "row": "prelude", "version": "6.0.3"}]
+                    "row": "prelude", "version": "6.0.2"}]
         problems = runner.check_versions(SKILL_TABLE, LOCK_OK, TOOLS_OK,
                                          anchors=anchors)
         self.assertTrue(problems)

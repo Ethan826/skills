@@ -28,7 +28,7 @@ print the work directory's size at the end.
   installed with `bun install --frozen-lockfile`. `trustedDependencies`
   lets bun run purescript's postinstall, which downloads the compiler
   binary.
-- `spago.yaml` and `spago.lock`: registry package set 81.0.0. `run.sh`
+- `spago.yaml` and `spago.lock`: registry package set 82.1.1. `run.sh`
   runs `spago install --pure` and fails if spago rewrites the lock.
 - `runner.py` reads `purs --version`, `spago --version`, the lock's
   package set, and the lock's versions of prelude, quickcheck,
