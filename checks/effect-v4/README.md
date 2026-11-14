@@ -3,7 +3,7 @@
 Compiles the TypeScript examples in `skills/effect-v4/SKILL.md` and
 `skills/readable-functional-code/typescript.md` against the versions in
 `package.json` and `bun.lock` (effect 4.1.4, @effect/vitest 4.1.4,
-vitest 5.1.0, TypeScript 5.9.3).
+vitest 5.1.0, TypeScript 7.0.2).
 
 ```bash
 checks/effect-v4/run.sh            # the check; needs bun 1.3.6 on PATH
@@ -11,7 +11,7 @@ checks/effect-v4/test-run.sh       # the check's own tests (planted defects)
 ```
 
 `run.sh` installs into a temporary directory, with bun's cache inside it, and
-removes the directory on exit. A run uses about 240 MB at peak. It fails when:
+removes the directory on exit. A run uses about 260 MB at peak. It fails when:
 
 - `package.json` pins a range, or its versions differ from the `anchors.json`
   `tool` entries whose `check` is `checks/effect-v4`, or from what is installed;

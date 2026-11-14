@@ -28,14 +28,14 @@ how to make the enforcing tests in the last section trustworthy.
 |---|---|
 | effect | 4.1.4 |
 | @effect/vitest | 4.1.4 |
-| typescript | 5.9.3 |
+| typescript | 7.0.2 |
 
 Every API name below was checked against effect 4.1.1 by reading
 the package's own source (`node_modules/effect/src`) and the
 documentation it ships (`node_modules/effect/AGENTS.md` and
 `node_modules/effect/ai-docs`). That reading was not repeated for 4.1.4.
 For 4.1.4, every code block was compiled against effect 4.1.4 with
-TypeScript 5.9.3 under `strict` and `exactOptionalPropertyTypes`, given
+TypeScript 7.0.2 under `strict` and `exactOptionalPropertyTypes`, given
 stub declarations for the domain names a fragment leaves out, and a
 search of the export statements in `node_modules/effect/src` covered the
 table of v3 names below. The `@effect/vitest` names were checked by
@@ -499,7 +499,10 @@ that a machine can check, add a test that fails the build:
 - Bans (sync decoders, `getOrThrow`, `Effect.promise`, `instanceof` on
   errors, reads of `_tag`, `JSON.parse`): an ESLint rule or a test that
   walks the TypeScript syntax tree, not a text search. A text search misses
-  aliased imports and matches inside comments.
+  aliased imports and matches inside comments. The `typescript` 7.0
+  package exports no stable compiler API, only `unstable/*` entry points;
+  the TypeScript team publishes the 6.0 API as `@typescript/typescript6`
+  for tools that still need it.
 - Global doubles: fail on `vi.stubGlobal`, `vi.spyOn(globalThis,
   ...)` and assignment to a global anywhere except the one adapter's own
   test. Check for the act in all three spellings.
