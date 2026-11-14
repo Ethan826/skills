@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "design-brainstorming",
+      "skill": "design-brainstorming",
+      "kind": "fork",
+      "from": "2ce8aa1",
+      "to": "22f0b46",
+      "link": "https://github.com/obra/superpowers/compare/2ce8aa15d05bd57213e6f746f953aafb7ded7a8b...22f0b463e7a5e579904dd6211a520321035526f7",
+      "detail": [
+        "22f0b46 Release v7.0.2: brainstorming tuning, harness bootstrap fixes, SDD helper fixes (#2657)"
+      ]
+    },
+    {
+      "id": "effect-v4/effect",
+      "skill": "effect-v4",
+      "kind": "tool",
+      "from": "4.1.1",
+      "to": "4.1.4",
+      "link": "https://www.npmjs.com/package/effect/v/4.1.4",
+      "detail": []
+    },
+    {
+      "id": "humanized-prose-review",
+      "skill": "humanized-prose-review",
+      "kind": "vendored",
+      "from": "225a6f3",
+      "to": "8b067c5",
+      "link": "https://github.com/blader/humanizer/compare/225a6f39ac85f76ee48dbad772ea4abe4ed6c9d8...8b067c507fd14e9472164511fd0f77258ee46136",
+      "detail": [
+        "latest release: v4.0.0",
+        "8b067c5 Release 4.0.0",
+        "9b03693 Make the After examples read better",
+        "9e561ab Allow added specifics and rework the After examples"
+      ]
+    },
+    {
+      "id": "installed/humanizer",
+      "skill": "humanizer",
+      "kind": "anchor-missing",
+      "from": "8c307f3",
+      "to": null,
+      "link": "https://github.com/blader/humanizer",
+      "detail": [
+        "folderHash 8c307f367c91bd974002f10f2be2965d642c13df is a commit, not a tree; re-anchor by tree ID"
+      ]
+    }
+  ]
+}

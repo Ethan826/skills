@@ -1,0 +1,33 @@
+name: skill-drift
+
+# Monthly drift detection into one issue labeled skill-drift, updated in
+# place (scripts/drift_issue.py). Never edits the repository, runs no model
+# and uses no secret beyond the job's own token.
+on:
+  schedule:
+    - cron: "17 6 1 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: skill-drift
+  cancel-in-progress: false
+
+jobs:
+  drift:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Detect drift
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/detect_drift.py --root . --out "$RUNNER_TEMP/drift.json"
+      - name: Update the skill-drift issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/drift_issue.py "$RUNNER_TEMP/drift.json"

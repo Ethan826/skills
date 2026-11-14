@@ -1,0 +1,2 @@
+{"number":41,"title":"Bump the drift job","state":"open","body":"","labels":[{"name":"skill-drift"}],"pull_request":{"url":"https://api.github.com/repos/o/r/pulls/41"}}
+{"number":7,"title":"Skill drift","state":"open","body":"Owner note.\n\n<!-- skill-drift:start -->\n<!-- skill-drift:end -->\n","labels":[{"name":"skill-drift"}]}
