@@ -12,4 +12,4 @@ package:
     - tuples
 workspace:
   packageSet:
-    registry: 81.0.0
+    registry: 82.1.1
