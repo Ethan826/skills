@@ -166,10 +166,13 @@ completed tasks, which is the most expensive failure this process has
 seen. Track progress in a ledger file as well as in todos.
 
 - Each plan owns a workspace. At skill start, run this skill's
-  `bash scripts/sdd-workspace PLAN_FILE`. It prints the plan's git-ignored
+  `bash scripts/sdd-workspace PLAN_FILE` by its absolute path, from the
+  working tree you're executing in. It prints the plan's git-ignored
   directory (under `<repo-root>/.superpowers/sdd/`), which holds every
   artifact for this plan: ledger, briefs, reports, review packages.
   Another plan's directory is never yours to read or write.
+- The helpers accept `-C DIR` to run against another working tree without
+  changing directories.
 - Look for this plan's ledger at `<workspace>/progress.md`. If one
   exists, or a stray ledger sits at the old flat path
   `.superpowers/sdd/progress.md`, read
@@ -269,7 +272,8 @@ omitted one inherits your session's, usually the most expensive. Read
 [Model selection](#model-selection) before your
 first dispatch.
 
-- **Task brief.** Run this skill's `bash scripts/task-brief PLAN_FILE N`.
+- **Task brief.** Run this skill's `bash scripts/task-brief PLAN_FILE N`
+  by its absolute path, from the working tree you're executing in.
   It writes the plan's Global Constraints section, verbatim, followed by
   the task's full text to a uniquely named file and prints the path. If
   it exits 4, the plan has a constraints heading it cannot place; fix the
@@ -343,8 +347,10 @@ once, at the end. Never skip it, and never accept a review that lacks
 either verdict (spec compliance and task quality). The implementer's
 self-review is no substitute.
 
-- Hand the reviewer its diff as a file. From this skill's directory, run
-  `bash scripts/review-package PLAN_FILE BASE HEAD` and pass the reviewer the unique path it prints. Without bash, redirect `git log --oneline`,
+- Hand the reviewer its diff as a file. Run
+  `bash scripts/review-package PLAN_FILE BASE HEAD` by its absolute path,
+  from the working tree you're executing in, and pass the reviewer the
+  unique path it prints. Without bash, redirect `git log --oneline`,
   `git diff --stat` and `git diff -U10` for the range into one uniquely
   named file. The output never enters your own context, and the reviewer
   sees the commit list, the stat summary and the full diff with context in

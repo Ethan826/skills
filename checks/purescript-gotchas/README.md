@@ -10,7 +10,7 @@ checks/purescript-gotchas/run.sh                 # whole check, about a minute
 python3 -m unittest discover -s checks/purescript-gotchas -p 'test_*.py'
 ```
 
-`run.sh` needs `bun`, `node` 22.5 or later (spago 1.0.4 requires it),
+`run.sh` needs `bun`, `node` 22.5 or later (spago 1.0.5 requires it),
 `python3` and `git`. It creates a `mktemp -d` work directory and deletes
 it on exit. HOME, XDG_CACHE_HOME and bun's install cache all point into
 that directory, so the purs binary download, the registry index and the
@@ -22,7 +22,7 @@ print the work directory's size at the end.
 
 ## Pins
 
-- `package.json` and `bun.lock`: purescript 0.15.16 and spago 1.0.4,
+- `package.json` and `bun.lock`: purescript 0.15.17 and spago 1.0.5,
   installed with `bun install --frozen-lockfile`. `trustedDependencies`
   lets bun run purescript's postinstall, which downloads the compiler
   binary.
@@ -57,7 +57,7 @@ and parses the output. The others run the compiled `main` with node:
 `js-bigints-native` must exit 0, and the two sampling cases print JSON
 that the runner checks against bounds.
 
-purs 0.15.16 leaves `moduleName` null for parse errors,
+purs 0.15.17 leaves `moduleName` null for parse errors,
 `MissingClassMember` and `NonAssociativeError`. For those the runner
 reads the module name from the reported file's `module` header.
 

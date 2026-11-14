@@ -5,7 +5,8 @@ is complete, before you dispatch the final reviewer.
 
 ## Final review
 
-Run `bash scripts/review-package PLAN_FILE MERGE_BASE HEAD` (MERGE_BASE is
+Run `bash scripts/review-package PLAN_FILE MERGE_BASE HEAD` by its
+absolute path, from the working tree you're executing in (MERGE_BASE is
 the commit the branch started from, for example `git merge-base main HEAD`)
 and put the printed path in the final review dispatch, so the reviewer
 reads one file instead of re-deriving the branch diff. Dispatch it on the

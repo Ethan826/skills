@@ -30,8 +30,8 @@ types record requirements and errors.
 
 | Tool or package | Version |
 |---|---|
-| effect | 4.1.1 |
-| typescript | 5.9.3 |
+| effect | 4.1.4 |
+| typescript | 7.0.2 |
 
 The TypeScript examples in typescript.md compile against these versions.
 `checks/effect-v4` in this repository checks them.

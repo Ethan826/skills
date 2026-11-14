@@ -4,13 +4,20 @@
 # only if the command succeeded — append the completion line to the ledger.
 # A failing command records nothing: the task is not complete.
 #
-# Usage: task-done PLAN_FILE TASK_NUMBER BASE -- TEST_COMMAND [ARGS...]
+# Usage: task-done [-C DIR] PLAN_FILE TASK_NUMBER BASE -- TEST_COMMAND [ARGS...]
 #   BASE is the SHA task-start printed; the completion line records BASE..HEAD.
 # Exit: the test command's exit status.
 set -euo pipefail
 
+here="$(cd "$(dirname "$0")" && pwd)"
+if [ "${1:-}" = "-C" ]; then
+  [ -d "${2:-}" ] || { echo "bad -C directory: ${2:-}" >&2; exit 2; }
+  cd "$2"
+  shift 2
+fi
+
 if [ $# -lt 5 ] || [ "$4" != "--" ]; then
-  echo "usage: task-done PLAN_FILE TASK_NUMBER BASE -- TEST_COMMAND [ARGS...]" >&2
+  echo "usage: task-done [-C DIR] PLAN_FILE TASK_NUMBER BASE -- TEST_COMMAND [ARGS...]" >&2
   exit 2
 fi
 
@@ -18,9 +25,9 @@ plan=$1
 n=$2
 base=$3
 shift 4
-here="$(cd "$(dirname "$0")" && pwd)"
+repo=$("${BASH:-bash}" "$here/sdd-repo" --with-commit)
 
-git rev-parse --verify --quiet "$base" >/dev/null || { echo "bad BASE: $base" >&2; exit 2; }
+git -C "$repo" rev-parse --verify --quiet "$base" >/dev/null || { echo "bad BASE: $base" >&2; exit 2; }
 
 dir=$("${BASH:-bash}" "$here/sdd-workspace" "$plan")
 log="$dir/task-${n}-tests.log"
@@ -47,6 +54,6 @@ fi
 
 last=$(grep -v '^[[:space:]]*$' "$log" | tail -n 1) || last="(no output)"
 [ -f "$ledger" ] || printf '# SDD ledger — plan: %s\n' "$plan" > "$ledger"
-line="Task $n: complete (commits $(git rev-parse --short=7 "$base")..$(git rev-parse --short=7 HEAD), tests: $cmd → $last)"
+line="Task $n: complete (commits $(git -C "$repo" rev-parse --short=7 "$base")..$(git -C "$repo" rev-parse --short=7 HEAD), tests: $cmd → $last)"
 printf '%s\n' "$line" >> "$ledger"
 echo "ledger: $line"

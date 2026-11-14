@@ -185,11 +185,14 @@ same directory and the same format, so a plan can switch executors
 midway and the new one resumes from the same ledger.
 
 - Each plan owns a workspace. At skill start, run this skill's
-  `scripts/sdd-workspace PLAN_FILE`. It prints
+  `scripts/sdd-workspace PLAN_FILE` by its absolute path, from the
+  working tree you're executing in. It prints
   the plan's git-ignored directory
   (`<repo-root>/.superpowers/sdd/<plan-basename>/`), which holds every
   artifact for this plan: ledger, briefs and review packages. Another
   plan's directory is never yours to read or write.
+- The helpers accept `-C DIR` to run against another working tree without
+  changing directories.
 - Look for this plan's ledger at `<workspace>/progress.md`. If its first
   line names your plan file, every task with a `Task <N>: complete` line
   is done. Do not redo it; resume at the first task without one. Those
@@ -233,7 +236,8 @@ plan.
 
 ### 1. Take the task
 
-- Run this skill's `scripts/task-start PLAN_FILE N`. In one call it
+- Run this skill's `scripts/task-start PLAN_FILE N` by its absolute path,
+  from the working tree you're executing in. In one call it
   prints the brief's path and BASE, the commit the task's range is cut
   from. The brief opens with the plan's Global Constraints, verbatim, and
   then the task's own text; both bind the task. If task-start fails
@@ -304,7 +308,8 @@ item is missing, the task is not complete: finish it.
 ### 4. Complete the task
 
 Run this skill's `scripts/task-done PLAN_FILE N BASE -- <test command>`
-with the test command the brief names for the whole task. It runs the
+by its absolute path, from the working tree you're executing in, with
+the test command the brief names for the whole task. It runs the
 tests, keeps the full output in the workspace, prints the tail and, only
 if the tests pass, appends the completion line to the ledger:
 
@@ -316,6 +321,7 @@ line is recorded, mark the todo complete and take the next task.
 ## Final Review
 
 Run this skill's `scripts/review-package PLAN_FILE MERGE_BASE HEAD`
+by its absolute path, from the working tree you're executing in
 (MERGE_BASE is the commit the branch started from, for example
 `git merge-base main HEAD`) and review from the file it prints.
 

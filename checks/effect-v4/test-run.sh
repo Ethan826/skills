@@ -135,19 +135,19 @@ expect fail 'CLAIM FAILS' \
   "runtime claim broken" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup anchor-bumped
-sed -i.bak 's/"id": "effect-v4\/effect", \(.*\)"version": "4\.1\.1"/"id": "effect-v4\/effect", \1"version": "4.1.2"/' "$r/anchors.json"
-expect fail 'anchors\.json effect-v4/effect says 4\.1\.2, package\.json pins 4\.1\.1' \
+sed -i.bak 's/"id": "effect-v4\/effect", \(.*\)"version": "4\.1\.4"/"id": "effect-v4\/effect", \1"version": "4.1.5"/' "$r/anchors.json"
+expect fail 'anchors\.json effect-v4/effect says 4\.1\.5, package\.json pins 4\.1\.4' \
   "anchors.json bumped, package.json not" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup package-bumped-deps
-sed -i.bak 's/"effect": "4\.1\.1"/"effect": "4.1.2"/' "$c/package.json"
-sed -i.bak 's/"version": "4\.1\.1", "row": "effect"/"version": "4.1.2", "row": "effect"/g' "$r/anchors.json"
-expect fail 'installed effect is 4\.1\.1, package\.json pins 4\.1\.2' \
+sed -i.bak 's/"effect": "4\.1\.4"/"effect": "4.1.5"/' "$c/package.json"
+sed -i.bak 's/"version": "4\.1\.4", "row": "effect"/"version": "4.1.5", "row": "effect"/g' "$r/anchors.json"
+expect fail 'installed effect is 4\.1\.4, package\.json pins 4\.1\.5' \
   "package.json and anchors bumped, deps not (reused deps)" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup package-bumped-fresh
-sed -i.bak 's/"effect": "4\.1\.1"/"effect": "4.1.2"/' "$c/package.json"
-sed -i.bak 's/"version": "4\.1\.1", "row": "effect"/"version": "4.1.2", "row": "effect"/g' "$r/anchors.json"
+sed -i.bak 's/"effect": "4\.1\.4"/"effect": "4.1.5"/' "$c/package.json"
+sed -i.bak 's/"version": "4\.1\.4", "row": "effect"/"version": "4.1.5", "row": "effect"/g' "$r/anchors.json"
 expect fail 'bun install --frozen-lockfile failed' \
   "package.json and anchors bumped, bun.lock not (fresh install)" "$c/run.sh" --repo "$r"
 

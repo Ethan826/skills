@@ -16,7 +16,7 @@
 # inline-plan-execution/scripts, so each skill installs on its own. Change
 # both copies together.
 #
-# Usage: task-brief PLAN_FILE TASK_NUMBER [OUTFILE]
+# Usage: task-brief [-C DIR] PLAN_FILE TASK_NUMBER [OUTFILE]
 # Default OUTFILE: <repo-root>/.superpowers/sdd/<plan-basename>/task-<N>-brief.md
 # (per plan and per worktree; concurrent runs of the SAME plan in the same
 # working tree share it).
@@ -24,29 +24,35 @@
 # cannot be parsed.
 set -euo pipefail
 
+here=$(cd "$(dirname "$0")" && pwd)
+if [ "${1:-}" = "-C" ]; then
+  [ -d "${2:-}" ] || { echo "bad -C directory: ${2:-}" >&2; exit 2; }
+  cd "$2"
+  shift 2
+fi
+
 if [ $# -lt 2 ] || [ $# -gt 3 ]; then
-  echo "usage: task-brief PLAN_FILE TASK_NUMBER [OUTFILE]" >&2
+  echo "usage: task-brief [-C DIR] PLAN_FILE TASK_NUMBER [OUTFILE]" >&2
   exit 2
 fi
 
 plan=$1
 n=$2
 [ -f "$plan" ] || { echo "no such plan file: $plan" >&2; exit 2; }
-case "$n" in
-  ''|*[!0-9]*) echo "TASK_NUMBER must be a number: $n" >&2; exit 2 ;;
-esac
+[[ "$n" =~ ^[A-Za-z0-9]+(\.[A-Za-z0-9]+)*$ && "$n" =~ [0-9] ]] \
+  || { echo "TASK_NUMBER must be an ID of letters and digits containing a digit: $n" >&2; exit 2; }
 
 if [ $# -eq 3 ]; then
   out=$3
 else
   # Invoke via bash rather than direct exec: some extractors (Python zipfile)
   # strip Unix exec bits when unpacking packaged skills.
-  dir=$("${BASH:-bash}" "$(cd "$(dirname "$0")" && pwd)/sdd-workspace" "$plan")
+  dir=$("${BASH:-bash}" "$here/sdd-workspace" "$plan")
   out="$dir/task-${n}-brief.md"
 fi
 
 rc=0
-awk -v n="$n" -v plan="$plan" '
+TASK_BRIEF_PLAN="$plan" awk -v n="$n" '
   function fail(code, msg) {
     print "task-brief: " msg > "/dev/stderr"
     failed = code
@@ -57,24 +63,39 @@ awk -v n="$n" -v plan="$plan" '
     sub(/[ \t#]+$/, "", line)
     return line
   }
-  /^```/ { infence = !infence }
+  /^```/ {
+    infence = !infence
+    if (infence) { fence_line = NR; hidden = 0 }
+  }
+  infence && /^#+[ \t]+Task[ \t]/ { hidden = 1 }
   !infence && /^#+[ \t]+/ {
     match($0, /^#+/)
     level = RLENGTH
-    if ($0 ~ /^#+[ \t]+Task[ \t]+[0-9]+/) {
-      seentask = 1
-      incons = 0
-      intask = ($0 ~ ("^#+[ \t]+Task[ \t]+" n "([^0-9]|$)"))
-      if (intask) found = 1
+    id = $0
+    sub(/^#+[ \t]+Task[ \t]+/, "", id)
+    if (match(id, /^[A-Za-z0-9]+(\.[A-Za-z0-9]+)*/) &&
+        substr(id, 1, RLENGTH) ~ /[0-9]/) {
+      id = substr(id, 1, RLENGTH)
+      tasks++
+      subtask = intask && level > tasklevel &&
+        substr(id, 1, length(n)) == n &&
+        substr(id, length(n) + 1, 1) ~ /[A-Za-z.]/
+      if (!subtask) {
+        seentask = 1
+        incons = 0
+        intask = (id == n)
+        tasklevel = level
+        if (intask) found = 1
+      }
     } else if (!seentask && !(incons && level > conslevel)) {
       # Any heading at or above the constraints heading ends the section;
       # deeper headings are its subsections and stay in it.
       incons = 0
       if (tolower(title($0)) ~ /constraint/) {
         if (tolower(title($0)) != "global constraints")
-          fail(4, plan ":" NR ": cannot place constraints heading \"" title($0) "\" (task-brief reads only \"Global Constraints\"); rename it, or fold it into Global Constraints")
+          fail(4, ENVIRON["TASK_BRIEF_PLAN"] ":" NR ": cannot place constraints heading \"" title($0) "\" (task-brief reads only \"Global Constraints\"); rename it, or fold it into Global Constraints")
         if (hascons)
-          fail(4, plan ":" NR ": second \"Global Constraints\" heading (first at line " consline ")")
+          fail(4, ENVIRON["TASK_BRIEF_PLAN"] ":" NR ": second \"Global Constraints\" heading (first at line " consline ")")
         hascons = 1
         incons = 1
         conslevel = level
@@ -92,8 +113,15 @@ awk -v n="$n" -v plan="$plan" '
   intask { task = task $0 "\n" }
   END {
     if (failed) exit failed
+    where = "the code fence opened at line " fence_line " of " ENVIRON["TASK_BRIEF_PLAN"] " never closes"
+    if (infence && hidden && (intask || !found)) {
+      print "task-brief: " where ", so no task boundary after it can be seen; close that fence in the plan and rerun" > "/dev/stderr"
+      exit 4
+    } else if (infence && intask) {
+      print "task-brief: warning: " where "; this brief may include text after the task" > "/dev/stderr"
+    }
     if (hascons && !consbody)
-      fail(4, plan ":" consline ": \"Global Constraints\" heading has no content; write \"None\" if the plan has none")
+      fail(4, ENVIRON["TASK_BRIEF_PLAN"] ":" consline ": \"Global Constraints\" heading has no content; write \"None\" if the plan has none")
     if (!found) exit 3
     print "## Global Constraints (from the plan; they bind this task)"
     print ""

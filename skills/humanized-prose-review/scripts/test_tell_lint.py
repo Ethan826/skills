@@ -276,7 +276,7 @@ class CatalogContract(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         refs = SKILL / "references"
-        humanizer = (refs / "humanizer-3.1.0.md").read_text(encoding="utf-8")
+        humanizer = (refs / "humanizer-4.0.0.md").read_text(encoding="utf-8")
         additional = (refs / "additional-tells.md").read_text(encoding="utf-8")
         cls.researched = (refs / "researched-tells.md").read_text(encoding="utf-8")
         cls.sections = set()

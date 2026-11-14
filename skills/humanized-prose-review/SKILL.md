@@ -14,9 +14,9 @@ the user wants its wording kept.
 The detailed catalog of AI-writing patterns comes from Humanizer. If a
 `humanizer` skill is installed, including a namespaced variant such as
 `humanizer:humanizer`, and its metadata reports a version newer than
-3.1.0, use it. Otherwise read the vendored [Humanizer 3.1.0
-reference](references/humanizer-3.1.0.md). Its rules match upstream
-3.1.0, but the examples in patterns 12 to 18 are original replacements
+4.0.0, use it. Otherwise read the vendored [Humanizer 4.0.0
+reference](references/humanizer-4.0.0.md). Its rules match upstream
+4.0.0, but the examples in patterns 12 to 18 are original replacements
 (see [NOTICE.md](NOTICE.md)), so they will not match an installed copy
 word for word. Use Humanizer's guidance to find and remove the
 patterns; this skill adds the audit record and the final adversarial
@@ -24,7 +24,7 @@ review.
 
 Whichever Humanizer catalog you use, also read [additional
 tells](references/additional-tells.md). It lists patterns found in review
-that Humanizer 3.1.0 does not: figurative *carry* and *seam*, label
+that Humanizer 4.0.0 does not: figurative *carry* and *seam*, label
 openers, mirrored scope pairs, forward-pointing closers, and
 personified abstractions used as a payoff. Also read [researched
 tells](references/researched-tells.md), which adds patterns from
@@ -72,9 +72,10 @@ target is plain text, such as a commit message.
     more precise, or easier to follow. Then confirm that the final
     version keeps every supported fact, name, number, date, quote,
     qualification, technical distinction, and citation, and every
-    intentional part of the writer's voice. If a sentence needs a detail
-    you do not have, ask for it or write a simpler sentence; an invented
-    detail is an error even when it reads well.
+    intentional part of the writer's voice. A specific detail may be
+    added when you know it is true; verify it before using it. If a
+    sentence needs a detail you cannot verify, ask for it or write a
+    simpler sentence.
 
 ## What to look for
 

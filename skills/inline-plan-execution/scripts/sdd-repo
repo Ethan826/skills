@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Print the current directory's git working tree, as git itself resolves it.
+# The plan's location never selects the repository: its workspace and commits
+# belong to the working tree the executor is using.
+#
+# Usage: sdd-repo [--with-commit]
+set -euo pipefail
+
+with_commit=false
+if [ "${1:-}" = "--with-commit" ]; then
+  with_commit=true
+  shift
+fi
+
+if [ $# -ne 0 ]; then
+  echo "usage: sdd-repo [--with-commit]" >&2
+  exit 2
+fi
+
+if root=$(git rev-parse --show-toplevel 2>/dev/null); then
+  if [ "$with_commit" = false ] || git -C "$root" rev-parse --verify --quiet HEAD >/dev/null; then
+    printf '%s\n' "$root"
+    exit 0
+  fi
+  said=$(git -C "$root" rev-parse --verify HEAD 2>&1 >/dev/null) || true
+else
+  said=$(git rev-parse --show-toplevel 2>&1 >/dev/null) || true
+fi
+
+echo "SDD scripts must run from inside the git working tree you're executing in, with at least one commit (current directory: $PWD). If this is a new project, run 'git init' and make a first commit, then rerun." >&2
+echo "git said: ${said%%$'\n'*}" >&2
+exit 2

@@ -122,7 +122,8 @@ Dispatch a subagent (any general-purpose agent your platform offers):
   appended
 - `[FIX_BASE_SHA]`: the head the previous review saw
 - `[HEAD_SHA]`: the current commit
-- `[DIFF_FILE]`: the path `bash scripts/review-package PLAN_FILE FIX_BASE HEAD` printed
+- `[DIFF_FILE]`: the path printed by `bash scripts/review-package PLAN_FILE FIX_BASE HEAD`,
+  run by its absolute path from the working tree you're executing in
 
 **The re-reviewer returns** its full report as text: a verdict on each
 finding (ADDRESSED / NOT ADDRESSED), new breakage in the fix diff,

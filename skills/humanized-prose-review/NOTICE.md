@@ -1,11 +1,11 @@
 # Notice
 
-`references/humanizer-3.1.0.md` is a modified copy of the `SKILL.md` from
-[blader/humanizer](https://github.com/blader/humanizer), version 3.1.0. The
-example passages in patterns 12 through 18 were replaced with original ones,
-and the emoji in pattern 20's example were replaced with descriptions of
-them; the rest is unchanged. The modifications are Copyright (c) 2026 Ethan Kent and
-are released under the same MIT License.
+`references/humanizer-4.0.0.md` adapts the `SKILL.md` from
+[blader/humanizer](https://github.com/blader/humanizer), version 4.0.0.
+Patterns 12 through 18 use original replacement examples. The surrounding
+skill adapts Humanizer's verified-specifics guidance to this review workflow.
+These modifications are Copyright (c) 2026 Ethan Kent and are released under
+the same MIT License.
 
 Humanizer's patterns are drawn from Wikipedia's
 [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing),

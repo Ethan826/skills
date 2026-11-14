@@ -155,7 +155,7 @@ MODULE_HEADER = re.compile(r"^module\s+([A-Z][\w.]*)", re.MULTILINE)
 def fill_modules(outcome: Outcome, base: Path) -> Outcome:
     """Name the module of diagnostics where purs leaves moduleName null.
 
-    purs 0.15.16 does so for parse errors, MissingClassMember and
+    purs 0.15.17 does so for parse errors, MissingClassMember and
     NonAssociativeError; the module is then read from the file's header.
     """
     def fill(found: Diagnostic) -> Diagnostic:

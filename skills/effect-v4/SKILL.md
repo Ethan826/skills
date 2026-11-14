@@ -1,6 +1,6 @@
 ---
 name: effect-v4
-description: "How to write TypeScript with Effect v4 (the effect package, 4.x): the v3 names that no longer exist or changed meaning (Either, Context.Tag, Effect.catchAll, Schema.decode, Option.fromNullable and others), the combinator to use in place of each imperative pattern, tagged errors and no throwing in core code, lifting Option and Result into Effect, Schema decoding instead of type assertions, Match on tags, Combiner and Reducer instead of hand-written merges, the dual data-first and data-last convention, services as Context.Service behind Layers built once in a ManagedRuntime, tests that substitute a Layer rather than a global, and tests that enforce these rules. Use it whenever you write, review or plan TypeScript that imports effect at version 4, when an Effect API name comes from memory, and when you add a service, a Layer, a runtime or a test double. Checked against effect 4.1.1."
+description: "How to write TypeScript with Effect v4 (the effect package, 4.x): the v3 names that no longer exist or changed meaning (Either, Context.Tag, Effect.catchAll, Schema.decode, Option.fromNullable and others), the combinator to use in place of each imperative pattern, tagged errors and no throwing in core code, lifting Option and Result into Effect, Schema decoding instead of type assertions, Match on tags, Combiner and Reducer instead of hand-written merges, the dual data-first and data-last convention, services as Context.Service behind Layers built once in a ManagedRuntime, tests that substitute a Layer rather than a global, and tests that enforce these rules. Use it whenever you write, review or plan TypeScript that imports effect at version 4, when an Effect API name comes from memory, and when you add a service, a Layer, a runtime or a test double. Checked against effect 4.1.4."
 license: MIT
 ---
 
@@ -26,18 +26,18 @@ how to make the enforcing tests in the last section trustworthy.
 
 | Tool or package | Version |
 |---|---|
-| effect | 4.1.1 |
-| @effect/vitest | 4.1.1 |
-| typescript | 5.9.3 |
+| effect | 4.1.4 |
+| @effect/vitest | 4.1.4 |
+| typescript | 7.0.2 |
 
-Every API name below was checked against effect 4.1.1 by reading
+Every API name below was checked against effect 4.1.4 by reading
 the package's own source (`node_modules/effect/src`) and the
 documentation it ships (`node_modules/effect/AGENTS.md` and
 `node_modules/effect/ai-docs`). Every code block compiles against effect
-4.1.1 with TypeScript 5.9.3 under `strict` and
+4.1.4 with TypeScript 7.0.2 under `strict` and
 `exactOptionalPropertyTypes`, given stub declarations for the domain
 names a fragment leaves out. The `@effect/vitest` names were checked by
-compiling a use of each against `@effect/vitest` 4.1.1.
+compiling a use of each against `@effect/vitest` 4.1.4.
 
 Before relying on a name here, confirm it in the version you have
 installed: search `node_modules/effect/src/<Module>.ts` for
@@ -57,8 +57,8 @@ an upgrade as a review, with dependency-intake.
 
 Each row is a v3 name a model is likely to write, and what to use in
 v4. Every name in the left column was checked in effect 3.19.15 and
-every name in the right column in 4.1.1. A left-column name is either
-gone from 4.1.1 or, where the row shows a different call shape, takes
+every name in the right column in 4.1.4. A left-column name is either
+gone from 4.1.4 or, where the row shows a different call shape, takes
 different arguments there.
 
 | v3 | v4 |

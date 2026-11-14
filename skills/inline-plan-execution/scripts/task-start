@@ -6,20 +6,27 @@
 # instead of two, because every call in an inline session is a turn that
 # re-reads the whole context.
 #
-# Usage: task-start PLAN_FILE TASK_NUMBER
+# Usage: task-start [-C DIR] PLAN_FILE TASK_NUMBER
 # Prints:
 #   brief: <path to the task's brief file>
 #   base:  <full SHA of HEAD>
 set -euo pipefail
 
+here="$(cd "$(dirname "$0")" && pwd)"
+if [ "${1:-}" = "-C" ]; then
+  [ -d "${2:-}" ] || { echo "bad -C directory: ${2:-}" >&2; exit 2; }
+  cd "$2"
+  shift 2
+fi
+
 if [ $# -ne 2 ]; then
-  echo "usage: task-start PLAN_FILE TASK_NUMBER" >&2
+  echo "usage: task-start [-C DIR] PLAN_FILE TASK_NUMBER" >&2
   exit 2
 fi
 
 plan=$1
 n=$2
-here="$(cd "$(dirname "$0")" && pwd)"
+repo=$("${BASH:-bash}" "$here/sdd-repo" --with-commit)
 
 # Invoke via bash rather than direct exec: some extractors (Python zipfile)
 # strip Unix exec bits when unpacking packaged skills.
@@ -28,4 +35,4 @@ brief=$(printf '%s\n' "$out" | sed -n 's/^wrote \(.*\): [0-9][0-9]* lines$/\1/p'
 [ -n "$brief" ] || { echo "task-brief did not report a path: $out" >&2; exit 1; }
 
 echo "brief: $brief"
-echo "base: $(git rev-parse HEAD)"
+echo "base: $(git -C "$repo" rev-parse HEAD)"

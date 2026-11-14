@@ -216,7 +216,8 @@ Dispatch a subagent (any general-purpose agent your platform offers):
 - `[MODEL]`: required; the reviewer model per Model selection in
   [SKILL.md](SKILL.md#model-selection)
 - `[BRIEF_FILE]`: required; the task brief file
-  (`bash scripts/task-brief PLAN N` prints the path; the same file the
+  (`bash scripts/task-brief PLAN N`, run by its absolute path from the
+  working tree you're executing in, prints the path; the same file the
   implementer worked from)
 - `[GLOBAL_CONSTRAINTS]`: the binding requirements copied verbatim from
   the plan's Global Constraints section or the spec: exact values,
@@ -227,7 +228,8 @@ Dispatch a subagent (any general-purpose agent your platform offers):
 - `[BASE_SHA]`: the commit before this task
 - `[HEAD_SHA]`: the current commit
 - `[DIFF_FILE]`: required; the path the controller wrote the review
-  package to (`bash scripts/review-package PLAN_FILE BASE HEAD` prints the
+  package to (`bash scripts/review-package PLAN_FILE BASE HEAD`, run by
+  its absolute path from the working tree you're executing in, prints the
   unique path it wrote; the package never enters the controller's
   context)
 
