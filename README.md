@@ -142,7 +142,7 @@ of those for PureScript only and one for TypeScript with Effect v4.
 | [`decision-core-architecture`](skills/decision-core-architecture/SKILL.md) | Niche | Keep a pure core of decisions under a thin shell that holds no logic. Language-neutral, but functional in outlook. |
 | [`purescript-rows-and-newtypes`](skills/purescript-rows-and-newtypes/SKILL.md) | Niche | Track a PureScript function's dependencies and errors in its type. PureScript only. |
 | [`purescript-gotchas`](skills/purescript-gotchas/SKILL.md) | Niche | PureScript compiler and tooling traps that cost a compile cycle to discover, pinned to the versions they were checked against. |
-| [`readable-functional-code`](skills/readable-functional-code/SKILL.md) | Niche | Readability rules for functional code, with budgets and names a lint can check, plus Effect for TypeScript idioms. |
+| [`readable-functional-code`](skills/readable-functional-code/SKILL.md) | Niche | Readability rules for functional code, with budgets and names a lint can check, plus how they apply to TypeScript. |
 | [`effect-v4`](skills/effect-v4/SKILL.md) | Situational | Write TypeScript with Effect v4: the v3 names that changed, combinators over statements, typed errors, Schema decoding, and services behind Layers that tests substitute. Checked against effect 4.1.1. |
 
 ### Writing

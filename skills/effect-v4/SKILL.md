@@ -16,8 +16,9 @@ and dependencies as services behind Layers.
 
 Related skills cover what this one leaves out. decision-core-architecture
 says where pure decisions and effects live in an application.
-readable-functional-code, in its reference file `effect-ts-idioms.md`,
-has the house readability rules for Effect code. public-api-argument-shape
+readable-functional-code, in its reference file `typescript.md`, has
+the house readability rules for TypeScript, for a project that has
+adopted them. public-api-argument-shape
 covers the parameters of your own public functions. gate-integrity covers
 how to make the enforcing tests in the last section trustworthy.
 
@@ -105,6 +106,9 @@ When you reach for a statement, find the combinator that replaces it.
 | `try`/`catch` | `Effect.try`, `Effect.tryPromise`, then `Effect.catchTag` |
 | `throw` | `return yield* new SomeError(...)`, or `Effect.fail` |
 | `await somePromise` | `Effect.tryPromise({ try, catch })` with a typed error; `Effect.promise` only for a Promise that cannot reject |
+| `new Promise(...)` | `Effect.tryPromise` with a typed error |
+| `JSON.parse` | `Schema.fromJsonString` with `Schema.decodeUnknownEffect`, `Schema.decodeUnknownOption` or `Schema.decodeUnknownResult` |
+| `JSON.stringify` | `Schema.fromJsonString` with `Schema.encodeEffect` |
 | `x as T` | a `Schema` decode at the boundary |
 | `if`/`switch`/`instanceof` on a tagged union | `Match.tag`, or `Effect.catchTag` for errors |
 | a `??` chain or a hand-written merge | `Struct.makeCombiner`, `Option.makeReducer`, `Combiner.last` |
@@ -148,11 +152,19 @@ a failure into a defect, which no typed handler sees, so use them only
 for what cannot happen when the code is correct. If the process must
 stop on a defect, stop it once, in the entrypoint.
 
+Before adding `Effect.ignore`, ask whether any failure it swallows
+should be logged. A blanket ignore makes a corrupted file and a missing
+one look the same. `Effect.ignore({ log: true })` logs the full cause
+and then discards the failure.
+
 These throw or hide a failure. A lint can ban all but one of them by
 syntax, and the exception says how to gate it:
 
 - `Schema.decodeUnknownSync`, `Schema.decodeSync` and the other `*Sync`
-  decoders and encoders. Use the `Effect`, `Result` or `Option` variant.
+  decoders and encoders, and `Schema.asserts`, all of which throw. The
+  `*Promise` forms (`Schema.decodePromise`, `decodeUnknownPromise`,
+  `encodePromise`, `encodeUnknownPromise`) reject instead. Use the
+  `Effect`, `Result` or `Option` variant.
 - `Option.getOrThrow`, `Result.getOrThrow` and their `With` forms. Use
   `match` or `getOrElse`, or lift into the Effect.
 - `Effect.promise` on a Promise that can reject. `Effect.promise` is
@@ -165,11 +177,21 @@ syntax, and the exception says how to gate it:
   Promise can reject, so the lint flags every `Effect.promise`, and each
   one kept goes in the gate's allowlist with the reason it cannot
   reject.
-- `JSON.parse` and `JSON.stringify`. Use `Schema.fromJsonString` with a
-  decode or encode.
+- `JSON.parse` and `JSON.stringify`. Both throw, the second on a
+  `BigInt` or a cycle. Use `Schema.fromJsonString` with a decode or
+  encode.
 - `instanceof` on errors, a `switch` on `_tag`, `x._tag === "..."` and
-  `"_tag" in x`.
+  `"_tag" in x`. `instanceof` fails across two copies of a module and
+  cannot see a tag. Convert a library's thrown error into a tagged
+  domain error at the boundary.
 - non-null assertions (`x!`) and type assertions other than `as const`.
+- loops, `.push`, `.length`, `array[0]`, `throw`, `try`, and `async`
+  away from a boundary. The table in "Reach for the combinator" gives
+  the replacement for each.
+
+Test files may relax the loop, mutation and parsing rules, since
+mutable fixtures and parsing test data are normal there. They keep the
+rest.
 
 ## Lift Option and Result into Effect
 
@@ -191,25 +213,36 @@ const taskTitle = Effect.fn("taskTitle")(function* (taskId: string) {
 })
 ```
 
+This replaces `Option.match`, `Option.isNone` and nested pipes inside a
+generator. The same lift works in a `flatMap`:
+
+```ts
+import { Effect, Record, pipe } from "effect"
+
+const settingIn = (key: string) => (settings: Settings) =>
+  Effect.fromOption(Record.get(settings, key))
+
+const readSetting = (key: string) =>
+  pipe(loadSettings, Effect.flatMap(settingIn(key)))
+```
+
 `Effect.fromOption` fails with `Cause.NoSuchElementError` when given no
 second argument. Pass a function that returns a domain error when the
 caller needs to tell this absence from another. To go the other way,
 `Effect.result` turns an Effect's failure into a `Result` value and
 `Effect.option` turns it into an `Option`.
 
-Outside an Effect, keep using `Option` and `Result` directly. Absence is
-`Option.none()`, not `null` or `undefined`, in domain state and in
-payloads between modules. Convert at a public boundary with
-`Option.getOrUndefined` or `Option.getOrNull`, and decode back to
-`Option` on the way in with `Schema.OptionFromNullOr` or
-`Schema.OptionFromUndefinedOr`.
+Outside an Effect, keep using `Option` and `Result` directly, and read
+one with its own `match` or `getOrElse`.
 
 ## Decode, never assert
 
 A value from outside the program (a file, a response, a message, an
-environment variable, another process's output) is `unknown` until a
-`Schema` decodes it. After that it is typed and trusted, and nothing
-deeper re-checks it.
+environment variable, a bundled JSON file, another process's output) is
+`unknown` until a `Schema` decodes it. After that it is typed and
+trusted, and nothing deeper re-checks it. If code deep in the program
+feels it must re-check a value's shape, fix the boundary that handed it
+over.
 
 ```ts
 import { Schema } from "effect"
@@ -233,6 +266,16 @@ Decode several optional inputs in one `Schema.Struct` with
 `Schema.optional` fields rather than a chain of `if (x !== undefined)`.
 Map the schema's issue to a tagged domain error at the boundary, so the
 core never sees a parse error.
+
+Absence is `Option.none()`, not `null` or `undefined`, in domain state
+and in the payloads passed between modules inside the core. A payload
+that crosses a public boundary (a facade to a UI shell, a wire format,
+an outside caller) uses that boundary's plain representation, usually
+`undefined` or `null`. Where the two conflict, the boundary wins:
+convert with `Option.getOrUndefined` or `Option.getOrNull` at the
+facade, and decode back to `Option` on the way in with
+`Schema.OptionFromNullOr` or `Schema.OptionFromUndefinedOr`
+(decision-core-architecture, "The facade").
 
 ## Match on tags
 
@@ -289,15 +332,36 @@ the global `Number` in that file.
 
 ## Write effectful functions with Effect.fn
 
-Use `Effect.gen` for an inline sequence of steps, with one `yield*` per
-step, instead of nested `flatMap` calls. For a reusable function that
-returns an Effect, use `Effect.fn("name")`, which adds a tracing span
-and a better stack trace, or `Effect.fnUntraced` on hot paths and in
-library code. Do not write a function whose only body is
-`return Effect.gen(...)`. Add behavior such as recovery or log
-annotations as extra arguments to `Effect.fn`, not with `.pipe` on its
-result. Declare the return type with `Effect.fn.Return<A, E, R>` when
-the inferred one is not what you mean.
+A storage read, then a decode, then an action, is one `Effect.gen` with
+one `yield*` per step. Do not nest `.pipe(Effect.flatMap(...))` or
+`.then()` chains, and do not re-check a hand-written cancellation flag
+at each level:
+
+```ts
+import { Data, Effect, Schema } from "effect"
+
+class NoStoredDraft extends Data.TaggedError("NoStoredDraft") {}
+
+const DraftFromJson = Schema.fromJsonString(Draft)
+
+const restoreDraft = Effect.gen(function* () {
+  const stored = yield* readStoredDraft
+  const text = yield* Effect.fromOption(stored, () => new NoStoredDraft())
+  const draft = yield* Schema.decodeUnknownEffect(DraftFromJson)(text)
+  yield* showDraft(draft)
+})
+```
+
+To cancel, interrupt the fiber that `runtime.runFork` returns with
+`Fiber.interrupt`.
+
+For a reusable function that returns an Effect, use `Effect.fn("name")`,
+which adds a tracing span and a better stack trace, or
+`Effect.fnUntraced` on hot paths and in library code. Do not write a
+function whose only body is `return Effect.gen(...)`. Add behavior such
+as recovery or log annotations as extra arguments to `Effect.fn`, not
+with `.pipe` on its result. Declare the return type with
+`Effect.fn.Return<A, E, R>` when the inferred one is not what you mean.
 
 ## Argument shape: dual, and no uniform currying
 
@@ -366,10 +430,10 @@ that needs a service the runtime does not build fails to compile at the
 call site. `Effect.runPromise` takes only effects with `R = never`, so
 in application code outside the entrypoint a call to it either reaches
 no services or provides them ad hoc, and both are wrong. Tests are the
-exception: there, providing a substitute Layer is the point. For a process whose whole life is
-one program, `Layer.launch` or the platform's `runMain` is the
-entrypoint instead. Dispose the runtime with `runtime.dispose()` on
-shutdown so finalizers run.
+exception: there, providing a substitute Layer is the point. For a
+process whose whole life is one program, `Layer.launch` or the
+platform's `runMain` is the entrypoint instead. Dispose the runtime with
+`runtime.dispose()` on shutdown so finalizers run.
 
 In a decision-core application, these services, their Layers and the
 runtime belong to the Runtime layer and the Program wiring. Domain and
@@ -421,8 +485,8 @@ is back in a file nobody reviewed with it in mind. For each rule above
 that a machine can check, add a test that fails the build:
 
 - Bans (sync decoders, `getOrThrow`, `Effect.promise`, `instanceof` on
-  errors, reads of `_tag`, `JSON.parse`): an ESLint rule or a test that walks the
-  TypeScript syntax tree, not a text search. A text search misses
+  errors, reads of `_tag`, `JSON.parse`): an ESLint rule or a test that
+  walks the TypeScript syntax tree, not a text search. A text search misses
   aliased imports and matches inside comments.
 - Global doubles: fail on `vi.stubGlobal`, `vi.spyOn(globalThis,
   ...)` and assignment to a global anywhere except the one adapter's own

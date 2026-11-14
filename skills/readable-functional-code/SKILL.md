@@ -1,6 +1,6 @@
 ---
 name: readable-functional-code
-description: Rules for writing functional code that reads top-down and can be tested a piece at a time, in PureScript or Haskell, with a reference for TypeScript written with Effect. Covers where over let-in, named transformations and named lambdas, branches that call named functions, maybe and either over two-arm matches, named numbers, per-declaration complexity budgets, file length and line width, module order, a denylist of abbreviations, tail recursion, range bounds, and how docstrings and comments are written. Use it whenever writing, refactoring or reviewing PureScript or Haskell, when a function grows past one screen or a branch holds a formula, when briefing an agent to write functional code, when building a lint for any of these rules, and, through its reference file, whenever writing or reviewing TypeScript that uses Effect. These are a house style. In a project with its own conventions, apply them only where the project has adopted them or the user asks.
+description: Rules for writing functional code that reads top-down and can be tested a piece at a time, in PureScript or Haskell, with a reference that applies them to TypeScript. Covers where over let-in, named transformations and named lambdas, branches that call named functions, maybe and either over two-arm matches, named numbers, per-declaration complexity budgets, file length and line width, module order, a denylist of abbreviations, tail recursion, range bounds, and how docstrings and comments are written. Use it whenever writing, refactoring or reviewing PureScript or Haskell, when a function grows past one screen or a branch holds a formula, when briefing an agent to write functional code, and when building a lint for any of these rules. For TypeScript, its typescript.md applies the house style (budgets, file length and width, named steps, arrow functions, no lint-disable comments) in a project that has adopted it; Effect API names and practice are in effect-v4. These are a house style. In a project with its own conventions, apply them only where the project has adopted them or the user asks.
 license: MIT
 ---
 
@@ -13,8 +13,9 @@ from the top down and whose every decision can be tested on its own.
 
 The examples are PureScript, as of purs 0.15. The rules carry over to
 Haskell, with the differences noted where evaluation order matters:
-PureScript evaluates eagerly and Haskell lazily. For TypeScript written
-with Effect, read [effect-ts-idioms.md](effect-ts-idioms.md).
+PureScript evaluates eagerly and Haskell lazily. For TypeScript, read
+[typescript.md](typescript.md); for Effect's API, use the effect-v4
+skill.
 
 These rules are a house style. Where a project has adopted them, or the
 user asks for them, they govern. In a project with other conventions,
