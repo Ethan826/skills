@@ -223,6 +223,33 @@ CASES = {
         None, lambda r: edit_anchors(r, lambda d: d["declined"].append(
             {"anchor": "nobody", "to": "1.0.0", "reason": "No."})),
         "SCHEMA", "declined"),
+    "declined_fork_to_not_short_sha": (
+        lambda r: edit_anchors(r, lambda d: d["declined"].append(
+            {"anchor": "forky", "to": "22f0b46", "reason": "No."})),
+        lambda r: edit_anchors(r, lambda d: d["declined"][-1].update(
+            to="22f0b4612")),
+        "SCHEMA", "declined"),
+    "declined_vendored_to_uppercase": (
+        lambda r: edit_anchors(r, lambda d: d["declined"].append(
+            {"anchor": "vendy", "to": "225a6f3", "reason": "No."})),
+        lambda r: edit_anchors(r, lambda d: d["declined"][-1].update(
+            to="225A6F3")),
+        "SCHEMA", "declined"),
+    "declined_installed_to_version": (
+        lambda r: (add_installed(r), edit_anchors(
+            r, lambda d: d["declined"].append(
+                {"anchor": "installed/elsewhere", "to": "76a98a2",
+                 "reason": "No."}))),
+        lambda r: edit_anchors(r, lambda d: d["declined"][-1].update(
+            to="v1.2.3")),
+        "SCHEMA", "declined"),
+    "declined_tool_to_not_semver": (
+        lambda r: edit_anchors(r, lambda d: d["declined"].append(
+            {"anchor": "tooly/widget", "to": "4.2.0-beta.1",
+             "reason": "No."})),
+        lambda r: edit_anchors(r, lambda d: d["declined"][-1].update(
+            to="v4.2.0")),
+        "SCHEMA", "declined"),
     "directory_without_skill_md": (
         None, lambda r: write(r, "skills/stray/README.md", "# Stray\n"),
         "NOT_A_SKILL_DIR", "stray"),

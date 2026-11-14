@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "expectedCases": 42,
   "cases": [
     {
       "name": "reexport-individual",

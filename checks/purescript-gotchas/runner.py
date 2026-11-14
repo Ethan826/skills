@@ -66,11 +66,20 @@ def load_cases(path: Path) -> list:
     except (OSError, ValueError) as error:
         raise CheckError(f"{path}: cannot read: {error}")
     if not isinstance(data, dict) or data.get("version") != 1 or \
-            not isinstance(data.get("cases"), list):
-        raise CheckError(f"{path}: want {{\"version\": 1, \"cases\": [...]}}")
+            not isinstance(data.get("cases"), list) or \
+            set(data) != {"version", "expectedCases", "cases"}:
+        raise CheckError(f"{path}: want {{\"version\": 1, \"expectedCases\""
+                         f": N, \"cases\": [...]}}")
     cases = data["cases"]
     if not cases:
         raise CheckError(f"{path}: no cases")
+    # The count is pinned: a case removed together with its directory
+    # still passes the inventory check below, so only this catches it.
+    # Change expectedCases only with the owner's approval.
+    expected = data["expectedCases"]
+    if type(expected) is not int or len(cases) != expected:
+        raise CheckError(f"{path}: {len(cases)} cases, expectedCases says "
+                         f"{expected!r}")
     names = []
     for item in cases:
         if not isinstance(item, dict):

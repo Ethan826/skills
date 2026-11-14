@@ -6,12 +6,14 @@ on:
       - "skills/purescript-gotchas/**"
       - "checks/purescript-gotchas/**"
       - "anchors.json"
+      - "scripts/anchors_gate.py"
       - ".github/workflows/check-purescript-gotchas.yml"
   pull_request:
     paths:
       - "skills/purescript-gotchas/**"
       - "checks/purescript-gotchas/**"
       - "anchors.json"
+      - "scripts/anchors_gate.py"
       - ".github/workflows/check-purescript-gotchas.yml"
 
 permissions:

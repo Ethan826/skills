@@ -37,7 +37,10 @@ print the work directory's size at the end.
 ## Cases
 
 `cases.json` lists one entry per directory under `cases/`. If a directory
-has no entry, or an entry has no directory, the check fails. Each entry
+has no entry, or an entry has no directory, the check fails. The case
+count is pinned as `expectedCases` in `cases.json`, so removing a case
+along with its directory also fails; change that number only with the
+owner's approval. Each entry
 gives the skill section and the claim it checks. It lists the exact
 errors and warnings expected, each with its code and module, and adds a
 line and message fragments where those matter. A case passes only when the

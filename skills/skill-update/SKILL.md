@@ -1,6 +1,6 @@
 ---
 name: skill-update
-description: Carries out approved skill updates in a repository whose skills are anchored in anchors.json (upstream forks, vendored files, tool versions, unmodified installs), and registers new skills there. Use it whenever asked to "do the approved skill updates", to work through ticked items in the skill-drift issue, to port upstream changes into a fork, to bump a version a skill was checked against, or to move a pinned upstream commit, a NOTICE.md or a THIRD_PARTY.md row. Use it too whenever someone asks to add, write, fork or install a skill, or the gate reports UNREGISTERED, because every new skill must be registered before it lands.
+description: Carries out approved skill updates in a repository whose skills are anchored in anchors.json (upstream forks, vendored files, tool versions, unmodified installs), and registers new skills there. Use it whenever asked to "do the approved skill updates", to work through ticked items in the skill-drift issue, to port upstream changes into a fork, to bump a version a skill was checked against, or to move a pinned upstream commit, a NOTICE.md or a THIRD_PARTY.md row. Use it too whenever someone asks to add, write, fork or install a skill in a repository that keeps an anchors.json, or the gate reports UNREGISTERED, because every new skill there must be registered before it lands.
 license: MIT
 ---
 
@@ -329,8 +329,9 @@ owner's reason.
 - To decline an upstream skill, add `{"repo", "path", "reason"}`, as in
   New skills. It stays declined until the entry is removed.
 
-Run the gate after editing `declined`; it checks the shape and that
-`anchor` names an existing entry. Land declines like any other change.
+Run the gate after editing `declined`; it checks the shape, that
+`anchor` names an existing entry, and that `to` has the form detection
+writes (7 lowercase hex, or SemVer for a tool). Land declines like any other change.
 
 ## Finishing
 

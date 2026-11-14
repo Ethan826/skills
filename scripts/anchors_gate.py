@@ -32,7 +32,9 @@ Rules:
    the entry's version as its first token (VERSIONS_MISMATCH); every
    Versions row has a tool entry (VERSIONS_UNANCHORED).
 6. Schema: required and allowed keys by kind, 40-hex commits, unique ids
-   (SCHEMA, DUPLICATE_ID).
+   (SCHEMA, DUPLICATE_ID). A decline naming an anchor states `to` in the
+   form detection writes: 7 lowercase hex for fork, vendored and
+   installed anchors, a SemVer version for tool anchors (SCHEMA).
 7. Every workflow line whose first token is "uses:" or "- uses:" names an
    action pinned to a 40-hex commit or a local ./ path (UNPINNED_ACTION).
    This is a text check that over-matches within .github/workflows: a
@@ -86,6 +88,7 @@ DECLINE_SHAPES = ({"repo", "path", "reason"}, {"anchor", "to", "reason"})
 
 HEX40 = re.compile(r"[0-9a-f]{40}")
 SHORT_SHA = re.compile(r"[0-9a-f]{7,40}")
+SHORT_SHA7 = re.compile(r"[0-9a-f]{7}")
 REPO = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 SKILL_NAME = re.compile(r"[a-z0-9][a-z0-9-]*")
 RELEASE = re.compile(r"v\d+\.\d+\.\d+")
@@ -425,12 +428,12 @@ def load_anchors(path: Path) -> Anchors:
             not isinstance(data["declined"], list):
         raise GateError("SCHEMA", "anchors.json",
                         "anchors and declined must be lists")
-    seen = set()
+    seen = {}
     for entry in data["anchors"]:
         validate_anchor(entry)
         if entry["id"] in seen:
             raise GateError("DUPLICATE_ID", entry["id"], "id used twice")
-        seen.add(entry["id"])
+        seen[entry["id"]] = entry["kind"]
     for decline in data["declined"]:
         if not isinstance(decline, dict) or \
                 set(decline) not in DECLINE_SHAPES or \
@@ -441,6 +444,18 @@ def load_anchors(path: Path) -> Anchors:
         if "anchor" in decline and decline["anchor"] not in seen:
             raise GateError("SCHEMA", "declined",
                             f"names unknown anchor {decline['anchor']!r}")
+        if "anchor" in decline:
+            # Detection writes to as 7 lowercase hex (fork, vendored,
+            # installed) or a SemVer version (tool); a decline in any other
+            # form never matches an item, so it would silently decline
+            # nothing.
+            kind = seen[decline["anchor"]]
+            pattern = VERSION if kind == "tool" else SHORT_SHA7
+            if not pattern.fullmatch(decline["to"]):
+                raise GateError("SCHEMA", "declined",
+                                f"{decline['anchor']!r}: to "
+                                f"{decline['to']!r} must match "
+                                f"{pattern.pattern} for a {kind} anchor")
     return Anchors(anchors=data["anchors"], declined=data["declined"])
 
 

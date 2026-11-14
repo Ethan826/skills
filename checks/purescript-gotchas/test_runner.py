@@ -10,6 +10,8 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -177,7 +179,8 @@ class Manifest(unittest.TestCase):
         for name in dirs:
             (root / "cases" / name).mkdir()
             (root / "cases" / name / "Main.purs").write_text("module M where")
-        manifest = {"version": 1, "cases": [case(name=n) for n in names]}
+        manifest = {"version": 1, "expectedCases": len(names),
+                    "cases": [case(name=n) for n in names]}
         (root / "cases.json").write_text(json.dumps(manifest))
         return root
 
@@ -212,6 +215,28 @@ class Manifest(unittest.TestCase):
 
     def test_duplicate_name_fails(self):
         root = self.make_tree(["a", "a"], ["a"])
+        with self.assertRaises(runner.CheckError):
+            runner.load_cases(root / "cases.json")
+
+    def test_deleting_a_case_and_its_directory_fails(self):
+        """The case count is pinned in cases.json, so removing a case
+        with its directory (the inventory still agrees) fails."""
+        root = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: subprocess.run(["rm", "-rf", str(root)]))
+        shutil.copytree(HERE / "cases", root / "cases")
+        data = json.loads((HERE / "cases.json").read_text(encoding="utf-8"))
+        gone = data["cases"].pop()
+        shutil.rmtree(root / "cases" / gone["name"])
+        (root / "cases.json").write_text(json.dumps(data))
+        with self.assertRaises(runner.CheckError) as raised:
+            runner.load_cases(root / "cases.json")
+        self.assertIn("expectedCases", str(raised.exception))
+
+    def test_expected_count_must_be_stated(self):
+        root = self.make_tree(["a"], ["a"])
+        data = json.loads((root / "cases.json").read_text())
+        del data["expectedCases"]
+        (root / "cases.json").write_text(json.dumps(data))
         with self.assertRaises(runner.CheckError):
             runner.load_cases(root / "cases.json")
 
@@ -323,6 +348,39 @@ class RunAssertions(unittest.TestCase):
     def test_unknown_assertion_fails(self):
         with self.assertRaises(runner.CheckError):
             runner.check_run_output({"assert": "vibes"}, {})
+
+
+class WorkflowPaths(unittest.TestCase):
+    """The workflow runs when anything the runner reads changes. A
+    line-level reading: each repository module the runner imports from
+    scripts/ must be listed under both push and pull_request paths.
+    Blind spot: files the runner reads by other means (SKILL.md,
+    anchors.json) are listed by hand."""
+
+    WORKFLOW = REPO / ".github" / "workflows" / "check-purescript-gotchas.yml"
+
+    def path_lists(self):
+        lists, current = {}, None
+        for line in self.WORKFLOW.read_text(encoding="utf-8").split("\n"):
+            if line in ("  push:", "  pull_request:"):
+                current = lists.setdefault(line.strip(" :"), [])
+            elif current is not None and line.startswith("      - "):
+                current.append(line.strip()[2:].strip('"'))
+            elif current is not None and not line.startswith("    "):
+                current = None
+        return lists
+
+    def test_imported_scripts_trigger_the_workflow(self):
+        source = (HERE / "runner.py").read_text(encoding="utf-8")
+        modules = re.findall(r"^\s*from (\w+) import", source, re.M)
+        local = [f"scripts/{m}.py" for m in modules
+                 if (REPO / "scripts" / f"{m}.py").exists()]
+        self.assertIn("scripts/anchors_gate.py", local)
+        lists = self.path_lists()
+        self.assertEqual(set(lists), {"push", "pull_request"})
+        for event, paths in lists.items():
+            for path in local:
+                self.assertIn(path, paths, event)
 
 
 @unittest.skipIf(os.environ.get("SKIP_MUTANT"), "inside a mutant run")
