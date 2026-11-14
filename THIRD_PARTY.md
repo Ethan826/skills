@@ -19,7 +19,7 @@ single skill copies only that skill's folder.
 | receiving-review | obra/superpowers `receiving-code-review` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | landing-a-branch | obra/superpowers `finishing-a-development-branch` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | isolated-workspaces | obra/superpowers `using-git-worktrees` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
-| humanized-prose-review (`references/humanizer-3.1.0.md`) | blader/humanizer 3.1.0 | MIT, (c) 2025 Siqi Chen |
+| humanized-prose-review (`references/humanizer-4.0.0.md`) | blader/humanizer 4.0.0 | MIT, (c) 2025 Siqi Chen |
 
 Not vendored, and so carrying no obligations here: Wikipedia's "Signs of
 AI writing" (CC BY-SA 4.0), which is credited by link only and from which
