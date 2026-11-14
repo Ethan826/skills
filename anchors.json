@@ -1,7 +1,7 @@
 {
   "version": 1,
   "anchors": [
-    {"id": "design-brainstorming", "skill": "design-brainstorming", "kind": "fork", "repo": "obra/superpowers", "path": "skills/brainstorming", "commit": "2ce8aa15d05bd57213e6f746f953aafb7ded7a8b", "release": "v7.0.1"},
+    {"id": "design-brainstorming", "skill": "design-brainstorming", "kind": "fork", "repo": "obra/superpowers", "path": "skills/brainstorming", "commit": "22f0b463e7a5e579904dd6211a520321035526f7", "release": "v7.0.2"},
     {"id": "implementation-planning", "skill": "implementation-planning", "kind": "fork", "repo": "obra/superpowers", "path": "skills/writing-plans", "commit": "2ce8aa15d05bd57213e6f746f953aafb7ded7a8b", "release": "v7.0.1"},
     {"id": "verify-before-claiming", "skill": "verify-before-claiming", "kind": "fork", "repo": "obra/superpowers", "path": "skills/verification-before-completion", "commit": "2ce8aa15d05bd57213e6f746f953aafb7ded7a8b", "release": "v7.0.1"},
     {"id": "root-cause-debugging", "skill": "root-cause-debugging", "kind": "fork", "repo": "obra/superpowers", "path": "skills/systematic-debugging", "commit": "2ce8aa15d05bd57213e6f746f953aafb7ded7a8b", "release": "v7.0.1"},

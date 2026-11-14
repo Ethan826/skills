@@ -37,6 +37,24 @@ Before you start implementing, you must, in order:
 5. Get their approval of that doc.
 6. Invoke the implementation-planning skill.
 
+One shortcut changes how steps 2, 3 and 5 happen, and nothing else.
+When nothing is open as you write your first message, the work is a
+small change with one sensible way to build it, and the design proposes
+no new or materially changed procedure, your first message carries the
+approach (the one way, and why the others don't fit) and the short
+design. Their approval of that message is their pick and their approval
+of the design; you then write the short design doc as approved (see
+Your First Message). The rest still holds:
+
+- Step 1 comes first, before that message. If the ticket's premise
+  didn't hold, something is open and the shortcut is off.
+- Step 4 rules the shortcut out. A design that needs adversarial review
+  goes through the steps in order, with approaches in a message of their
+  own.
+- The short design doc still has its Approaches part, and its
+  Provenance part when there are algorithmic components.
+- Step 6 follows as usual.
+
 Two things aren't implementing: a spike they said yes to (see Spike to
 feel things out), and doing what they asked once they've opted out of
 the questions.
@@ -48,7 +66,8 @@ a handoff, files they pointed at, earlier conversation), dig in before your
 first message. Read what they referred to and the code or material it
 connects to, and keep reading until you can explain how the relevant
 parts work today and what this change would touch. Never ask what the
-project or their context already answers.
+project or their context already answers, or reopen what they've
+already decided.
 
 ## A Ticket's Premise Is a Claim
 
@@ -78,10 +97,22 @@ Move the work forward with one of these:
   that would change what they're asking for or how it has to be built,
   like a constraint, a conflict or a cheaper path, say so plainly. How to
   build it comes later, once you understand what they want (see Lay out
-  the approaches). End with one line inviting corrections, then one
-  question about what they want: the thing their request leaves open
-  whose answer would most change what gets built. Specs are often
-  incomplete, so confirm before you build on one.
+  the approaches). End with one line inviting corrections. Then, if they
+  haven't told you why they want it, even if you can guess, ask about
+  that: one open question in their own terms, with nothing to pick from.
+  If they have told you, and their request and the project leave open
+  something whose answer would change what gets built, ask about the one
+  that would change it most; when its choices can be named, sketch each
+  concretely, with what it trades off and which you'd pick. If nothing
+  like that is open, the work is a small change with one sensible way
+  to build it, and the design proposes no new or materially changed
+  procedure, end with the short design itself: the approach, a line on
+  why the others don't fit, and the design in a few lines. Then ask them
+  to approve it. Their approval covers the approach and the design:
+  write the short design doc as approved, where the design goes (see
+  Where it goes), and go on to the plan. Specs are often incomplete, so
+  confirm before
+  you build on one.
 - **They haven't:** one open question, in their own terms, about the
   biggest thing their request leaves unsettled. Say why you're asking:
   what the answer would change about what you build. For "a website for
@@ -93,10 +124,9 @@ How the message ends depends on whether their message asked for
 brainstorming:
 
 - **They asked for it** (by name, by invoking it, or by asking for a
-  design discussion): end with your question. They want this
-  conversation.
-- **They didn't:** they may not want a conversation at all. After your
-  question, add a light, one-line offer to just get going instead, like
+  design discussion): end there. They want this conversation.
+- **They didn't:** they may not want a conversation at all. End with a
+  light, one-line offer to just get going instead, like
   "Or if you'd rather I just dive in, say so." If they take you up on
   it, this skill is done: state any significant how-it-gets-made choice
   (platform, language, medium) in one plain line, then do what they
@@ -106,25 +136,30 @@ Put nothing else in that first message.
 
 ## The Conversation
 
-Each message ends with one question: a single sentence with no list of
-example answers hanging off it. Use plain language, pitched just a little
-above where your human partner is, in their vocabulary and without
-process jargon. Lead with what matters. When you report what you found,
+Ask a question only when the answer would change what gets built and
+neither the request nor the project answers it. Otherwise, state your
+call and your reason as a proposal they can correct, and move the work
+forward. Process steps are always your calls: writing things up, where
+files go, looking further, how to show something. Do them and say so.
+Ask one at a time. Use plain language, pitched just a little above where
+your human partner is, in their vocabulary and without process jargon. Lead with what matters. When you report what you found,
 give them the most important findings and offer the rest. You never need
 to quote this skill to them.
 
-**Get them describing.** Open questions come first. Their own words carry
-intent that your options can't. Offer a short menu only when they're
-stuck. When they say "just guess" or "what do you think?", propose
-something concrete.
+**Get them describing.** Until you know why they want it, ask open
+questions, with no example answers attached. Their own words carry
+intent that your options can't. Once you know why, when a decision has
+choices you can name, sketch each concretely, with what it trades off
+and which you'd pick. When they say "just guess" or "what do you think?",
+propose something concrete.
 
 **How it gets made.** Every project rests on choices about medium, tools,
 materials and resources: the platform, programming language and
-libraries for an app; the medium for a piece of art. Find out early which
-of those choices they want to make, which they're handing to you, and what
-they already have to work with. Someone with strong views or skills will
-want to talk it through. Someone counting on you needs sensible defaults,
-said in plain words. When there's existing work, build on what it already
+libraries for an app; the medium for a piece of art. Read from how they
+talk which of those choices they want to make. Someone who raises the how
+or asks about trade-offs wants the options with your pick. Someone who
+talks about outcomes is handing you the how: make those calls and state
+each in a line. When there's existing work, build on what it already
 uses. Any choice you make goes in the design as your call, never as
 something they agreed to.
 
@@ -149,21 +184,21 @@ already plain, say what you're hoping to learn or what the answer would
 change. A proposal they can correct, with your reason for it, often
 beats a question.
 
-**Offer recon.** Once you have a bit of grounding and looking further
-would help, offer to go look: deeper into their codebase or project,
-their own files and data, or the web. Say what you'd look for. They
-decide whether you go.
+**Do recon.** Once you have a bit of grounding and looking further
+would help, go look: deeper into their codebase or project, their own
+files and data, or the web. Say what you looked for and what you found.
 
 **Lay out the approaches.** Once you understand what they want, and
 before you write anything up, put the ways of building it in a message
 of its own. Come up with several real alternatives and drop the weak
 ones, including any that work against why they want it and any the
-existing work rules out. Present the two or three that remain, grounding
-each in what the project actually does and saying what it trades off.
-Recommend one and say why, then ask which way they want to go. When
-there's genuinely one sensible way, say so and explain why the others
-don't fit. This is for how it gets built; for what they want, get them
-describing first.
+existing work rules out. Sketch the two or three that remain concretely
+enough to picture, grounded in what the project actually does, with what
+each trades off. Recommend one and say why, then ask which way they want
+to go. When there's genuinely one sensible way, say so in that message
+and explain why the others don't fit; the design comes in the next one.
+This is for how it gets built; for what they want, get them describing
+first.
 
 **Standard parts first.** When the design has algorithmic components
 (anything that decides, solves, searches, merges, schedules, resolves or
@@ -183,6 +218,9 @@ out of the way. Spikes get no tests or minimal ones, aren't bulletproof,
 and skip the plan, implementation and review process. Bring what the
 spike taught you back into the conversation.
 
+**Show, don't tell.** Whenever seeing would help more than reading,
+sketch it in text: a few lines of what they'd see.
+
 ## Play It Back
 
 Play back as you go. As soon as you understand one part well enough to
@@ -194,6 +232,10 @@ through the whole conversation; the last chunk covers whatever is left.
 Only what they said goes in as theirs. Anything you filled in goes in
 as your proposal, with your reason. End each chunk by asking what's wrong
 or missing.
+
+Before you send a chunk, check it: does it describe something they'll
+look at, like a page, a screen, a schedule or a printout? If so, put a
+text sketch next to the description.
 
 ## Size the Work
 
@@ -251,7 +293,8 @@ equivalent instruction file) for a `Plans:` line.
   will be a working file at `.superpowers/plans/<issue>-<slug>.md`, kept
   out of git; implementation-planning sets that up.
 
-Outside a software repo, ask. Your human partner's preferences override
+Outside a software repo, pick a sensible place and say where. Your
+human partner's preferences override
 all of these.
 
 **Builder check** (for a project): dispatch a fresh subagent with
@@ -308,7 +351,7 @@ implementation-planning and no other skill.
 |---------|---------|
 | "I'll offer a menu of what they might want" | Options steer. Ask them to describe it first. |
 | "I'll fill in sensible defaults" | Good. Say them out loud. A default they never heard is one they couldn't reject. |
-| "I've answered their questions, so I'll write the doc" | Lay out the approaches first, in a message of their own. |
+| "I've answered their questions, so I'll write the doc" | Lay out the approaches first, in a message of their own (or, on the shortcut for a small change with nothing open, in your first message's short design). |
 | "I should explain the process first" | Ask your question. The process shows itself. |
 | "The ticket says what's causing it, so I'll design that fix" | The cause in a ticket is a claim. Observe the mechanism first. |
 | "My own rule for this is simple and the tests pass" | Put the standard mechanism beside it, with its cost. The standard one is the default. |
