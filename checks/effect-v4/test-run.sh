@@ -59,7 +59,7 @@ expect() {
   fi
 }
 
-ok_re='^effect-v4 check: OK \(9 \+ 2 blocks, 7 must-fail errors, runtime claim holds\)$'
+ok_re='^effect-v4 check: OK \(10 \+ 2 blocks, 8 must-fail errors, runtime claim holds\)$'
 skill=skills/effect-v4/SKILL.md
 tsmd=skills/readable-functional-code/typescript.md
 
@@ -81,10 +81,10 @@ expect fail 'blocks/effect-v4-01\.ts\([0-9]+,[0-9]+\): error TS2339' \
   "v3 name in block 01" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup block-removed
-open=$(ts_fence "$r/$skill" 9)
+open=$(ts_fence "$r/$skill" 10)
 close=$(awk -v s="$open" 'NR > s && /^```$/ { print NR; exit }' "$r/$skill")
 sed -i.bak "${open},${close}d" "$r/$skill"
-expect fail 'expected 9 effect-v4 blocks, found 8' \
+expect fail 'expected 10 effect-v4 blocks, found 9' \
   "last effect-v4 block removed" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup ts-md-block-removed
@@ -112,17 +112,17 @@ expect fail 'unterminated fence' \
   "unterminated fence" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup orphan-prelude
-cp "$c/preludes/effect-v4-09.ts" "$c/preludes/effect-v4-10.ts"
-expect fail 'orphan prelude: preludes/effect-v4-10\.ts' \
+cp "$c/preludes/effect-v4-10.ts" "$c/preludes/effect-v4-11.ts"
+expect fail 'orphan prelude: preludes/effect-v4-11\.ts' \
   "orphan prelude" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup mustfail-fixed
 sed -i.bak 's/^Effect\.catchAll$/Effect.catch/' "$c/mustfail-raw/must-fail.ts"
-expect fail 'expected 7 must-fail errors, found 6' \
+expect fail 'expected 8 must-fail errors, found 7' \
   "must-fail control stops failing" "$c/run.sh" --repo "$r" --deps "$scratch/deps"
 
 setup mustfail-moved
-# Same seven errors, each one line lower: a count-only check would pass.
+# Same eight errors, each one line lower: a count-only check would pass.
 awk '{ print } /^import / { print "" }' "$c/mustfail-raw/must-fail.ts" >"$c/mf.ts"
 mv "$c/mf.ts" "$c/mustfail-raw/must-fail.ts"
 expect fail 'must-fail errors differ' \

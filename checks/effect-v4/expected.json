@@ -1,6 +1,6 @@
 {
-  "effect-v4": 9,
+  "effect-v4": 10,
   "typescript": 2,
-  "mustFailErrors": 7,
-  "mustFailAt": ["10:TS2339", "11:TS2339", "12:TS2339", "13:TS2339", "14:TS2739", "14:TS2345", "16:TS2345"]
+  "mustFailErrors": 8,
+  "mustFailAt": ["10:TS2339", "11:TS2339", "12:TS2339", "13:TS2339", "14:TS2739", "14:TS2345", "16:TS2345", "23:TS2741"]
 }

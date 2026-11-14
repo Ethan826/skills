@@ -29,6 +29,11 @@ how to make the enforcing tests in the last section trustworthy.
 | effect | 4.1.4 |
 | @effect/vitest | 4.1.4 |
 | typescript | 7.0.2 |
+| eslint | 9.39.2 |
+| @eslint/js | 9.39.2 |
+| typescript-eslint | 8.54.0 |
+| eslint-plugin-functional | 9.0.4 |
+| typescript (lint) | 5.9.3 |
 
 Every API name below was checked against effect 4.1.1 by reading
 the package's own source (`node_modules/effect/src`) and the
@@ -42,6 +47,13 @@ table of v3 names below. The `@effect/vitest` names were checked by
 compiling a use of each against `@effect/vitest` 4.1.4. The names in the
 native-method and null-check rows of "Reach for the combinator" were
 checked against the export statements of 4.1.4 source.
+
+The eslint, @eslint/js, typescript-eslint, eslint-plugin-functional and
+typescript (lint) rows are the versions the reference lint config in
+[`lint/`](lint/README.md) was checked with. typescript-eslint 8.54.0
+accepts TypeScript below 6.0 only, so the lint check pins TypeScript
+5.9.3 while the code blocks compile with 7.0.2. The names in "Closed
+vocabularies" were checked against the 4.1.4 source.
 
 Before relying on a name here, confirm it in the version you have
 installed: search `node_modules/effect/src/<Module>.ts` for
@@ -303,6 +315,51 @@ facade, and decode back to `Option` on the way in with
 `Schema.OptionFromNullOr` or `Schema.OptionFromUndefinedOr`
 (decision-core-architecture, "The facade").
 
+## Closed vocabularies
+
+A closed vocabulary is a fixed set of values the program branches on:
+clients, roles, kinds, reasons, the tags of a wire format. Define it
+once, as a named `as const` object, in the module that
+decision-core-architecture assigns it to (its section "Closed
+vocabularies"). Derive the schema, the record keys and the defaults
+from that object. No other file writes the values again.
+
+```ts
+import { Record, Schema } from "effect"
+
+export const Channels = { Email: "email", Sms: "sms" } as const
+export const Channel = Schema.Literals(Record.values(Channels))
+export type Channel = typeof Channel.Type
+
+export const Priorities = { Low: "low", Urgent: "urgent" } as const
+export const Priority = Schema.Literals(Record.values(Priorities))
+
+export const ChannelPriorities = Schema.Record(Channel, Priority)
+export type ChannelPriorities = typeof ChannelPriorities.Type
+
+export const defaultPriorities: ChannelPriorities = {
+  [Channels.Email]: Priorities.Low,
+  [Channels.Sms]: Priorities.Urgent,
+}
+
+const levels = [1, 2, 3] as const
+export const Level = Schema.Literals(levels)
+```
+
+`Record.values` lists the object's values. A tuple marked `as const`,
+such as `levels`, goes to `Schema.Literals` as it is; use one when no
+code refers to a single member. `Schema.Record` with the vocabulary's
+schema as its key gives a type with one required field per member, so a
+default that leaves a member out does not compile. Refer to a member as
+`Channels.Email`, including as a computed key, and pass it to
+`Schema.Literal` the same way: `Schema.Literal(Channels.Email)`.
+
+Do not write `Schema.Literals(["email", "sms"])` or
+`Schema.Literal("email")`. Each inline list defines the vocabulary again,
+and the copies drift apart. The reference lint config bans both forms,
+and bans a vocabulary's values as string literals outside the module
+that defines it (see "Enforce the rules with tests").
+
 ## Match on tags
 
 Read a tagged union with `Match`, which checks that every case is
@@ -527,6 +584,9 @@ that a machine can check, add a test that fails the build:
   checked against the table in "Reach for the combinator" row by row. One
   that bans only `array[0]`, `.push` and `.length` lets every native
   `.filter` and `.map` through.
+- Closed vocabularies: inline literals in `Schema.Literals` and
+  `Schema.Literal`, and a vocabulary's values written as string
+  literals outside its module.
 - Global doubles: fail on `vi.stubGlobal`, `vi.spyOn(globalThis,
   ...)` and assignment to a global anywhere except the one adapter's own
   test. Check for the act in all three spellings.
@@ -538,6 +598,15 @@ that a machine can check, add a test that fails the build:
 - A mocked module that does not exist: fail on a `vi.mock` whose
   specifier resolves to nothing, which substitutes nothing and stays
   green.
+
+[`lint/eslint.rules.js`](lint/eslint.rules.js) is a reference ESLint
+config for the first three items, together with the layer imports of
+decision-core-architecture. It does not cover the last three. A project
+copies it and passes its own layer table, core layers, vocabularies and
+import aliases to `buildConfig`; [`lint/README.md`](lint/README.md) gives
+the options and the steps. `checks/effect-v4-lint` in the skills
+repository lints must-fail fixtures with it at the versions in the
+Versions table. The top of the file lists each rule's blind spots.
 
 Every exemption from such a gate sits in an allowlist next to the gate,
 with the argument for it. When the allowlist empties, keep the gate as a

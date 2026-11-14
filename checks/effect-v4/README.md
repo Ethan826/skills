@@ -22,7 +22,7 @@ removes the directory on exit. A run uses about 260 MB at peak. It fails when:
 - the block counts differ from `expected.json`, or a prelude has no block;
 - any block, with its prelude, or any file in `controls/` fails `tsc`;
 - `mustfail-raw/must-fail.ts` (v3 names and other code the skill says does not
-  compile) gives any errors other than the seven listed in `expected.json`, by
+  compile) gives any errors other than the eight listed in `expected.json`, by
   line and code;
 - `runtime/promise-rejection.ts` does not print `CLAIM HOLDS`.
 

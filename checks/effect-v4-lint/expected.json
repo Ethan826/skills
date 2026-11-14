@@ -1,0 +1,87 @@
+{
+  "comment": "Each must-fail fixture must report every listed rule with a message containing the listed text; each clean control must report nothing; every .ts file under fixtures/src and fixtures/test must be listed exactly once. The native-method lists are written out here on purpose, apart from eslint.rules.js, so dropping a method from the config fails the check.",
+  "nativeMethods": {
+    "src/domain/native-array-iterate.ts": ["map", "filter", "some", "every", "find", "findIndex", "findLast", "findLastIndex", "reduce", "reduceRight", "flatMap", "flat", "forEach"],
+    "src/features/native-array-access.ts": ["includes", "indexOf", "lastIndexOf", "slice", "concat", "join", "sort", "toSorted", "reverse", "toReversed", "at", "fill", "splice", "toSpliced"],
+    "src/format/native-string.ts": ["split", "trim", "trimStart", "trimEnd", "toLowerCase", "toUpperCase", "startsWith", "endsWith", "replace", "replaceAll", "padStart", "padEnd", "substring", "charAt", "repeat", "localeCompare", "normalize"],
+    "src/domain/native-evasions.ts": ["map", "filter"]
+  },
+  "mustFail": {
+    "src/domain/native-object.ts": [
+      ["no-restricted-properties", "'Object.keys' is restricted"],
+      ["no-restricted-properties", "'Object.entries' is restricted"]
+    ],
+    "src/domain/native-set.ts": [["no-restricted-syntax", "Native Set and Map"]],
+    "src/domain/eq-undefined.ts": [["no-restricted-syntax", "Comparing with undefined"]],
+    "src/domain/ne-undefined.ts": [["no-restricted-syntax", "Comparing with undefined"]],
+    "src/domain/eq-null.ts": [["no-restricted-syntax", "Comparing with null"]],
+    "src/domain/ne-null.ts": [["no-restricted-syntax", "Comparing with null"]],
+    "src/domain/loose-null.ts": [["no-restricted-syntax", "Comparing with null"]],
+    "src/domain/typeof-undefined.ts": [["no-restricted-syntax", "typeof comparisons"]],
+    "src/domain/nullish-coalesce.ts": [["no-restricted-syntax", "?? on a nullable"]],
+    "src/features/optional-chain.ts": [["no-restricted-syntax", "Optional chaining"]],
+    "src/domain/cast.ts": [["@typescript-eslint/consistent-type-assertions", "Do not use any type assertions"]],
+    "src/domain/nonnull.ts": [["@typescript-eslint/no-non-null-assertion", "Forbidden non-null assertion"]],
+    "src/domain/throw.ts": [
+      ["functional/no-throw-statements", "throw"],
+      ["no-restricted-syntax", "Use Effect.fail with a tagged error, not throw"]
+    ],
+    "src/domain/try.ts": [["no-restricted-syntax", "not try/catch"]],
+    "src/domain/loop.ts": [
+      ["functional/no-loop-statements", "loop"],
+      ["no-restricted-syntax", "not for...of"],
+      ["no-restricted-syntax", "instead of .push()"],
+      ["no-restricted-syntax", "Array.isReadonlyArrayEmpty"]
+    ],
+    "src/domain/while.ts": [
+      ["functional/no-loop-statements", "loop"],
+      ["no-restricted-syntax", "not while"]
+    ],
+    "src/domain/let.ts": [["functional/no-let", "let"]],
+    "src/domain/mutate.ts": [["functional/immutable-data", "Modifying an array is not allowed"]],
+    "src/domain/parse.ts": [["no-restricted-syntax", "JSON.parse and JSON.stringify throw"]],
+    "src/features/async.ts": [
+      ["no-restricted-syntax", "No async function"],
+      ["no-restricted-syntax", "No await"],
+      ["no-restricted-syntax", "No Promise"]
+    ],
+    "src/features/schema-decode.ts": [["no-restricted-syntax", "Schema.decode and the Sync"]],
+    "src/features/schema-sync.ts": [["no-restricted-syntax", "Schema.decode and the Sync"]],
+    "src/features/run.ts": [["no-restricted-syntax", "running them belongs to Program"]],
+    "src/features/function-style.ts": [["func-style", "Expected a function expression"]],
+    "src/domain/import-up.ts": [["no-restricted-imports", "domain may import only nothing"]],
+    "src/domain/import-node.ts": [["no-restricted-imports", "Core layers import no platform module"]],
+    "src/features/import-format.ts": [["no-restricted-imports", "features may import only domain"]],
+    "src/format/import-features.ts": [["no-restricted-imports", "format may import only domain"]],
+    "src/runtime/import-format.ts": [["no-restricted-imports", "runtime may import only domain"]],
+    "src/facade/import-runtime.ts": [["no-restricted-imports", "facade may import only domain, features, format, program"]],
+    "src/domain/literals-inline-array.ts": [["no-restricted-syntax", "Schema.Literals takes a named"]],
+    "src/domain/literals-alias.ts": [["no-restricted-syntax", "Schema.Literals takes a named"]],
+    "src/format/literal-inline.ts": [["no-restricted-syntax", "Schema.Literal takes a named"]],
+    "src/features/bare-names.ts": [
+      ["no-restricted-syntax", "Bare closed-vocabulary string: use Channels from src/domain/channels.ts"],
+      ["no-restricted-syntax", "Bare closed-vocabulary string: use Priorities from src/domain/priorities.ts"]
+    ],
+    "src/format/sources.ts": [["no-restricted-syntax", "Bare closed-vocabulary string: use Channels"]],
+    "test/bare-names.ts": [
+      ["no-restricted-syntax", "use Channels"],
+      ["no-restricted-syntax", "use Priorities"]
+    ],
+    "test/cast.ts": [["@typescript-eslint/consistent-type-assertions", "Do not use any type assertions"]],
+    "test/schema-decode.ts": [["no-restricted-syntax", "Schema.decode and the Sync"]]
+  },
+  "clean": [
+    "src/domain/ok.ts",
+    "src/domain/control.ts",
+    "src/domain/literals-named.ts",
+    "src/domain/channels.ts",
+    "src/domain/priorities.ts",
+    "src/domain/effect-modules.ts",
+    "src/features/names-ok.ts",
+    "src/format/kinds.ts",
+    "src/format/ok.ts",
+    "src/runtime/native-ok.ts",
+    "src/runtime/node-ok.ts",
+    "test/relaxed.ts"
+  ]
+}

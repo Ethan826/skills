@@ -1,7 +1,7 @@
 // Compares tsc's output for tsconfig.mustfail.json with expected.json: the
 // number of `error TS` lines must equal mustFailErrors, and the errors, as
 // "line:code" in mustfail-raw/must-fail.ts, must equal mustFailAt exactly
-// (same multiset). A total alone could stay at 7 while the errors moved.
+// (same multiset). A total alone could stay the same while the errors moved.
 // Usage: bun mustfail.ts <tsc-output> <expected.json>
 import { readFileSync } from "node:fs"
 

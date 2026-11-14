@@ -233,6 +233,22 @@ bundled fixture, the facade) is `unknown` until a schema decodes it. After
 that it is typed and trusted. If code further in wants to check the value's
 shape again, fix the boundary that handed it over.
 
+## Define each closed vocabulary once
+
+A closed vocabulary is a fixed set of values the code branches on:
+clients, roles, kinds, refusal reasons, the tags of a wire format.
+Define it once, as named constants, in Domain. The exception is a
+vocabulary that only one boundary module uses, such as the tags a single
+Format decoder reads; it sits at the top of that module. Schemas, the
+keys of records and structs, and defaults all derive from those
+constants, and no other file writes the values again. A second copy is
+a second definition, and the two drift apart with no error to say so.
+
+Enforce this mechanically where the language allows: ban each
+vocabulary's values as literals outside the module that defines it, and
+ban inline lists of literals where a schema should take the constant.
+For TypeScript with Effect, effect-v4 has a lint config that does both.
+
 ## Round each figure once, in the core
 
 The core returns each figure twice: the exact value, for computation, and a
@@ -251,6 +267,7 @@ include:
 - the import-direction check, and any subtree-privacy check;
 - the facade contract test, which confirms that each declared name exists
   and is the kind of value declared;
+- the closed-vocabulary bans, where the language allows them;
 - a ban on escape hatches in shell and facade code: lint-disable comments,
   type-checker suppressions, type assertions, non-null assertions, skipped
   or focused tests, and calls to partial functions;
@@ -290,3 +307,5 @@ cases a heuristic can follow, write the one that reports every case.
    environment variable, a mode) instead of receiving a different value?
 10. Does any stand-in from a feedback shell appear in the facade or core,
     or lack the issue that will replace it?
+11. Does any file other than a vocabulary's defining module write one of
+    its values?
