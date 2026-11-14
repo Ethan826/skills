@@ -1,7 +1,7 @@
 # Additional tells
 
 These patterns come from an author's corrections of agent-written drafts.
-Humanizer 3.1.0 does not list them. Check for them whichever Humanizer
+Humanizer 4.0.0 does not list them. Check for them whichever Humanizer
 catalog you use. Each one names its nearest Humanizer pattern, so you can
 tell an extension from a new pattern.
 

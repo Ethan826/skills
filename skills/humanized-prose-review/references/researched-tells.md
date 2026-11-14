@@ -1,7 +1,7 @@
 # Researched tells
 
 These patterns come from a survey of published research and practitioner
-writing in November 2026. Humanizer 3.1.0 and the additional tells do not
+writing in November 2026. Humanizer 4.0.0 and the additional tells do not
 list them, or list only part of them. Each entry gives its evidence, so you
 can weigh it:
 
