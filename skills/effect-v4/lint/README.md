@@ -56,7 +56,7 @@ export default buildConfig({
 | Option | Required | Meaning |
 |---|---|---|
 | `tsconfigRootDir` | yes | Directory of the tsconfig for type-aware rules. |
-| `layers` | yes | Layer directories under `sourceRoot`, each mapped to the layers it may import. A layer missing from another's list may not be imported by it. The import diagram in decision-core-architecture draws the same table. |
+| `layers` | yes | Layer directories under `sourceRoot`, each mapped to the layers it may import. A layer missing from another's list may not be imported by it. decision-core-architecture's onion generator (`diagram/onion.ts`) returns the same shape from `layerTable(spec)`, so a project's drift test can compare the drawing with this option. |
 | `coreLayers` | yes | Layers that also ban native methods, null checks, native `Set` and `Map`, and platform imports. |
 | `vocabularies` | no | `{ constant, module, names }` for each closed vocabulary. The names may appear as string literals only in `module`. Add a vocabulary's names when you add the vocabulary. |
 | `aliases` | no | Names Effect modules are imported under, such as `{ Array: ["Arr"], Schema: ["S"] }`. They are exempt from the native-method ban and count as `Schema`, `Effect`, `Option` and `Result` in the other bans. |

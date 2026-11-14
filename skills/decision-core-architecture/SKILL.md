@@ -72,6 +72,33 @@ private, the import check does that too. Every import across that boundary
 goes in a named list with the reason for it, so the shared surface grows only
 when someone decides it should.
 
+![The layers as concentric rings, Domain at the center and the facade outermost, with each layer's imports listed beside them](diagram/onion.svg)
+
+### Drawing a project's layers
+
+`diagram/onion.ts` draws the picture above from a spec: the rings from
+the center outward (one layer each, or two that share a ring), and for
+each layer its directory, name, subtitle, import list and whether it is
+planned, which draws it dashed. A caption and a title complete the spec.
+The defaults are this skill's layers. The script is TypeScript with no
+dependencies, run by bun, whatever language the application is written
+in. To draw an application's own layers:
+
+1. Copy `diagram/onion.ts` into the project, for example to
+   `docs/diagrams/`.
+2. Replace `defaultSpec` with the project's layers. Use the directory
+   names the import check uses, and mark layers that hold no code yet
+   as planned.
+3. Regenerate with `bun docs/diagrams/onion.ts > docs/diagrams/onion.svg`.
+   Render both themes before committing, for example with
+   `rsvg-convert`, and fix any label that overlaps a ring. For the dark
+   render, delete the `@media` wrapper in a copy of the file. The colors
+   are plain CSS classes because `rsvg-convert` ignores `var()`.
+4. Add a drift test that asserts two things: the committed SVG equals
+   `renderOnion(spec)` byte for byte, and `layerTable(spec)` equals the
+   import check's layer table. The first catches a stale or hand-edited
+   SVG, and the second catches a drawing that disagrees with the rules.
+
 A module that will not fit in one layer usually straddles two. Split it and
 keep the rule. Laying out a document, for example (where each line breaks,
 which heading starts a new page), is a decision, while writing that layout as
