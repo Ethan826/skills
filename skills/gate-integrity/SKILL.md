@@ -277,6 +277,21 @@ A failing chained check that stops at its first failing step is not
 silent green, but it is incomplete diagnostics: expect more failures
 behind the one it shows. See the silent-green reference.
 
+## 11. Lift the rule into its skill
+
+A rule that forecloses a recurring class of mistake, such as a lint ban,
+an architecture convention or a closed-vocabulary rule, is rarely about
+one project. If the project's rules come from a shared skills
+repository, the rule also goes into the skill that owns its subject,
+with its check, in the same piece of work. The project's instruction
+file and lint config apply it locally and point to the skill. A rule
+kept in one project protects that project only, and the next project
+makes the same mistake.
+
+In the skills repository the rule is generalized: names that belong to
+the project become parameters or examples, and the check gets its own
+must-fail cases. skill-update covers registering that check.
+
 ## Review checklist
 
 1. Does each gate state its rule and its blind spot? Is every ungated
@@ -307,3 +322,5 @@ behind the one it shows. See the silent-green reference.
     required correctness checks gating and deterministic?
 11. Are the enforcement limits written down where the gates are
     documented?
+12. Does a new rule that forecloses a recurring mistake also sit, with
+    its check, in the shared skill that owns its subject?

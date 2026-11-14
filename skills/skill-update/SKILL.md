@@ -301,6 +301,25 @@ The reason is the owner's words. Do not supply one.
 **An `unregistered/<skill>` item** means a skill reached the default
 branch without an entry. Register it as above.
 
+## Rules lifted from a project
+
+gate-integrity (section 11) sends a rule here when a project adds one
+that forecloses a recurring mistake. Put it in the skill that owns the
+subject, in the same piece of work as the project's change:
+
+1. Generalize it. Names that belong to the project become parameters or
+   an example; nothing in the skill should name that project.
+2. Give it a check under `checks/<name>/`, with must-fail cases and a
+   mutant test that removes the rule, as gate-integrity requires.
+   `checks/effect-v4-lint`, which runs the reference ESLint config in
+   `effect-v4`, is the model.
+3. Register every tool version the check runs as a `tool` entry naming
+   that check, add the rows to the skill's Versions table, and add a
+   path-filtered workflow pinned to full commit SHAs.
+
+The project then points to the skill instead of being the rule's only
+home.
+
 ## anchor-missing
 
 Detection could not find the anchor: the commit is not on the default
