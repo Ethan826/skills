@@ -66,8 +66,11 @@ If a rule says only one subtree may import a module, a check has to
 enforce it. `purs graph` prints the import graph as JSON, which a short
 script can test against an allowlist.
 
-**Export forms:** `T` exports the type alone, `T(..)` the type and every
-constructor, and `T(A, B)` the type and the named constructors.
+**Export forms:** `T` exports the type alone, and `T(..)` the type and
+every constructor. A type exports all of its constructors or none. A
+list that leaves one out, such as `T(A, B)` for a type that also has
+`C`, is a `TransitiveDctorExportError`, so a facade cannot hide only
+some constructors.
 
 **A point-free definition inside a recursive binding group is a
 `CycleInDeclaration`** (as of purs 0.15.x). Here `go` is point-free, and
@@ -163,8 +166,11 @@ token ','", because parentheses only group. A pair is `Tuple a b` from
 `Data.Tuple`, an ordinary constructor with no comma.
 
 **Addition on `Number` is not associative.** `(a + b) + c` and
-`a + (b + c)` differ on a large share of random triples: between a sixth
-and a quarter in a quick test, at every magnitude tried. So if a
+`a + (b + c)` differ on a large share of random triples. In a
+fixed-seed sample of 100,000, about a quarter differed when all three
+values were positive, at every magnitude from 1 to 1e9. The share
+changes with sign and magnitude: with values drawn from [-1, 1) it was
+under a tenth, and from [-m, m) with larger m about a third. So if a
 `Semigroup` instance's `append` is floating-point addition, its
 associativity law is false, and an exact law test will find it. See
 purescript-rows-and-newtypes on using an exact representation wherever a

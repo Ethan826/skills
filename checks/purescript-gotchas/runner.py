@@ -215,15 +215,22 @@ def check_case(case: dict, outcome: Outcome) -> list:
 def check_run_output(spec: dict, data: dict) -> list:
     """Problems with a program's JSON report against a named assertion."""
     kind = spec.get("assert")
-    if kind == "fractions-between":
+    if kind == "fraction-bands":
+        # Each band names the report keys whose fraction must lie in
+        # [low, high]. An empty band list or band would pass vacuously.
+        if not spec.get("bands"):
+            raise CheckError("fraction-bands with no bands")
         problems = []
-        for key in spec["keys"]:
-            if key not in data:
-                problems.append(f"no fraction for magnitude {key}")
-            elif not spec["low"] <= data[key] <= spec["high"]:
-                problems.append(f"magnitude {key}: fraction {data[key]} "
-                                f"outside [{spec['low']:.4f}, "
-                                f"{spec['high']:.4f}]")
+        for band in spec["bands"]:
+            if not band.get("keys"):
+                raise CheckError("fraction-bands band with no keys")
+            for key in band["keys"]:
+                if key not in data:
+                    problems.append(f"no fraction for {key}")
+                elif not band["low"] <= data[key] <= band["high"]:
+                    problems.append(f"{key}: fraction {data[key]} outside "
+                                    f"[{band['low']:.4f}, "
+                                    f"{band['high']:.4f}]")
         return problems
     if kind == "unit-interval-sample":
         problems = []

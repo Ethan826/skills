@@ -283,15 +283,30 @@ class Versions(unittest.TestCase):
 
 
 class RunAssertions(unittest.TestCase):
-    def test_fractions_in_band(self):
-        good = {"1": 0.2, "1000": 0.19, "1000000": 0.21, "1000000000": 0.2}
-        spec = {"assert": "fractions-between", "low": 1 / 6, "high": 0.25,
-                "keys": sorted(good)}
+    def test_fraction_bands(self):
+        good = {"positive/1": 0.25, "positive/1000": 0.26,
+                "signed/1": 0.07, "signed/1000": 0.33}
+        spec = {"assert": "fraction-bands", "bands": [
+            {"keys": ["positive/1", "positive/1000"], "low": 0.22,
+             "high": 0.28},
+            {"keys": ["signed/1"], "low": 0.03, "high": 0.10},
+            {"keys": ["signed/1000"], "low": 0.28, "high": 0.38}]}
         self.assertEqual(runner.check_run_output(spec, good), [])
-        bad = dict(good, **{"1000": 0.05})
-        self.assertTrue(runner.check_run_output(spec, bad))
-        missing = {k: v for k, v in good.items() if k != "1"}
-        self.assertTrue(runner.check_run_output(spec, missing))
+        for key, value in (("positive/1000", 0.19), ("signed/1", 0.25),
+                           ("signed/1000", 0.07)):
+            problems = runner.check_run_output(spec, dict(good, **{key: value}))
+            self.assertEqual(len(problems), 1, key)
+            self.assertIn(key, problems[0])
+        missing = {k: v for k, v in good.items() if k != "signed/1"}
+        self.assertEqual(len(runner.check_run_output(spec, missing)), 1)
+
+    def test_fraction_bands_empty_fails(self):
+        with self.assertRaises(runner.CheckError):
+            runner.check_run_output({"assert": "fraction-bands",
+                                     "bands": []}, {})
+        with self.assertRaises(runner.CheckError):
+            runner.check_run_output({"assert": "fraction-bands", "bands": [
+                {"keys": [], "low": 0, "high": 1}]}, {})
 
     def test_unit_interval_sample(self):
         spec = {"assert": "unit-interval-sample", "count": 3}

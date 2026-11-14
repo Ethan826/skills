@@ -1,4 +1,4 @@
-module ExportForms.T (T, U(..), V(A, B), mkT) where
+module ExportForms.T (T, U(..), V(A, B, C), mkT) where
 
 data T = T0
 
