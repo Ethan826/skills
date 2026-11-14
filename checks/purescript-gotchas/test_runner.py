@@ -69,7 +69,7 @@ LOCK_OK = {
         "bigints": {"type": "registry", "version": "7.0.1"},
     },
 }
-TOOLS_OK = {"purs": "0.15.16", "spago": "1.0.4"}
+TOOLS_OK = {"purs": "0.15.17", "spago": "1.0.5"}
 
 
 class CheckCase(unittest.TestCase):
