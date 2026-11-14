@@ -310,6 +310,62 @@ class Installed(Case):
         self.assertEqual(item["from"], self.c2[:7])
         self.assertIn("is a commit, not a tree", item["detail"][0])
 
+    def test_installed_repo_root_with_commit_resolves_from_commit(self):
+        """The blader/humanizer shape after re-anchoring (owner, 2026-11-14):
+        path "" (the skill is the repository root), commit = the lock's
+        skillFolderHash, folderHash = that commit's root tree. It must
+        resolve to an installed item from that commit, not anchor-missing.
+        A later revert to the same root tree must not move "from"."""
+        entry = dict(installed("s", "", self.up.tree(self.c2, "")),
+                     commit=self.c2)
+        self.write_root([entry])
+        self.assertEqual(self.detect(), [])
+        c3 = self.up.commit("change", {"x.md": "x\n"})
+        c4 = self.up.commit("revert", {"x.md": None})
+        c5 = self.up.commit("change again", {"y.md": "y\n"})
+        item = self.detect()[0]
+        self.assertEqual(item["kind"], "installed")
+        self.assertEqual((item["from"], item["to"]), (self.c2[:7], c5[:7]))
+        self.assertEqual(item["link"], "https://github.com/someone/installed"
+                         f"/compare/{self.c2}...{c5}")
+        self.assertEqual(item["detail"], [f"{c5[:7]} change again",
+                                          f"{c4[:7]} revert",
+                                          f"{c3[:7]} change"])
+
+    def test_installed_commit_disagreeing_with_folder_hash_is_anchor_missing(
+            self):
+        """commit and folderHash must name the same tree; the original
+        humanizer entry (folderHash holding the commit ID) fails here even
+        with commit recorded."""
+        self.up.commit("later", {"README.md": "y\n"})
+        entry = dict(installed("s", "", self.c2), commit=self.c2)
+        self.write_root([entry])
+        item = self.detect()[0]
+        self.assertEqual(item["kind"], "anchor-missing")
+        self.assertIn("disagree", item["detail"][0])
+        other = dict(installed("s", "skills/s", self.installed_tree),
+                     commit=self.c1)
+        self.up.commit("skill v2", {"skills/s/SKILL.md": "2\n"})
+        self.write_root([other])
+        item = self.detect()[0]
+        self.assertEqual(item["kind"], "installed")
+        self.assertEqual(item["from"], self.c1[:7])
+        wrong = dict(other, folderHash="b" * 40)
+        self.write_root([wrong])
+        self.assertEqual(self.detect()[0]["kind"], "anchor-missing")
+
+    def test_installed_commit_off_default_branch_is_anchor_missing(self):
+        self.up.git("checkout", "-q", "-b", "side")
+        side = self.up.commit("side change", {"skills/s/SKILL.md": "side\n"})
+        self.up.git("checkout", "-q", "main")
+        self.up.commit("main change", {"skills/s/SKILL.md": "main\n"})
+        entry = dict(installed("s", "skills/s", self.up.tree(side, "skills/s")),
+                     commit=side)
+        self.write_root([entry])
+        item = self.detect()[0]
+        self.assertEqual(item["kind"], "anchor-missing")
+        self.assertIn("not in the history", item["detail"][0])
+
     def test_installed_path_gone_reports_anchor_missing(self):
         self.up.commit("remove", {"skills/s/SKILL.md": None})
         self.write_root([installed("s", "skills/s", self.installed_tree)])

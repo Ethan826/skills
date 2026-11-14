@@ -60,7 +60,10 @@ Rules:
   equals folderHash. A path gone at HEAD is anchor-missing, and so is a
   folderHash that names an object other than a tree (the lock records a
   commit ID for a skill at a repository root; detection does not guess
-  what that means).
+  what that means). An entry that also records commit is checked first:
+  the commit's tree at path must equal folderHash and the commit must be
+  on the default branch (else anchor-missing), and "from" is that commit
+  rather than the walk's answer.
 - tool: the highest SemVer version from the ecosystem's source, above
   the anchored version. Pre-releases count only when the anchor is one.
   GitHub releases: drafts and releases marked pre-release are skipped,
@@ -202,6 +205,8 @@ def detect_installed(entry, sources):
     if head_tree is None:
         return missing(entry, f"path {path!r} not found at the default "
                        "branch's HEAD")
+    if "commit" in entry:
+        return detect_installed_commit(entry, repo, head_tree)
     if head_tree == entry["folderHash"]:
         return None
     code, out = git(repo, "cat-file", "-t", entry["folderHash"],
@@ -231,6 +236,32 @@ def detect_installed(entry, sources):
                      f"history of {path or 'the repository root'}"])
     return item(entry["id"], entry["skill"], "installed", since[:7],
                 newest[:7], compare(entry["repo"], since, newest),
+                describe(after))
+
+
+def detect_installed_commit(entry, repo, head_tree):
+    """installed with a recorded commit: the commit must hold folderHash at
+    path and be on the default branch; "from" is that commit, so a later
+    revert to the same tree cannot move it."""
+    commit, path = entry["commit"], entry["path"]
+    link = f"https://github.com/{entry['repo']}/commit/{commit}"
+    tree = resolve(repo, f"{commit}^{{commit}}:{path}")
+    if tree != entry["folderHash"]:
+        return missing(entry, f"commit {commit} and folderHash "
+                       f"{entry['folderHash']} disagree: the commit's tree "
+                       f"at {path or 'the repository root'} is {tree}",
+                       commit[:7], link)
+    if not in_history(repo, commit):
+        return missing(entry, f"commit {commit} is not in the history of "
+                       "the default branch", commit[:7], link)
+    if head_tree == entry["folderHash"]:
+        return None
+    after = path_log(repo, f"{commit}..HEAD", path)
+    if not after:
+        return None
+    newest = after[0][0]
+    return item(entry["id"], entry["skill"], "installed", commit[:7],
+                newest[:7], compare(entry["repo"], commit, newest),
                 describe(after))
 
 
