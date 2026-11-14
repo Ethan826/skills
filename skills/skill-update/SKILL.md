@@ -160,7 +160,7 @@ not a tagged commit, ask whether to use the tag instead. Record
 `NOTICE.md` ("version X.Y.Z") and the `THIRD_PARTY.md` row.
 
 If the local file's name includes the version
-(`references/humanizer-3.1.0.md`), rename it with `git mv` and update
+(`references/humanizer-X.Y.Z.md`), rename it with `git mv` and update
 `local` in `anchors.json`, the code span in `NOTICE.md`, the
 `THIRD_PARTY.md` row, and every link to it from the skill
 (`git grep -n -F '<old file name>'`).
@@ -223,7 +223,7 @@ its check is what shows it.
    no such list and a name changed, add one.
 
 7. Update the version strings no gate sees: the skill's description
-   and prose (effect-v4's "Checked against effect 4.1.1"), its README
+   and prose (effect-v4's "Checked against effect 4.1.4"), its README
    row, and the check's `README.md`. Find them with
    `git grep -n -F '<old version>'` and read each hit; not every hit is
    this anchor.
