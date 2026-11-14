@@ -7,7 +7,7 @@ single skill copies only that skill's folder.
 
 | Skill | Derived from | Upstream license |
 |---|---|---|
-| design-brainstorming | obra/superpowers `brainstorming` @ `2ce8aa1` (visual companion not included) | MIT, (c) 2025 Jesse Vincent |
+| design-brainstorming | obra/superpowers `brainstorming` @ `22f0b46` (visual companion not included) | MIT, (c) 2025 Jesse Vincent |
 | implementation-planning | obra/superpowers `writing-plans` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | verify-before-claiming | obra/superpowers `verification-before-completion` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
 | root-cause-debugging | obra/superpowers `systematic-debugging` @ `2ce8aa1` | MIT, (c) 2025 Jesse Vincent |
