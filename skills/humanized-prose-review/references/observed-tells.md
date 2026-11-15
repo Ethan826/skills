@@ -1055,3 +1055,61 @@ is named nearby needs the meaning.
 
 **Checklist:** Could a reader say exactly what happens, and who does
 it? Replace "accounted for", "handled" and "addressed" with the action.
+
+### O37. Staged hypothesis with a second hedge
+
+**Observed:** 2026-11-15, Waxwing design prose.
+
+**Example:**
+
+> The hypothesis is that these features can make dependencies and
+> errors compose without a new environment type, error union or
+> transformer stack for every combination.
+
+**Why:** "The hypothesis is that" frames the claim instead of making
+it, with an abstraction as subject and no owner. "Can" adds a second
+hedge, so the reader can't tell how confident the writer is. A
+hypothesis stated without its test is only a hedge. The sentence also
+shows O8 ("these features"), O9 and O25 ("compose").
+
+**Rewrite:**
+
+> We expect inferred rows to let you call functions that need
+> different services, or that fail in different ways, without writing
+> any glue types to combine them. We'll test this by [name the test].
+
+**Mechanizable:** partly. "The hypothesis is that", "The idea is that"
+and "The goal is to" are matchable as staged openers; the second hedge
+needs the meaning.
+
+**Status:** open
+
+**Checklist:** Is a claim framed ("The hypothesis is …") instead of
+made? Does it carry two hedges? Does it say how it will be tested?
+
+### O38. Benefit stated only as what it avoids
+
+**Observed:** 2026-11-15, Waxwing design prose (same example as O37).
+
+**Example:**
+
+> without a new environment type, error union or transformer stack for
+> every combination.
+
+**Why:** The reader learns what won't be needed, in another
+ecosystem's jargon ("environment type", "error union", "transformer
+stack" from Haskell and Effect), but not what they will be able to do.
+The three terms also form a forced triad.
+
+**Rewrite:**
+
+> … without writing any glue types to combine them. In Haskell, each
+> new combination usually means a new environment record, a new error
+> union, or another layer of monad transformers.
+
+**Mechanizable:** no.
+
+**Status:** judgment-only
+
+**Checklist:** Is a benefit stated only as an absence? Say what the
+reader can do, and explain any outside jargon used for contrast.
