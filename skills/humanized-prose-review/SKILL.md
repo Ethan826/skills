@@ -36,7 +36,9 @@ each. Then read [observed tells](references/observed-tells.md), the
 owner's register of tells spotted in real drafts: every entry that has
 no linter rule, and the checklist line of every entry that has one.
 Use them as a checklist beside the linter output. A new entry applies
-from the next review on.
+from the next review on. When you replace a tell, use [good
+patterns](references/good-patterns.md), which shows what to write in
+its place.
 
 `scripts/tell_lint.py` checks the catalog's listed phrases. Run it on
 every draft; it needs only Python 3.9 or later. Judge each finding

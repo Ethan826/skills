@@ -5,7 +5,8 @@ drafts. A new entry takes effect on the next review, because reviewers
 read it as a checklist: every entry that has no linter rule, and the
 checklist question of every entry that has one. No
 code change is needed to record a tell. Converting entries into linter
-rules happens in batches; SKILL.md says when and how.
+rules happens in batches; SKILL.md says when and how. For what to
+write in place of a tell, see [good patterns](good-patterns.md).
 
 Each entry has seven fields in this order, and `test_tell_lint.py`
 checks that they are present. Observed gives the date (YYYY-MM-DD) and
