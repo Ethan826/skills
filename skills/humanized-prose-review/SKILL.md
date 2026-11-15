@@ -32,9 +32,9 @@ openers, mirrored scope pairs, forward-pointing closers, and
 personified abstractions used as a payoff. Also read [researched
 tells](references/researched-tells.md), which adds patterns from
 published studies and practitioner reports and grades the evidence for
-each. Then read the open and judgment-only entries of [observed
-tells](references/observed-tells.md), the owner's register of tells
-spotted in real drafts, and the checklist line of each converted entry.
+each. Then read [observed tells](references/observed-tells.md), the
+owner's register of tells spotted in real drafts: every entry that has
+no linter rule, and the checklist line of every entry that has one.
 Use them as a checklist beside the linter output. A new entry applies
 from the next review on.
 
@@ -50,7 +50,7 @@ target is plain text, such as a commit message.
 ## Write for the reader at this point
 
 A common failure is writing that presumes familiarity with the very
-process the document is meant to teach. Before writing or reviewing,
+process the document sets out to teach. Before writing or reviewing,
 build an explicit model of what this reader knows here and now, at this
 point in this text: who they are, what they have read above, and what
 they came for. Write each sentence for that reader. Define a term where
@@ -144,8 +144,8 @@ URLs that belong to the source or its syntax.
 ## Converting observed tells into rules
 
 Recording a tell is a prose edit to the register. Turning tells into
-linter rules happens in batches, so the linter and its tests change a
-few times a year rather than with every sighting.
+linter rules happens in batches, so the linter and its tests change
+only a few times a year.
 
 1.  Start a batch when five entries are open and marked mechanizable
     (yes or partly), or at the monthly skill-drift review (see
@@ -157,9 +157,13 @@ few times a year rather than with every sighting.
     entry's verbatim example fails and its rewrite passes. Change
     `tell_lint.py` only when the rule format cannot express the rule,
     and then add a mutant to `CheckerMutant` that undoes the change.
-3.  Prefer a miss to a false positive. If no rule separates the tell
-    from ordinary uses, mark the entry `judgment-only`; it stays on the
-    checklist.
+3.  Prefer a miss to a false positive. Give a rule the tier `strong`
+    only when legitimate matches are rare, since one strong finding
+    blocks. A `weak` finding blocks when a different tell shares its
+    paragraph. A `note` finding never blocks; use it for a rule whose
+    matches are often legitimate. If no rule separates the tell from
+    ordinary uses, mark the entry `judgment-only`; reviewers still ask
+    its checklist question.
 4.  Run the suite and `python3 scripts/prose_gate.py`. When a new rule
     flags prose in this repository, fix the prose; do not weaken the
     rule. Then set each entry's status to `converted to` and its rule

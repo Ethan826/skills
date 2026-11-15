@@ -1,0 +1,23 @@
+[
+  {
+    "entry": "O49",
+    "rule": "contrast-density",
+    "text": "rather than",
+    "count": 1,
+    "reason": "the rewrite describes the contrast-density rule, so it must quote the two phrases the rule counts"
+  },
+  {
+    "entry": "O49",
+    "rule": "contrast-density",
+    "text": "instead of",
+    "count": 1,
+    "reason": "the rewrite describes the contrast-density rule, so it must quote the two phrases the rule counts"
+  },
+  {
+    "entry": "worked-example",
+    "rule": "contrast-density",
+    "text": "instead of",
+    "count": 1,
+    "reason": "the rewrite gives instead of and rather than as an example of a near synonym, so it must quote both phrases"
+  }
+]

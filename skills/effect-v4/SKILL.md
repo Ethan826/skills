@@ -590,7 +590,7 @@ that a machine can check, add a test that fails the build:
 - Global doubles: fail on `vi.stubGlobal`, `vi.spyOn(globalThis,
   ...)` and assignment to a global anywhere except the one adapter's own
   test. Check for the act in all three spellings.
-- `R` is carried: the helper that runs effects should accept an
+- `R` is checked: the helper that runs effects should accept an
   effect requiring a service the runtime builds and reject one requiring
   a service it does not. Assert both with type-level tests, and keep two
   controls beside them, a helper with `R` forced to `never` and one with

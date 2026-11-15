@@ -22,9 +22,9 @@ built another way, follow its existing structure. Proposing a move to this
 one is a separate decision for the user and falls outside an ordinary task.
 
 Code sketches below use a Haskell-like notation. `∀ r` means "for any `r`",
-and `| r` leaves a record or row open to further fields. For the same rules
-written out in PureScript, with rows, `Variant` errors and newtypes, see
-purescript-rows-and-newtypes.
+and `| r` leaves a record or row open to further fields. See
+purescript-rows-and-newtypes for the same rules written out in
+PureScript, with rows, `Variant` errors and newtypes.
 
 ## The layers
 

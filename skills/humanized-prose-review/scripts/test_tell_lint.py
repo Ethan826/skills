@@ -46,8 +46,9 @@ class RuleProbes(unittest.TestCase):
 
     def test_rule_inventory_floor_and_named_member(self):
         rules = lint.load_rules()
-        self.assertGreaterEqual(len(rules), 68)
+        self.assertGreaterEqual(len(rules), 80)
         self.assertIn("not-just", [r["id"] for r in rules])
+        self.assertIn("buried-instruction", [r["id"] for r in rules])
         self.assertIn("container-hold", [r["id"] for r in rules])
 
     def test_every_rule_catches_its_probe_exactly_once(self):
@@ -137,6 +138,14 @@ class ObservedExamples(unittest.TestCase):
         ("status-bold-repeat",
          "- **Built:** the decoders.\n- **Planned:** the CLI.",
          "The decoders have code. The CLI is still a design."),
+        ("buried-instruction",
+         "For sequence diagrams of a tranche and of a launch attempt, the hold\n"
+         "states, a plain-words account of pacing, and what exists today, read\n"
+         "docs/how-it-works.md. Each src/ layer has a README linked from there.",
+         "Read docs/how-it-works.md next. It has diagrams of one batch of work"
+         " and of how foreman decides to start an agent, explains how pacing"
+         " works, and lists what exists today. Each source directory has its own"
+         " README, linked from that page."),
     ]
 
     def test_example_fails_and_rewrite_passes(self):
@@ -144,6 +153,75 @@ class ObservedExamples(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, [f["rule"] for f in lint.scan(bad)["blocking"]])
                 self.assertEqual(ids(lint.scan(good)), [])
+
+    NOTES = [
+        ("hedged-intent",
+         "Row polymorphism is the intended bridge to TypeScript's structural\n"
+         "flexibility",
+         "Waxwing uses row polymorphism to give TypeScript programmers the\n"
+         "flexibility they expect from structural types."),
+        ("would-chain",
+         "Planned inference would collect the row from the operations a\n"
+         "function calls. Construction requirements and failures would be\n"
+         "accounted for where a service is constructed. Adding a service or\n"
+         "error family would no longer require copying its name through every\n"
+         "caller. Explicit signatures would still limit what a function is\n"
+         "allowed to do.",
+         "We plan to have the compiler work out a function's requirements for\n"
+         "you. It will look at the services and operations the function uses\n"
+         "and add them to the function's type, in the part of the type called\n"
+         "its row. If you write a function's type yourself, the compiler still\n"
+         "checks the body against it."),
+        ("passive-vague-verb",
+         "Construction requirements and failures would be accounted for where a\n"
+         "service is constructed.",
+         "When code constructs a service, the compiler will add that service's\n"
+         "own requirements and possible errors to the constructing code's type."),
+        ("staged-claim",
+         "The hypothesis is that these features can make dependencies and\n"
+         "errors compose without a new environment type, error union or\n"
+         "transformer stack for every combination.",
+         "We expect inferred rows to let you call functions that need\n"
+         "different services, or that fail in different ways, without writing\n"
+         "any glue types to combine them."),
+        ("vague-influence",
+         "Koka, Unison and Effekt inform the effect system's lineage.",
+         "Koka, Unison and Effekt are research languages whose type checkers\n"
+         "track side effects."),
+        ("deserves",
+         "Dependencies, expected failures, external interaction, state and\n"
+         "divergence deserve precise descriptions instead of one catch-all IO.",
+         "A function's type will list five kinds of effect. Haskell gives all\n"
+         "five the single type `IO`."),
+        ("gerund-pair", "the type itself lists the printing and the throwing.",
+         "The `<console,exn>` part says that the function may print and may\n"
+         "throw."),
+        ("headless-summary",
+         "whether it changes state, and whether it might run forever, instead\n"
+         "of putting all of that under one IO type as Haskell does.",
+         "whether it changes state, and whether it might run forever.\n"
+         "Haskell gives all five the single type `IO`."),
+        ("touch-change", "It won't touch your verbatim examples.",
+         "The agent will not edit any entry's Example field, which quotes the\n"
+         "original text exactly."),
+        ("contrast-density",
+         "Fix the file, rather than editing the file under it, and"
+         " cross-reference instead of duplicating.",
+         "Cross-reference the existing entry."),
+        ("unreasoned-preference",
+         "a note when the phrase repeats within a short span. That beats\n"
+         "blocking every single use.",
+         "It will not block a single use, because one phrase of that kind is\n"
+         "often the clearest way to state a choice."),
+    ]
+
+    def test_noted_example_is_found_without_blocking_and_rewrite_passes(self):
+        for rule, bad, good in self.NOTES:
+            with self.subTest(rule=rule):
+                result = lint.scan(bad)
+                self.assertIn(rule, ids(result))
+                self.assertNotIn(rule, [f["rule"] for f in result["blocking"]])
+                self.assertNotIn(rule, ids(lint.scan(good)))
 
     def test_domain_noun_hold_is_not_the_tell(self):
         text = ("Foreman creates a hold when a step fails. `foreman release` clears"
@@ -168,6 +246,11 @@ class Tiers(unittest.TestCase):
 
     def test_the_same_weak_rule_twice_is_not_company(self):
         result = lint.scan("A valuable cache and a robust queue sit here.")
+        self.assertEqual(result["blocking"], [])
+
+    def test_a_note_never_blocks_and_is_not_company(self):
+        result = lint.scan("The cache is valuable. All of this is in the README.")
+        self.assertEqual(sorted(ids(result)), ["ai-word", "headless-summary"])
         self.assertEqual(result["blocking"], [])
 
     def test_weak_rules_in_separate_paragraphs_are_not_company(self):
@@ -362,6 +445,7 @@ class ObservedRegister(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         text = (SKILL / "references" / "observed-tells.md").read_text(encoding="utf-8")
+        text = re.split(r"^## ", text, flags=re.M)[0]
         cls.entries = {}
         for block in re.split(r"^### ", text, flags=re.M)[1:]:
             match = re.match(r"(O\d+)\.", block)
@@ -369,7 +453,7 @@ class ObservedRegister(unittest.TestCase):
                 cls.entries[match.group(1)] = block
 
     def test_register_inventory_floor(self):
-        self.assertGreaterEqual(len(self.entries), 31)
+        self.assertGreaterEqual(len(self.entries), 49)
         self.assertIn("O2", self.entries)
 
     def test_every_entry_has_every_field_in_order(self):
@@ -401,6 +485,63 @@ class ObservedRegister(unittest.TestCase):
                 self.assertEqual(listed, refs)
 
 
+class RegisterRewrites(unittest.TestCase):
+    """The register's Rewrite blocks must not show the tells it records.
+
+    Each block is scanned with its blockquote markers and double quotes
+    removed, so the rewrite is read as prose. It fails on any blocking
+    finding and on any finding of a rule converted from the register.
+    scripts/keep/observed-rewrites.keep.json lists the fragments that must
+    stay verbatim (a rewrite that quotes a phrase it discusses), each with
+    its entry and a reason; an unused keep entry is an error.
+    """
+
+    KEEP = HERE / "keep" / "observed-rewrites.keep.json"
+
+    @classmethod
+    def setUpClass(cls):
+        text = (SKILL / "references" / "observed-tells.md").read_text(encoding="utf-8")
+        entries, worked = re.split(r"^## Worked example\b.*$", text, flags=re.M)
+        cls.rewrites = {}
+        body = worked.split("\nRewrite:\n", 1)[1]
+        cls.rewrites["worked-example"] = re.sub(r"^> ?", "", body, flags=re.M).replace('"', "")
+        for block in re.split(r"^### ", entries, flags=re.M)[1:]:
+            match = re.match(r"(O\d+)\.", block)
+            if match:
+                body = block.split("**Rewrite:**", 1)[1].split("**Mechanizable:**", 1)[0]
+                body = re.sub(r"^> ?", "", body, flags=re.M).replace('"', "")
+                cls.rewrites[match.group(1)] = body
+        cls.keep = json.loads(cls.KEEP.read_text(encoding="utf-8"))
+
+    def test_every_entry_has_a_rewrite_to_scan(self):
+        self.assertGreaterEqual(len(self.rewrites), 50)
+        self.assertIn("worked-example", self.rewrites)
+        for name, body in self.rewrites.items():
+            with self.subTest(entry=name):
+                self.assertRegex(body, r"\w")
+
+    def test_keep_entries_name_real_entries_and_give_reasons(self):
+        for entry in self.keep:
+            with self.subTest(entry=entry):
+                self.assertIn(entry["entry"], self.rewrites)
+                self.assertTrue(entry.get("reason"))
+
+    def test_no_rewrite_blocks_or_shows_a_register_tell(self):
+        for name, body in self.rewrites.items():
+            with self.subTest(entry=name):
+                keep = [{k: v for k, v in e.items() if k != "entry"}
+                        for e in self.keep if e["entry"] == name]
+                result = lint.scan(body, keep=keep)
+                self.assertEqual([(f["rule"], f["text"]) for f in result["blocking"]], [])
+                own = [(f["rule"], f["text"]) for f in result["findings"]
+                       if f["ref"].startswith("O")]
+                self.assertEqual(own, [])
+
+    def test_a_planted_tell_in_a_rewrite_fails(self):
+        result = lint.scan("Foreman will start the agent. It won't touch the log.")
+        self.assertIn("touch-change", ids(result))
+
+
 class CheckerMutant(unittest.TestCase):
     """Block item 7: a broken checker must fail this suite."""
 
@@ -412,6 +553,9 @@ class CheckerMutant(unittest.TestCase):
          "spans_visible = masked"),
         ("code rules read raw text", "spans_visible = mask(text, plain, spans=False)",
          "spans_visible = text"),
+        ("notes block like weak tells",
+         'live = [f for f in findings if not f["quoted"] and f["tier"] != "note"]',
+         'live = [f for f in findings if not f["quoted"]]'),
     ]
 
     @unittest.skipIf("TELL_LINT_PATH" in os.environ, "already running a mutant")

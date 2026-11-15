@@ -39,7 +39,7 @@ def load_rules(path=RULES_PATH):
         missing = [key for key in REQUIRED if key not in rule]
         if missing:
             raise LintError("rule %s lacks %s" % (rule.get("id"), ", ".join(missing)))
-        if rule["tier"] not in ("strong", "weak"):
+        if rule["tier"] not in ("strong", "weak", "note"):
             raise LintError("rule %s has unknown tier" % rule["id"])
         flags = re.MULTILINE | (0 if rule.get("case") else re.IGNORECASE)
         try:
@@ -129,8 +129,11 @@ def apply_keep(text, findings, keep):
 
 
 def choose_blocking(findings):
-    """A strong tell blocks alone; a weak one needs a different tell beside it."""
-    live = [f for f in findings if not f["quoted"]]
+    """A strong tell blocks alone; a weak one needs a different tell beside it.
+
+    A note never blocks and is not company for a weak tell.
+    """
+    live = [f for f in findings if not f["quoted"] and f["tier"] != "note"]
     company = {}
     for finding in live:
         company.setdefault(finding["paragraph"], set()).add(finding["rule"])

@@ -2,8 +2,8 @@
 
 This register records AI-writing tells the owner has spotted in real
 drafts. A new entry takes effect on the next review, because reviewers
-read it as a checklist: every entry whose status is open or
-judgment-only, and the judgment remainder of every converted entry. No
+read it as a checklist: every entry that has no linter rule, and the
+checklist question of every entry that has one. No
 code change is needed to record a tell. Converting entries into linter
 rules happens in batches; SKILL.md says when and how.
 
@@ -15,8 +15,13 @@ gives a better version that keeps every fact. Mechanizable is yes,
 partly or no, with the reason. Status is `open`, `judgment-only`, or
 `converted to` followed by rule ids in backticks; a rule whose `ref`
 is an entry's number must appear in that entry's status. Checklist is
-the question a reviewer asks of each paragraph. For a converted entry it
-covers what the rules cannot see.
+the question a reviewer asks of each paragraph. For an entry with rules,
+it covers what the rules cannot see.
+
+Record the cause of each tell (a missing actor, an undefined term, a
+missing example) along with its words. A writer trained the same way
+reaches for a near synonym once one phrase is caught, and a reviewer who
+checks for the cause catches the synonym too.
 
 To record a tell, copy the last entry, give it the next O number, fill
 in every field and set the status to `open`. Quote examples verbatim
@@ -107,7 +112,8 @@ parsing the list, and the qualification about `pace` is buried.
 
 > Only part of the design has code. The Domain types and the decoders
 > for Claude and Codex output are written and tested. So is the pure
-> pacing function `pace`, which may change until the design is approved.
+> pacing function `pace`, which may change until the owner approves the
+> design.
 
 **Mechanizable:** no. A colon before a list is often right; the tell is
 the label clause and the list's length together.
@@ -219,9 +225,9 @@ releases it, and with what command.
 > Foreman stops starting agents when something needs the owner's
 > attention, and records why as a hold: a Failure hold when a step
 > fails, for example, or a Protected hold when a step changed a
-> protected file. Several holds can be in place at once, and each kind
-> is cleared only by its own command, such as `release-protected` for a
-> Protected hold.
+> protected file. Several holds can be in place at once, and the owner
+> clears each kind only with its own command, such as
+> `release-protected` for a Protected hold.
 
 **Mechanizable:** no. A regex cannot tell a defined term from an
 undefined one.
@@ -298,7 +304,8 @@ sentence is about.
 **Rewrite:**
 
 > Foreman will convert the decoded values into Domain `Observation`
-> values after live tests L1 and L2 confirm their shape.
+> values after the first two live tests, which run against real
+> accounts, confirm their shape.
 
 **Mechanizable:** no. A gerund subject is often fine; the tell is its
 length before the verb, which a regex cannot measure without a parse.
@@ -327,8 +334,10 @@ See O2 for "holds" with a code location.
 
 **Rewrite:**
 
-> No code converts the decoded values into Domain `Observation` values
-> yet. That code comes after live tests L1 and L2 settle the shapes.
+> Foreman has no code yet that converts the decoded values into Domain
+> `Observation` values. We will write it after the first two live
+> tests, which run against real accounts, confirm the shapes of those
+> values.
 
 > `ClaudeEventTypes`, `ClaudeSystemSubtypes` and `CodexEventTypes`
 > define the wire tags.
@@ -491,8 +500,8 @@ the reader has to unpack which modifies which and what the whole names.
 **Rewrite:**
 
 > Your Claude plan limits usage over two windows, one that resets every
-> five hours and one that resets every week. Foreman starts an agent
-> only when both have room. Codex has limits too; a live test will show
+> five hours and one that resets every week. Foreman will start an agent
+> only when both windows have room. Codex has limits too; a live test will show
 > which windows it reports.
 
 **Mechanizable:** no. Telling a noun from an adjective or a verb needs
@@ -548,8 +557,8 @@ phrases? Give each action its own sentence.
 
 **Rewrite:**
 
-> After a crash or restart, foreman reads its log and continues from the
-> last step it recorded.
+> After a crash or restart, foreman will read its log and continue from
+> the last step it recorded.
 
 **Mechanizable:** no. Resolving "its" needs the meaning of the
 sentence.
@@ -709,9 +718,9 @@ design. See "Write for the reader at this point" in SKILL.md.
 
 **Rewrite:**
 
-> At the center are functions that only compute an answer from their
-> inputs. They never touch files or the network, and they return an
-> answer for every possible input.
+> At the center of foreman are functions that only compute an answer
+> from their inputs. They never read or write files or use the network,
+> and they return an answer for every possible input.
 
 **Mechanizable:** no. Whether a term needs defining depends on the
 reader and on what the text has already introduced.
@@ -737,8 +746,8 @@ what, or which decisions.
 **Rewrite:**
 
 > The command-line tool will turn what you type into plain data and pass
-> it to the core. It never chooses what to do next, such as whether to
-> start an agent.
+> it to the core. It will never choose what to do next, such as whether
+> to start an agent.
 
 **Mechanizable:** no. Whether an abstraction has been made concrete
 nearby needs the meaning of the text.
@@ -764,8 +773,8 @@ the open-ended form.
 
 **Rewrite:**
 
-> Foreman keeps every decision in a core of plain functions, and a thin
-> outer layer does the reading, writing and running around it.
+> In foreman, a core of plain functions makes every decision. A thin
+> outer layer reads and writes files and runs the agents.
 
 **Mechanizable:** no. A label and a colon are right in glossaries,
 definition lists and forms, and a regex cannot tell those from prose.
@@ -796,13 +805,14 @@ what to do. It is the imperative form of O10's left-branching sentence.
 > works, and lists what exists today. Each source directory has its own
 > README, linked from that page.
 
-**Mechanizable:** partly. A sentence that opens with "For" or "To",
-runs through three or more commas, and then reaches an imperative such
-as "read", "see" or "run" is a plausible pattern. It needs near misses
-for sentences where the imperative comes early ("To build it, run make,
-then test, then see the log"), so it waits for the next batch.
+**Mechanizable:** partly. The rule matches a sentence that opens with
+"For" or "To", runs at least 80 characters before its first imperative
+("read", "see", "run" and a few others), and passes three or more commas
+on the way. It skips "For example" and sentences whose imperative comes
+early ("To build it, run make, then test, then see the log"). A shorter
+lead-in, or one without commas, needs judgment.
 
-**Status:** open
+**Status:** converted to `buried-instruction`
 
 **Checklist:** Does a sentence make the reader get through a list of
 reasons before reaching the action? Put the action first.
@@ -890,8 +900,8 @@ cascade ("supported resume of a suspended primary loop").
 > followed its protocol. But when we paused a run for usage limits,
 > Ralph's documented resume command couldn't find the paused run, and
 > we never got far enough to test whether it recovers safely when a
-> step is interrupted midway. Foreman needs both, so we built our own
-> supervisor.
+> step is interrupted midway. Foreman needs both a working resume and
+> safe recovery, so we built our own supervisor.
 
 **Mechanizable:** no. Following the topic across sentences needs a
 parse and the meaning.
@@ -920,11 +930,11 @@ unexplained specialist term) and O3 (a colon followed by a list).
 
 **Rewrite:**
 
-> Waxwing uses row polymorphism to give TypeScript programmers the
-> flexibility they expect from structural types. A function can ask for
-> only the fields it uses: `getName` accepts any record that has a
-> `name` field, and the record it returns keeps its other fields and
-> their types.
+> A Waxwing function can ask for only the fields it uses: `getName`
+> accepts any record that has a `name` field, and the record it returns
+> keeps its other fields and their types. Typing records this way is
+> called row polymorphism, and it gives TypeScript programmers the
+> flexibility they expect from structural types.
 
 **Mechanizable:** no. Telling a figurative noun from a literal one needs
 the meaning.
@@ -956,7 +966,7 @@ reader can't tell a shipped feature from a plan.
 **Mechanizable:** partly. "the intended", "is intended to" and "is meant
 to" are matchable; whether the text hides status needs the meaning.
 
-**Status:** open
+**Status:** converted to `hedged-intent`
 
 **Checklist:** Does "intended", "meant to" or "designed to" hide whether
 the thing works today?
@@ -976,9 +986,9 @@ they were the same kind of claim. The reader can't tell which half
 describes the system and which describes a hope.
 
 **Rewrite:** Split the claim from the goal, and say which one is true
-today: "A function can ask for only the fields it uses. Service
-requirements will combine the same way, so nobody declares a new
-environment type for each combination."
+today: "A function can ask for only the fields it uses. A function's
+service requirements will combine the same way, so you won't have to
+declare a new environment type for each combination."
 
 **Mechanizable:** no.
 
@@ -1024,7 +1034,7 @@ before any definition), O10 (gerund subject), O17 (noun stack) and O31
 "would" are countable; whether the text describes a plan needs the
 meaning.
 
-**Status:** open
+**Status:** converted to `would-chain`
 
 **Checklist:** Does a plan read as a string of "would" sentences? State
 it once ("We plan to …") and then use "will".
@@ -1051,7 +1061,7 @@ where.
 and "addressed" in the passive are matchable; whether a concrete action
 is named nearby needs the meaning.
 
-**Status:** open
+**Status:** converted to `passive-vague-verb`
 
 **Checklist:** Could a reader say exactly what happens, and who does
 it? Replace "accounted for", "handled" and "addressed" with the action.
@@ -1076,16 +1086,17 @@ shows O8 ("these features"), O9 and O25 ("compose").
 
 > We expect inferred rows to let you call functions that need
 > different services, or that fail in different ways, without writing
-> any glue types to combine them. We'll test this by [name the test].
+> any glue types to combine them. We'll test that expectation by [name
+> the test].
 
 **Mechanizable:** partly. "The hypothesis is that", "The idea is that"
 and "The goal is to" are matchable as staged openers; the second hedge
 needs the meaning.
 
-**Status:** open
+**Status:** converted to `staged-claim`
 
 **Checklist:** Is a claim framed ("The hypothesis is …") instead of
-made? Does it carry two hedges? Does it say how it will be tested?
+made? Does it hedge twice? Does it say how it will be tested?
 
 ### O38. Benefit stated only as what it avoids
 
@@ -1128,17 +1139,17 @@ from any of the three. The three names are also never introduced (O29).
 
 **Rewrite:**
 
-> Koka, Unison and Effekt are research languages whose type checkers
-> track side effects. In Koka, a function that prints to the console and
-> can throw an exception has the type `() -> <console,exn> int`. The
-> `<console,exn>` part says that the function may print and may throw.
-> Waxwing takes the same approach.
+> In Koka, a research language, a function that prints to the console
+> and can throw an exception has the type `() -> <console,exn> int`.
+> The `<console,exn>` part says that the function may print and may
+> throw. Unison and Effekt, two other research languages, also list a
+> function's side effects in its type, and so do Waxwing's types.
 
 **Mechanizable:** partly. "inform(s) the", "shape(s) the", "lineage",
 "heritage" and "DNA" are matchable as notes; whether the sentence says
 what was borrowed needs the meaning.
 
-**Status:** open
+**Status:** converted to `vague-influence`
 
 **Checklist:** Does a verb like "inform", "shape" or "underpin" stand
 where the text should say what was taken, from where?
@@ -1166,7 +1177,7 @@ decides and why. The five-item subject also buries the verb (O18), and
 **Mechanizable:** partly. "deserve(s)" with a non-person subject is
 matchable as a note.
 
-**Status:** open
+**Status:** converted to `deserves`
 
 **Checklist:** Does "deserves", "merits" or "calls for" stand in for a
 decision someone made? Say who decided what.
@@ -1183,12 +1194,12 @@ decision someone made? Say who decided what.
 > language's proofs.
 
 **Why:** The first "their" means the three languages from two sentences
-earlier; the second "their" means the contracts. A reader carrying the
-first referent misreads the second sentence.
+earlier; the second "their" means the contracts. A reader who keeps the
+first referent in mind misreads the second sentence.
 
-**Rewrite:** Name the referent in each sentence: "Each of the three
-languages proves its own properties about its effect types, and those
-proofs say nothing about Waxwing's rules. We still have to write
+**Rewrite:** Name the referent in each sentence: "The published proofs
+for each of the three languages cover that language's own effect types
+and say nothing about Waxwing's rules. We still have to write
 Waxwing's rules for pure functions and for these five kinds of effect,
 and prove what they guarantee."
 
@@ -1265,8 +1276,8 @@ doesn't show.
 
 **Rewrite:**
 
-> Each of the three languages proves its own properties about its
-> effect types, and those proofs say nothing about Waxwing's rules.
+> The published proofs for each of the three languages cover that
+> language's own effect types and say nothing about Waxwing's rules.
 
 **Mechanizable:** no.
 
@@ -1295,7 +1306,7 @@ type says, and "itself" adds emphasis with no content.
 **Mechanizable:** partly. "the X-ing and the Y-ing" is matchable as a
 note.
 
-**Status:** open
+**Status:** converted to `gerund-pair`
 
 **Checklist:** Has a pair of verbs been turned into "the X-ing and the
 Y-ing"? Say what happens instead.
@@ -1323,7 +1334,7 @@ also hides at the tail of an already long sentence.
 are matchable as notes; whether the referent is a long list needs the
 meaning.
 
-**Status:** open
+**Status:** converted to `headless-summary`
 
 **Checklist:** Does "that", "this" or "every one of these" point back
 at a list or a long passage? Give the demonstrative a head noun:
@@ -1331,3 +1342,175 @@ either name the category before the list ("five kinds of effect: …")
 and refer back with it ("all five"), or attach the noun where you
 refer back ("every one of those effect types"). A demonstrative with
 no head noun ("these", "those") is still a gap.
+
+### O47. Figurative "touch" and "carry" for editing and containing
+
+**Observed:** 2026-11-15, the coordinator's chat text.
+
+**Example:**
+
+> It won't touch your verbatim examples.
+
+> since several of mine carried tells you caught
+
+**Why:** "Touch" stands for "edit" and "carried" for "contained", so
+the reader translates each verb into the action it means. "It" has no
+clear antecedent (O8), and "mine" leaves the reader to supply the noun
+(the rewrites). Figurative "carry" is already A1 in the additional
+tells; its rule, `figurative-carry`, now matches "carried" as well.
+
+**Rewrite:**
+
+> The agent will not edit any entry's Example field, which quotes the
+> original text exactly.
+
+> … because you found tells in several rewrites I wrote.
+
+**Mechanizable:** partly. "Touch" after a negative ("won't touch",
+"does not touch", "never touch") is matchable as a non-blocking
+finding; the rule skips physical objects such as a screen or a stove.
+R8's `verb-no` rule already flags "touches no". A positive use ("the
+patch touches the parser") needs judgment.
+
+**Status:** converted to `touch-change`
+
+**Checklist:** Does "touch", "carry" or "hold" stand where "edit",
+"contain" or "record" would say what happens? Does a possessive pronoun
+("mine", "yours") leave the reader to supply its noun?
+
+### O48. Contrast tails used out of habit
+
+**Observed:** 2026-11-15, the coordinator's chat text.
+
+**Example:**
+
+> …, rather than editing the file under it
+
+> …cross-reference instead of duplicating
+
+**Why:** Each tail says what is not done, as a beat of rhythm more than
+as information. One "rather than" can be the clearest way to state a
+choice; several close together read as a habit, even when each is
+grammatical. "Under it" also places one file below another as
+shorthand for a relation the sentence never names.
+
+**Rewrite:** State the action, and name the alternative only when the
+reader needs it to understand the choice. For the second example:
+"Cross-reference the existing entry."
+
+**Mechanizable:** partly. The `rather-than` rule (§1) already flags
+each "rather than" as a weak tell. The `contrast-density` rule adds a
+non-blocking finding when "rather than" or "instead of" appears twice
+within 1,200 characters (about 200 words), across paragraph breaks.
+Whether a given contrast helps the reader, and what a spatial word such
+as "under" stands for, need judgment.
+
+**Status:** converted to `contrast-density`
+
+**Checklist:** Do "rather than" and "instead of" recur within a few
+paragraphs? Keep the one the reader needs to understand a choice, and
+elsewhere state the action alone. Does a spatial word ("under",
+"behind", "on top of") stand for a relation the text should name?
+
+### O49. Imitated expert manner
+
+**Observed:** 2026-11-15, the coordinator's chat text.
+
+**Example:**
+
+> a note when the phrase repeats within a short span. That beats
+> blocking every single use.
+
+> The core failure, a term used without its real meaning, stays a
+> judgment item, with two questions on the checklist
+
+> Nothing in that section lands until you approve it.
+
+**Why:** The writer copies the manner of someone who knows the field,
+brisk and casual, and uses its terms without their meanings. The owner
+compared it to a person with no medical training who talks to a doctor
+in an invented quasi-medical patois that a trained ear hears as
+unfamiliar. It has three parts. First, borrowed words used loosely: "a
+note" and "blocking" sound like the linter's terms, but the linter
+reports a blocking or a non-blocking finding, and "within a short span"
+sounds like a measure without being one. "Stays a judgment item" uses
+the register's status field as if it were plain English, with a
+figurative "stays". "Lands" is git shop talk for "is committed" or
+"is merged"; the landing-a-branch skill defines the term, but here it
+appears without that definition, in a negative frame around a simple
+action. Second, a casual claim that one option is better,
+with no reason ("That beats", and the intensifier "every single").
+Third, clipped syntax: a fragment with no main verb, and a bare "That"
+with no head noun (O46).
+
+**Rewrite:**
+
+> The rule reports a non-blocking finding when "rather than" or
+> "instead of" appears twice within 1,200 characters, about 200 words.
+> It will not block a single use, because one "rather than" is often
+> the clearest way to state a choice.
+
+> No rule can reliably detect a term used without its real meaning, so
+> reviewers check for it by reading, using two questions.
+
+> I won't commit any text from that section until you approve it.
+
+**Mechanizable:** partly. Casual claims of preference ("that beats",
+"every single", "is the way to go", "a no-brainer", "wins out", "hands
+down") are matchable as non-blocking findings. Whether a term has its
+real meaning needs a reader who knows the field. A rule for "land" with
+a subject that is not an aircraft would flag too many ordinary
+sentences, so reviewers check for it by reading.
+
+**Status:** converted to `unreasoned-preference`
+
+**Checklist:** Does each technical-sounding term have the field's
+actual meaning and, where it suggests a measure, a definite value? When
+the text says one option is better, does it say why?
+
+## Worked example: one paragraph, many tells
+
+The owner annotated this paragraph from the coordinator's chat text on
+2026-11-15. It shows how many entries can apply to one short passage.
+
+Original:
+
+> What that means for the register. The tells aren't random noise.
+> They're fingerprints of optimizing for how prose appears at a glance.
+> A register plus a linter applies counter-pressure in exactly the places
+> the training pushed. It works best when it targets the underlying
+> failures (the hidden actor, the missing example, borrowed jargon)
+> rather than individual words, because the model will produce new
+> surface variants of the same habit.
+
+The owner's annotations, in order:
+
+- "What that means for the register." is a label fragment with a
+  headless "that" (O27, O46).
+- "aren't random noise. They're" denies a view nobody stated, then
+  asserts, and "random noise" is a cliché.
+- "fingerprints" is a metaphor standing for a mechanism (O32).
+- "optimizing for how prose appears" is a gerund abstraction with no
+  actor (O10).
+- "counter-pressure" and "pushed" are physics metaphors for a logical
+  relation (O44), and "exactly" is an intensifier.
+- "the training" is personified.
+- "It" has three candidate antecedents (O8).
+- "works best" is a claim with no evidence.
+- "targets" is a corporate verb (O12), and "underlying" is filler.
+- The parenthetical list is a forced triad.
+- "rather than" is a contrast tail (O48).
+- "surface variants" is pseudo-technical (O49), and "habit" is
+  personified.
+- The last clause is an aphoristic close that asserts an effect nobody
+  measured.
+
+Rewrite:
+
+> The register should record why each passage reads badly, such as a
+> missing actor or an undefined term, as well as the words it used. A
+> rule that matches one phrase stops that phrase, but a model trained
+> the same way will often reach for a near synonym: "instead of" in
+> place of "rather than". A reviewer who checks for the cause catches
+> the synonym too. My evidence for this claim is only the examples from
+> 2026-11-15, where the same causes kept appearing in new words.
