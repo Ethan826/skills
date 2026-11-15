@@ -53,12 +53,17 @@ def blank(match):
     return re.sub(r"[^\n]", " ", match.group(0))
 
 
-def mask(text, plain=False):
-    """Blank what is not prose, keeping every offset and line number."""
+def mask(text, plain=False, spans=True):
+    """Blank what is not prose, keeping every offset and line number.
+
+    spans=False keeps inline code visible, for rules whose tell is what the
+    prose says about a code span (a "code" rule); fences stay blank.
+    """
     text = re.sub(r"\A---\n.*?\n---\n", blank, text, flags=re.S)
     if not plain:
         text = re.sub(r"^(```|~~~)[^\n]*\n.*?^\1[ \t]*$", blank, text, flags=re.S | re.M)
-        text = re.sub(r"`[^`\n]+`", blank, text)
+        if spans:
+            text = re.sub(r"`[^`\n]+`", blank, text)
     return re.sub(r"\bhttps?://[^\s)>\]]+", blank, text)
 
 
@@ -83,8 +88,10 @@ def is_quoted(text, offset):
     return before.lstrip().startswith(">") or len(re.findall("[\"“”]", before)) % 2 == 1
 
 
-def find(text, masked, rule):
+def find(text, masked, rule, spans_visible=None):
     source = text if rule.get("raw") else masked
+    if rule.get("code"):
+        source = spans_visible
     for match in rule["regex"].finditer(source):
         if rule.get("kind") == "isbn" and isbn_valid(match.group(1)):
             continue
@@ -158,11 +165,12 @@ def metrics(masked):
 def scan(text, plain=False, keep=(), rules=None):
     rules = load_rules() if rules is None else rules
     masked = mask(text, plain)
+    spans_visible = mask(text, plain, spans=False)
     findings = []
     for rule in rules:
         if rule.get("plain") and not plain:
             continue
-        findings.extend(find(text, masked, rule))
+        findings.extend(find(text, masked, rule, spans_visible))
     findings.sort(key=lambda f: (f["offset"], f["rule"]))
     kept = apply_keep(text, findings, keep)
     return {

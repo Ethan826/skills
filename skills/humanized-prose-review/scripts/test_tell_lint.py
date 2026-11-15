@@ -46,8 +46,9 @@ class RuleProbes(unittest.TestCase):
 
     def test_rule_inventory_floor_and_named_member(self):
         rules = lint.load_rules()
-        self.assertGreaterEqual(len(rules), 64)
+        self.assertGreaterEqual(len(rules), 68)
         self.assertIn("not-just", [r["id"] for r in rules])
+        self.assertIn("container-hold", [r["id"] for r in rules])
 
     def test_every_rule_catches_its_probe_exactly_once(self):
         for rule in lint.load_rules():
@@ -105,6 +106,49 @@ class Masking(unittest.TestCase):
     def test_a_hit_inside_a_blockquote_does_not_block(self):
         result = lint.scan("> Let's dive in, the source said.\n\nPlain text here.")
         self.assertEqual(result["blocking"], [])
+
+
+class CodeRules(unittest.TestCase):
+    """A "code" rule reads inline code spans; fenced code stays masked."""
+
+    def test_code_rule_sees_a_span_that_other_rules_cannot(self):
+        self.assertEqual(ids(lint.scan("`src/a` holds the types.")), ["container-hold"])
+
+    def test_code_rule_ignores_fenced_code(self):
+        text = "Run this now.\n\n```\n`src/a` holds the types.\n```\n\nThen stop."
+        self.assertEqual(ids(lint.scan(text)), [])
+
+
+class ObservedExamples(unittest.TestCase):
+    """Converted register entries: the verbatim example fails, the rewrite passes."""
+
+    CASES = [
+        ("container-hold",
+         "- `src/runtime`, `src/program`, `src/facade`: will hold the Effect shell,"
+         " the wiring and the CLI. They hold no code.",
+         "`src/runtime`, `src/program` and `src/facade` are empty. The Effect shell"
+         " will go in `src/runtime`, the wiring in `src/program` and the CLI in"
+         " `src/facade`."),
+        ("status-contrast", "Planned, not built.",
+         "Only the Domain types, the decoders and the pacing function have code so"
+         " far. The rest of this page describes the design."),
+        ("status-heading", "## Event log (planned)\n\nThe log is append-only.",
+         "## Event log\n\nThe log is append-only."),
+        ("status-bold-repeat",
+         "- **Built:** the decoders.\n- **Planned:** the CLI.",
+         "The decoders have code. The CLI is still a design."),
+    ]
+
+    def test_example_fails_and_rewrite_passes(self):
+        for rule, bad, good in self.CASES:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, [f["rule"] for f in lint.scan(bad)["blocking"]])
+                self.assertEqual(ids(lint.scan(good)), [])
+
+    def test_domain_noun_hold_is_not_the_tell(self):
+        text = ("Foreman creates a hold when a step fails. `foreman release` clears"
+                " that hold, and `src/domain/hold.ts` defines it.")
+        self.assertNotIn("container-hold", ids(lint.scan(text)))
 
 
 class Tiers(unittest.TestCase):
@@ -284,6 +328,9 @@ class CatalogContract(unittest.TestCase):
         cls.sections |= set(re.findall(r"^### (A\d+)\.", additional, re.M))
         cls.r_sections = set(re.findall(r"^### (R\d+)\.", cls.researched, re.M))
         cls.sections |= cls.r_sections
+        cls.observed = (refs / "observed-tells.md").read_text(encoding="utf-8")
+        cls.o_sections = set(re.findall(r"^### (O\d+)\.", cls.observed, re.M))
+        cls.sections |= cls.o_sections
 
     def test_catalog_inventory_is_not_empty(self):
         self.assertGreaterEqual(len(self.sections), 40)
@@ -306,6 +353,54 @@ class CatalogContract(unittest.TestCase):
                 self.assertNotEqual(name in covered, says_none)
 
 
+class ObservedRegister(unittest.TestCase):
+    """The register's fields are present and its statuses agree with the rules."""
+
+    FIELDS = ("Observed", "Example", "Why", "Rewrite", "Mechanizable", "Status",
+              "Checklist")
+
+    @classmethod
+    def setUpClass(cls):
+        text = (SKILL / "references" / "observed-tells.md").read_text(encoding="utf-8")
+        cls.entries = {}
+        for block in re.split(r"^### ", text, flags=re.M)[1:]:
+            match = re.match(r"(O\d+)\.", block)
+            if match:
+                cls.entries[match.group(1)] = block
+
+    def test_register_inventory_floor(self):
+        self.assertGreaterEqual(len(self.entries), 31)
+        self.assertIn("O2", self.entries)
+
+    def test_every_entry_has_every_field_in_order(self):
+        for name, block in self.entries.items():
+            with self.subTest(entry=name):
+                places = [block.find("**%s:**" % field) for field in self.FIELDS]
+                self.assertNotIn(-1, places)
+                self.assertEqual(places, sorted(places))
+                self.assertRegex(block, r"\*\*Observed:\*\* \d{4}-\d{2}-\d{2}")
+                self.assertRegex(block, r"\*\*Mechanizable:\*\* (?:yes|partly|no)\b")
+
+    def status(self, block):
+        line = block.split("**Status:**", 1)[1].split("**Checklist:**", 1)[0]
+        return " ".join(line.split())
+
+    def test_status_is_open_judgment_only_or_converted(self):
+        for name, block in self.entries.items():
+            with self.subTest(entry=name):
+                self.assertRegex(self.status(block),
+                                 r"^(?:open|judgment-only|converted to `[a-z-]+`"
+                                 r"(?:, `[a-z-]+`)*)$")
+
+    def test_converted_status_and_rule_refs_agree_both_ways(self):
+        rules = lint.load_rules()
+        for name, block in self.entries.items():
+            with self.subTest(entry=name):
+                listed = set(re.findall(r"`([a-z-]+)`", self.status(block)))
+                refs = {r["id"] for r in rules if r["ref"] == name}
+                self.assertEqual(listed, refs)
+
+
 class CheckerMutant(unittest.TestCase):
     """Block item 7: a broken checker must fail this suite."""
 
@@ -313,6 +408,10 @@ class CheckerMutant(unittest.TestCase):
         ("scans nothing", "for rule in rules:", "for rule in []:"),
         ("never blocks", "if finding[\"tier\"] == \"strong\"", "if False"),
         ("skips masking", "masked = mask(text, plain)", "masked = text"),
+        ("hides code spans", "spans_visible = mask(text, plain, spans=False)",
+         "spans_visible = masked"),
+        ("code rules read raw text", "spans_visible = mask(text, plain, spans=False)",
+         "spans_visible = text"),
     ]
 
     @unittest.skipIf("TELL_LINT_PATH" in os.environ, "already running a mutant")

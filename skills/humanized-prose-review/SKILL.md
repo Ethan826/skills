@@ -32,7 +32,11 @@ openers, mirrored scope pairs, forward-pointing closers, and
 personified abstractions used as a payoff. Also read [researched
 tells](references/researched-tells.md), which adds patterns from
 published studies and practitioner reports and grades the evidence for
-each.
+each. Then read the open and judgment-only entries of [observed
+tells](references/observed-tells.md), the owner's register of tells
+spotted in real drafts, and the checklist line of each converted entry.
+Use them as a checklist beside the linter output. A new entry applies
+from the next review on.
 
 `scripts/tell_lint.py` checks the catalog's listed phrases. Run it on
 every draft; it needs only Python 3.9 or later. Judge each finding
@@ -43,6 +47,16 @@ each file's summary line in your report or commit message. Reading this
 skill is not a pass. Add `--plain` when the
 target is plain text, such as a commit message.
 
+## Write for the reader at this point
+
+A common failure is writing that presumes familiarity with the very
+process the document is meant to teach. Before writing or reviewing,
+build an explicit model of what this reader knows here and now, at this
+point in this text: who they are, what they have read above, and what
+they came for. Write each sentence for that reader. Define a term where
+it first appears, show the concrete thing before naming it, and never
+lean on vocabulary the text has not introduced.
+
 ## Required workflow
 
 1.  Read the whole source text before editing it.
@@ -50,7 +64,11 @@ target is plain text, such as a commit message.
     sentence length, word choice, punctuation, openings, transitions, and
     deliberate quirks. The sample overrides the generic cleanup rules,
     including the preference against dashes.
-3.  Audit the text. For each issue, record:
+3.  Audit the text. Go through the linter output, then put each
+    checklist question from the observed tells to every paragraph.
+    Also ask of each paragraph: would a reader arriving here from the
+    top understand every term and every reference? For each issue,
+    record:
     - the exact passage;
     - the pattern or tell;
     - why it weakens this text or makes the reader work harder.
@@ -101,6 +119,13 @@ Check the shape of each paragraph as well as each sentence:
 - figurative *carry* and *seam*, label openers ("One gap:"), mirrored
   scope pairs, forward-pointing closers, and abstractions personified
   for a clever ending (see the additional tells);
+- sentences that do not name their actor, subjects that are
+  abstractions or the wrong thing, and an "it", "its", "this", "that",
+  "each" or "its own" without one obvious, concrete antecedent (see the
+  observed tells);
+- status and limitation sentences that do not say what they mean for
+  the reader, and design-document labels (L1, S7) in prose for readers
+  who have not seen the design;
 - participial clauses, nominalization chains, long sentences joined by
   *and*, Claude's stock phrases and word swaps, the edit-summary formula
   in commit messages, and absent specifics (see the researched tells).
@@ -115,6 +140,40 @@ Keep a contrast when both halves matter or when the negative half
 corrects a belief the reader holds. Keep uncertainty that
 records a real limit. Keep technical hyphens, dashes, code, paths, and
 URLs that belong to the source or its syntax.
+
+## Converting observed tells into rules
+
+Recording a tell is a prose edit to the register. Turning tells into
+linter rules happens in batches, so the linter and its tests change a
+few times a year rather than with every sighting.
+
+1.  Start a batch when five entries are open and marked mechanizable
+    (yes or partly), or at the monthly skill-drift review (see
+    skill-update), whichever comes first.
+2.  For each such entry, write a rule in `scripts/tell_rules.json` whose
+    `ref` is the entry's number. Its `probes` are the must-fail cases
+    and its `near_misses` the must-pass cases; the suite checks both
+    for every rule. Add a test in `scripts/test_tell_lint.py` that the
+    entry's verbatim example fails and its rewrite passes. Change
+    `tell_lint.py` only when the rule format cannot express the rule,
+    and then add a mutant to `CheckerMutant` that undoes the change.
+3.  Prefer a miss to a false positive. If no rule separates the tell
+    from ordinary uses, mark the entry `judgment-only`; it stays on the
+    checklist.
+4.  Run the suite and `python3 scripts/prose_gate.py`. When a new rule
+    flags prose in this repository, fix the prose; do not weaken the
+    rule. Then set each entry's status to `converted to` and its rule
+    ids.
+
+A project that vendors the linter picks up converted rules when it
+copies the files again. Foreman, for example, keeps a copy at
+`tools/prose/` and names the source commit in the README there. Copy
+`tell_lint.py` and `tell_rules.json` together from one commit of this
+repository, since a rule may use a key that an older `tell_lint.py`
+ignores, and update the recorded commit. Then run the project's prose
+check (`bun run prose` in foreman) and fix the prose the new rules
+flag. The register stays here: reviewers in those projects read it from
+the installed skill.
 
 ## Detectors
 
@@ -140,8 +199,9 @@ tells enter through the sentences you add.
 a brief faster than repair a drafted paragraph.
 - Screen review comments, outline bullets, and commit messages too.
   Outline bullets become the author's prose.
-- When the author flags a new tell, add it to the additional tells so the
-  next session catches it.
+- When the author flags a new tell, add an entry to the [observed
+  tells](references/observed-tells.md) with the status `open`. The next
+  review reads it, so no code change is needed.
 
 ## Output
 
