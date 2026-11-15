@@ -43,7 +43,7 @@ outside the markers, where the project can edit them freely.
 
 | File | What it is |
 |---|---|
-| `baseline.md` | The block, between `<!-- agent-baseline:start v2 -->` and `<!-- agent-baseline:end -->`. The single source. |
+| `baseline.md` | The block, between `<!-- agent-baseline:start v3 -->` and `<!-- agent-baseline:end -->`. The single source. |
 | `personal.example.md` | An optional second block for one owner's preferences, with each item's default and how to change it. |
 | `scripts/baseline.sh` | `install`, `check`, `sync` and `check-sync`. Bash and POSIX tools only. |
 | `scripts/test-baseline.sh` | The script's tests, run in a throwaway directory. |
@@ -224,11 +224,11 @@ change, never a side effect of another commit:
 
 ## Versioning the Block
 
-The start marker holds the version: `<!-- agent-baseline:start v2 -->`.
+The start marker holds the version: `<!-- agent-baseline:start v3 -->`.
 When you change the block:
 
 1. Edit `baseline.md` in the skill, and only there.
-2. Bump the version: `v2` becomes `v3`.
+2. Bump the version: `v3` becomes `v4`.
 3. Say what changed and why in the commit message, and in the skill's
    changelog if the repository keeps one. Projects pick up the change by
    reinstalling, and a human reviews the diff, so the message should
