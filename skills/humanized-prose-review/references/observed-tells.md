@@ -900,3 +900,89 @@ parse and the meaning.
 
 **Checklist:** Do the subjects of a paragraph's sentences stay on one
 topic, or does each sentence start from something new?
+
+### O32. Figurative noun for a design role
+
+**Observed:** 2026-11-15, Waxwing design prose.
+
+**Example:**
+
+> Row polymorphism is the intended bridge to TypeScript's structural
+> flexibility: functions can require part of a record while preserving
+> the rest, and service requirements should compose without a new
+> environment type for every combination.
+
+**Why:** "Bridge" is a metaphor standing in for a mechanism. The reader
+learns that two things are connected but not how, and the abstract
+target ("structural flexibility") gives the metaphor nothing concrete
+to land on. The same sentence shows O7 (stacked abstractions), O25 (an
+unexplained specialist term) and O3 (a colon followed by a list).
+
+**Rewrite:**
+
+> Waxwing uses row polymorphism to give TypeScript programmers the
+> flexibility they expect from structural types. A function can ask for
+> only the fields it uses: `getName` accepts any record that has a
+> `name` field, and the record it returns keeps its other fields and
+> their types.
+
+**Mechanizable:** no. Telling a figurative noun from a literal one needs
+the meaning.
+
+**Status:** judgment-only
+
+**Checklist:** Does a metaphor stand where the text should name the
+mechanism?
+
+### O33. Hedged intent hiding status
+
+**Observed:** 2026-11-15, Waxwing design prose (same example as O32).
+
+**Example:**
+
+> Row polymorphism is the intended bridge to TypeScript's structural
+> flexibility
+
+**Why:** "Intended" hides who intends it and whether it works today. The
+reader can't tell a shipped feature from a plan.
+
+**Rewrite:**
+
+> Waxwing uses row polymorphism to give TypeScript programmers the
+> flexibility they expect from structural types.
+
+(Or, if it does not work yet: "Waxwing will use row polymorphism to…")
+
+**Mechanizable:** partly. "the intended", "is intended to" and "is meant
+to" are matchable; whether the text hides status needs the meaning.
+
+**Status:** open
+
+**Checklist:** Does "intended", "meant to" or "designed to" hide whether
+the thing works today?
+
+### O34. Mixed modality in one sentence
+
+**Observed:** 2026-11-15, Waxwing design prose (same example as O32).
+
+**Example:**
+
+> functions can require part of a record while preserving the rest, and
+> service requirements should compose without a new environment type
+> for every combination.
+
+**Why:** "Can" states a fact and "should" states a goal, joined as if
+they were the same kind of claim. The reader can't tell which half
+describes the system and which describes a hope.
+
+**Rewrite:** Split the claim from the goal, and say which one is true
+today: "A function can ask for only the fields it uses. Service
+requirements will combine the same way, so nobody declares a new
+environment type for each combination."
+
+**Mechanizable:** no.
+
+**Status:** judgment-only
+
+**Checklist:** Does one sentence mix what is true ("can", "does") with
+what is wanted ("should", "will")?
