@@ -1326,6 +1326,8 @@ meaning.
 **Status:** open
 
 **Checklist:** Does "that", "this" or "every one of these" point back
-at a list or a long passage? Name the category before the list ("five
-kinds of effect: …"), then refer back with that noun ("all five").
-A demonstrative with no head noun ("these", "those") is still a gap.
+at a list or a long passage? Give the demonstrative a head noun:
+either name the category before the list ("five kinds of effect: …")
+and refer back with it ("all five"), or attach the noun where you
+refer back ("every one of those effect types"). A demonstrative with
+no head noun ("these", "those") is still a gap.
