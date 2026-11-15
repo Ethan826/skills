@@ -56,7 +56,9 @@ same "install keeps the text outside the block" original.md head.md
 expect 0 "install into a missing file creates it" "$bl" install new.md
 expect 0 "check passes on the created file" "$bl" check new.md
 
-sed 's/^- \*\*No emoji,\*\*/- **Few emoji,**/' AGENTS.md >edited.md
+sed 's/^- Use no emoji anywhere\./- Use few emoji./' AGENTS.md >edited.md
+grep -q '^- Use few emoji\.' edited.md ||
+  { echo 'FAIL  could not build the edited-block fixture'; exit 1; }
 expect 1 "check fails after an edit inside the block" "$bl" check edited.md
 cp edited.md reinstalled.md
 expect 0 "install replaces an edited block" "$bl" install reinstalled.md
@@ -111,7 +113,9 @@ expect 0 "sync a second time" "$bl" sync source.md copy.md
 same "second sync leaves the copy byte-identical" copy-once.md copy.md
 expect 0 "sync keeps the copy's own text" grep -q 'Harness-only notes.' copy.md
 
-sed 's/^- \*\*No emoji,\*\*/- **Few emoji,**/' copy.md >drift.md
+sed 's/^- Use no emoji anywhere\./- Use few emoji./' copy.md >drift.md
+grep -q '^- Use few emoji\.' drift.md ||
+  { echo 'FAIL  could not build the drifted-copy fixture'; exit 1; }
 expect 1 "check-sync fails when the copy drifts" "$bl" check-sync source.md drift.md
 cp source.md extra.md
 printf '\n<!-- stray:start v1 -->\ny\n<!-- stray:end -->\n' >>extra.md
