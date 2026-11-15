@@ -1,0 +1,8 @@
+[
+  {
+    "rule": "not-tail",
+    "text": "Your code, not the framework",
+    "count": 1,
+    "reason": "literal title of a section in writing-good-tests.md; changing the reference would break the link to that heading"
+  }
+]

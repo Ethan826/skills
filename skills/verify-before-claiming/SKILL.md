@@ -51,9 +51,9 @@ Run the gate before:
 - moving to the next task;
 - delegating to an agent, and accepting what it reports back.
 
-The rule covers exact phrases, paraphrases and synonyms, and anything
-that implies the work is complete or correct. It also covers claims
-written down rather than spoken: design documents, review summaries and
+The rule covers exact phrases and any wording that implies the work is
+complete or correct, whether paraphrased or synonymous. It also covers
+claims in writing as well as speech: design documents, review summaries and
 diagnostics (see "Claims Without a Check" below).
 
 ## What Each Claim Requires
@@ -143,16 +143,16 @@ step. Trust one of these and you get a confident zero that means nothing.
 A performance claim is a measurement, and it is only as good as the build
 it was measured on.
 
-- **Measure the build users run.** If users run a debug or interpreted
+- Measure the build users run. If users run a debug or interpreted
   build, measure that one. An optimizing compiler or JIT can hide the cost
   you are trying to remove. Where you cannot run the users' build, emulate
   it: run with the optimizer switched off.
-- **Count allocations as well as time.** In a garbage-collected runtime,
+- Count allocations as well as time. In a garbage-collected runtime,
   allocation is often the cost, and it is steadier to measure than wall
   time.
-- **Take the median of several runs after a warm-up,** and say how many.
+- Take the median of several runs after a warm-up, and say how many.
   One run measures the machine's mood.
-- **Prefer ratios to absolute times.** "The shared path costs less than
+- Prefer ratios to absolute times. "The shared path costs less than
   a quarter of computing each part alone" travels further than "under
   40 ms", which holds only on your machine. A ratio is still not
   machine-independent: cache sizes, core counts, the runtime version and
@@ -162,29 +162,29 @@ it was measured on.
   build), so the gate cannot pass vacuously on tiny input. Take each
   side as the median of warm runs, and investigate a failure rather
   than rerunning until green (gate-integrity).
-- **Aim for headroom.** A change that just clears the bar will fail it on
+- Aim for headroom. A change that just clears the bar will fail it on
   the next device or the next feature.
-- **Don't predict from reasoning alone.** Profile before choosing what to
+- Don't predict from reasoning alone. Profile before choosing what to
   optimize, and measure after. Guesses about where the time goes are
   usually wrong.
 
 ## Upgrades and Mechanical Sweeps
 
 After a major-version upgrade or a codemod across the codebase, a clean
-type check is the start of verification, not the end.
+type check is only the start of verification.
 
-- **Take the baseline on main first,** under the new install: lint, test
+- Take the baseline on main first, under the new install: lint, test
   and build results before your change. Then a failure you see afterwards
-  is yours, not the upgrade's.
-- **Exercise runtime behavior.** Types can line up while semantics moved:
+  is yours, and the upgrade is not to blame.
+- Exercise runtime behavior. Types can line up while semantics moved:
   a value that used to be implicitly converted, or an error that used to
   surface as one kind and now surfaces as another. Run the paths the
   release notes flag.
-- **Count what a sweep may have stripped.** Mechanical rewrites can drop
+- Count what a sweep may have stripped. Mechanical rewrites can drop
   trailing comments, including suppression and lint-directive comments.
   Count them before and after (`git grep -c` on the directive), and
   account for every difference.
-- **The type-error count is not the metric.** Driving it to zero with
+- The type-error count is not the metric. Driving it to zero with
   casts or suppressions converts compile errors into runtime ones.
 
 ## The Tool of Record
@@ -260,7 +260,7 @@ report work done:
 - Offering to file a follow-up with no issue or local draft behind it
 - Thinking "just this once"
 - Tired and wanting the work over
-- **Any wording that implies success when you have not run the verification**
+- Any wording that implies success when you have not run the verification
 
 ## Rationalization Prevention
 
@@ -273,7 +273,7 @@ report work done:
 | "Agent said success" | Verify independently |
 | "I'm tired" | Tiredness does not change what the output says |
 | "Partial check is enough" | A partial check proves only the part it ran |
-| "Different words, so the rule doesn't apply" | The rule follows the meaning, not the wording |
+| "Different words, so the rule doesn't apply" | The rule follows the meaning of the words |
 | "It was just a reorder" | Run the sorted-lines diff |
 | "The doc already gives the number" | Recompute it from the source |
 | "That failure isn't ours" | Name it in the report, then fix it or file it |

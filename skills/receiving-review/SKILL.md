@@ -8,7 +8,7 @@ license: MIT
 
 ## Overview
 
-Code review calls for technical evaluation, not emotional performance.
+Code review calls for technical evaluation.
 
 **Core principle:** Verify before implementing. Ask before assuming.
 Technical correctness comes before social comfort.
@@ -62,10 +62,10 @@ RIGHT: "I understand items 1,2,3,6. Need clarification on 4 and 5 before proceed
 ## Source-Specific Handling
 
 ### From your human partner
-- **Trusted:** implement once you understand it
-- **Still ask** if the scope is unclear
-- **No performative agreement**
-- **Go straight to the work**, or give a technical acknowledgment
+- Trusted: implement once you understand it
+- Still ask if the scope is unclear
+- No performative agreement
+- Go straight to the work, or give a technical acknowledgment
 
 ### From External Reviewers
 ```
@@ -91,14 +91,14 @@ check carefully."
 
 ### From a reviewer subagent
 
-A reviewer dispatched through requesting-review ends with a verdict:
-Ready to land, Ready with fixes, or Not ready. Its report also carries
-two lists that need something from you beyond fixing:
+A reviewer dispatched through requesting-review ends with one of three
+verdicts: Ready to land, Ready with fixes, or Not ready. Its report also
+includes two lists that need something from you beyond fixing:
 
-- **Declined to judge:** behaviors the reviewer set aside as outside the
+- Declined to judge: behaviors the reviewer set aside as outside the
   spec. Rule on each line. A line that is a product decision the spec
   does not settle goes to your human partner.
-- **Escape hatches:** suppressions, casts, skipped tests and edits to
+- Escape hatches: suppressions, casts, skipped tests and edits to
   checks or existing tests. Pass the whole list to your human partner
   before merge, including entries you think are justified.
 
@@ -163,7 +163,7 @@ Push back when:
 - It conflicts with your human partner's architectural decisions
 
 **How to push back:**
-- Use technical reasoning, not defensiveness
+- Use technical reasoning
 - Ask specific questions
 - Point to working tests or code
 - Involve your human partner if the question is architectural
@@ -258,5 +258,5 @@ Good: "Understand 1,2,3,6. Need clarification on 4 and 5 before implementing."
 
 When you reply to inline review comments on GitHub, or your forge's
 equivalent, reply in the comment thread
-(`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`), not as
-a top-level PR comment.
+(`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`).
+Do not post a top-level PR comment.

@@ -52,9 +52,9 @@ implementation plan exists:
 | Conflict detection | Interval overlap via a sorted sweep (textbook) | Faithful |
 | Merge of concurrent edits | None found | Invented |
 
-- **Source** is something a reader can look up: a paper with its authors
+- Source is something a reader can look up: a paper with its authors
   and title, a textbook section, or a library in wide use.
-- **Fidelity** says how closely the component follows that source:
+- Fidelity says how closely the component follows that source:
   *faithful*, *adapted* (state each change), or *invented* (no source).
 
 Anything marked invented is a finding. Report it to your human partner
@@ -81,15 +81,15 @@ that nobody can explain.
 A departure from a published source can be justified, but only with all
 of the following, gathered before approval:
 
-- **A demonstrated need.** Show that the published mechanism, modelled
+- A demonstrated need. Show that the published mechanism, modelled
   faithfully, fails a real requirement. "It might not handle X" is a
   hypothesis; build the case and run it.
-- **A clear argument** for why the departure is correct: what it
+- A clear argument for why the departure is correct: what it
   preserves, what it gives up, and why it terminates.
-- **Reproducible evidence**: tests against an independent reference,
+- Reproducible evidence: tests against an independent reference,
   exhaustive checks over small domains, executable examples. Run the
   adversarial-procedure-review skill on the departure.
-- **Explicit approval from your human partner**, given after they have
+- Explicit approval from your human partner, given after they have
   seen the standard alternative and its cost.
 
 A departure approved this way gets its own entry in the provenance table,
@@ -105,12 +105,12 @@ nobody else has found its failures.
 
 ### 5. Assurance and explanation
 
-- **Assurance** is a proof, or very robust testing: an oracle that does
+- Assurance is a proof, or very robust testing: an oracle that does
   not share the implementation's logic, exhaustive enumeration of small
   domains, and executable fixtures for every worked example. The
   verify-before-claiming and test-first skills cover what counts as
   evidence.
-- **Explanation**: the documentation explains each component in terms of
+- Explanation: the documentation explains each component in terms of
   its source, so that someone who knows the source can follow the code,
   and someone who does not knows what to read.
 
@@ -118,7 +118,7 @@ nobody else has found its failures.
 
 Keep a provenance record of what was read and what it contributed: the
 paper, the documentation page, the other project's design. Implement from
-the published description, not by copying another project's code. Reusing
+the published description. Do not copy another project's code. Reusing
 code is a licensing decision, separate from this skill, and it needs the
 source's license to allow it.
 

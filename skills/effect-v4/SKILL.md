@@ -206,7 +206,7 @@ syntax, and the exception says how to gate it:
   `match` or `getOrElse`, or lift into the Effect.
 - `Effect.promise` on a Promise that can reject. `Effect.promise` is
   only for a Promise that cannot reject. If it rejects anyway, the
-  rejection becomes a defect, not a typed failure, so no `Effect.catch`
+  rejection becomes a defect and never a typed failure, so no `Effect.catch`
   or `Effect.catchTag` sees it. Anything that can reject goes through
   `Effect.tryPromise({ try, catch })`, with a `catch` that returns a
   tagged error. The one-argument form fails with `Cause.UnknownError`,
@@ -227,8 +227,8 @@ syntax, and the exception says how to gate it:
   the replacement for each.
 
 Test files may relax the loop, mutation, parsing and native-method
-rules, since mutable fixtures, parsing test data and plain array helpers
-are normal there.
+rules, since mutable fixtures, test data that needs parsing and plain array
+helpers are normal there.
 They keep the rest.
 
 ## Lift Option and Result into Effect
@@ -305,7 +305,7 @@ Decode several optional inputs in one `Schema.Struct` with
 Map the schema's issue to a tagged domain error at the boundary, so the
 core never sees a parse error.
 
-Absence is `Option.none()`, not `null` or `undefined`, in domain state
+Absence is `Option.none()` and never `null` or `undefined` in domain state
 and in the payloads passed between modules inside the core. A payload
 that crosses a public boundary (a facade to a UI shell, a wire format,
 an outside caller) uses that boundary's plain representation, usually
@@ -442,8 +442,8 @@ For a reusable function that returns an Effect, use `Effect.fn("name")`,
 which adds a tracing span and a better stack trace, or
 `Effect.fnUntraced` on hot paths and in library code. Do not write a
 function whose only body is `return Effect.gen(...)`. Add behavior such
-as recovery or log annotations as extra arguments to `Effect.fn`, not
-with `.pipe` on its result. Declare the return type with
+as recovery or log annotations as extra arguments to `Effect.fn`.
+Do not add it with `.pipe` on its result. Declare the return type with
 `Effect.fn.Return<A, E, R>` when the inferred one is not what you mean.
 
 ## Argument shape: dual, and no uniform currying
@@ -556,7 +556,7 @@ version that matches `effect`.
 defaults, so a test can replace them. Read time through `Clock` or
 `DateTime.now`, never `Date.now()`.
 
-Put each test at the seam it checks. A test of the wire contract (which
+Put each test at the boundary it checks. A test of the wire contract (which
 call, which payload) runs against a stub transport. A test of how a use
 case combines several calls runs against stub services. A test of a
 derivation is a plain test of a pure function, with no Layer at all.
@@ -569,7 +569,7 @@ that a machine can check, add a test that fails the build:
 
 - Bans (sync decoders, `getOrThrow`, `Effect.promise`, `instanceof` on
   errors, reads of `_tag`, `JSON.parse`): an ESLint rule or a test that
-  walks the TypeScript syntax tree, not a text search. A text search misses
+  walks the TypeScript syntax tree. A text search misses
   aliased imports and matches inside comments. The `typescript` 7.0
   package exports no stable compiler API, only `unstable/*` entry points;
   the TypeScript team publishes the 6.0 API as `@typescript/typescript6`

@@ -6,12 +6,12 @@ MIT license. Each one is a plain `SKILL.md` folder, and none depends on
 a particular model or harness.
 
 Usefulness varies. Some are general habits any coding agent benefits
-from; others carry opinions from specific projects and only pay off in
+from; others hold opinions from specific projects and only pay off in
 that kind of work. Each skill below is labelled:
 
-- **Broad**: useful in most agent work.
-- **Situational**: pays off in the right kind of task.
-- **Niche**: opinionated or narrow.
+- Broad: useful in most agent work.
+- Situational: pays off in the right kind of task.
+- Niche: opinionated or narrow.
 
 ## Install
 
@@ -44,7 +44,7 @@ SKILL=path/to/agent-baseline
 [`agent-baseline`](skills/agent-baseline/SKILL.md) covers where the
 check belongs and how to keep a second instruction file in step.
 
-Some skills carry an architecture or a house style rather than a
+Some skills hold an architecture or a house style instead of a
 general habit: `append-only-data-model`, `decision-core-architecture`,
 `readable-functional-code` and `purescript-rows-and-newtypes`. They
 govern only a project that has adopted that approach, or a request to
@@ -115,10 +115,10 @@ customer.
 
 | Skill | Usefulness | What it does |
 |---|---|---|
-| [`append-only-data-model`](skills/append-only-data-model/SKILL.md) | Situational | Model mutable entities as immutable facts folded into current state, including erasure, ordering and per-tenant overrides. |
-| [`schema-migrations`](skills/schema-migrations/SKILL.md) | Situational | Write, lock and roll out schema changes, with real rollbacks locally and roll-forward in production. |
-| [`launch-readiness-audit`](skills/launch-readiness-audit/SKILL.md) | Situational | Audit readiness to launch with every row tied to code or live evidence, rechecked each pass. |
-| [`multi-tenant-security-review`](skills/multi-tenant-security-review/SKILL.md) | Situational | Review tenant isolation and authorization across roles, routes and writes. Not a full security audit. |
+| [`append-only-data-model`](skills/append-only-data-model/SKILL.md) | Situational | Model mutable entities as immutable facts folded into current state, including erasure, ordering, and overrides for each tenant. |
+| [`schema-migrations`](skills/schema-migrations/SKILL.md) | Situational | Write schema changes, lock them and roll them out, with real rollbacks locally and roll-forward in production. |
+| [`launch-readiness-audit`](skills/launch-readiness-audit/SKILL.md) | Situational | Audit readiness to launch, with every row backed by code or live evidence and rechecked each pass. |
+| [`multi-tenant-security-review`](skills/multi-tenant-security-review/SKILL.md) | Situational | Review tenant isolation and authorization for each role, each route and each write. Not a full security audit. |
 
 ### Design review
 
@@ -144,10 +144,10 @@ table and closed vocabularies.
 
 | Skill | Usefulness | What it does |
 |---|---|---|
-| [`decision-core-architecture`](skills/decision-core-architecture/SKILL.md) | Niche | Keep a pure core of decisions under a thin shell that holds no logic. Language-neutral, but functional in outlook. |
+| [`decision-core-architecture`](skills/decision-core-architecture/SKILL.md) | Niche | Keep a pure core of decisions under a thin shell with no logic in it. Language-neutral, but functional in outlook. |
 | [`purescript-rows-and-newtypes`](skills/purescript-rows-and-newtypes/SKILL.md) | Niche | Track a PureScript function's dependencies and errors in its type. PureScript only. |
 | [`purescript-gotchas`](skills/purescript-gotchas/SKILL.md) | Niche | PureScript compiler and tooling traps that cost a compile cycle to discover, pinned to the versions they were checked against. |
-| [`readable-functional-code`](skills/readable-functional-code/SKILL.md) | Niche | Readability rules for functional code, with budgets and names a lint can check, plus how they apply to TypeScript. |
+| [`readable-functional-code`](skills/readable-functional-code/SKILL.md) | Niche | Readability rules for functional code, with budgets and naming rules a lint can check, plus how they apply to TypeScript. |
 | [`effect-v4`](skills/effect-v4/SKILL.md) | Situational | Write TypeScript with Effect v4: the v3 names that changed, combinators over statements, typed errors, Schema decoding, and services behind Layers that tests substitute. Checked against effect 4.1.4. |
 
 ### Writing
@@ -269,6 +269,6 @@ git -C /tmp/superpowers diff <pinned-commit> HEAD -- skills/<original-name>
 ## License
 
 MIT; see `LICENSE`. The forked skills and the vendored humanizer
-reference are modified copies of MIT-licensed work. Each one carries the
+reference are modified copies of MIT-licensed work. Each one includes the
 original notice in its own `NOTICE.md`, and `THIRD_PARTY.md` lists them
 all.

@@ -1,0 +1,8 @@
+[
+  {
+    "rule": "dash",
+    "text": "-- <path>",
+    "count": 1,
+    "reason": "literal git pathspec separator inside a command in an indented fenced code block that the linter does not recognize as code"
+  }
+]

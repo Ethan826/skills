@@ -45,7 +45,7 @@ import Other (Thing)
 An export list can name only the module's own declarations, or whole
 modules with `module X`.
 
-**A whole-module re-export carries exactly what the facade imported,**
+**A whole-module re-export exposes exactly what the facade imported,**
 and no more:
 
 ```purescript
@@ -117,7 +117,7 @@ no `Eq`. If the inner type lacks the instance on purpose, write the outer
 instance by hand and unwrap.
 
 **`Generic` on a hidden constructor draws a `HiddenConstructors`
-warning** (as of purs 0.15.17). It is a warning, not an error, so the
+warning** (as of purs 0.15.17). It is a warning and not an error, so the
 derive compiles. The warning gives the reason: `to` and `from` match and
 build values of the type, so a type that exports `Percent` without `(..)`
 but derives `Generic` has in effect made its constructor public.
@@ -130,8 +130,8 @@ invariant.
 **Constrained data constructors do not exist** (as of purs 0.15.x).
 `data Range a = Ord a => Range a a` fails to parse with "Unexpected token
 '=>'". Haskell allows it with extensions, but PureScript has no syntax for
-it. Constrain the functions that compare, not the type that holds the
-values.
+it. Constrain the functions that compare. Leave the type that holds the
+values unconstrained.
 
 ## Prelude surprises
 
@@ -146,7 +146,7 @@ is true over an `Int`. Write the instance by hand, or wrap the value in
 purescript-rows-and-newtypes' rule to give each type only the instances
 whose laws hold for its meaning.
 
-**`Semiring` is four operations, not one:** `add`, `zero`, `mul` and
+**`Semiring` is four operations:** `add`, `zero`, `mul` and
 `one`, and `Ring` adds `sub`. There is no way to take addition alone, so
 deriving `Semiring` for a quantity also hands out multiplication, and
 the product of two prices means nothing.

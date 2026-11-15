@@ -67,8 +67,8 @@ You never saw these fail, so prove them with a mutant instead:
    fix. For untested code, break the guarantee the test claims to
    protect.
 3. Run the test in the copy and confirm it fails.
-4. Read the failure message. It must fail for the right reason, naming
-   the broken behavior and the wrong value. A crash, a type error or a
+4. Read the failure message. It must fail for the right reason, and the
+   message must show the broken behavior and the wrong value. A crash, a type error or a
    missing import is not the right reason.
 5. Discard the copy and confirm the test passes against the real code.
 
@@ -162,9 +162,9 @@ npm test path/to/test.test.ts
 ```
 
 Confirm that:
-- the test fails, rather than erroring;
+- the test fails and does not error;
 - the failure message is the one you expected;
-- it fails because the feature is missing, not because of a typo.
+- it fails because the feature is missing and not because of a typo.
 
 **If the test passes,** it is testing behavior that already exists. Fix
 the test.
@@ -224,16 +224,16 @@ Confirm that:
 - the other tests still pass;
 - the output is clean, with no errors or warnings.
 
-**If the test fails,** fix the code, not the test.
+**If the test fails,** fix the code and leave the test alone.
 
 **If other tests fail,** fix them now.
 
-"Other tests" means the project's whole suite, not just your file. A
+"Other tests" means the project's whole suite, and your file is only part of it. A
 green run of the test you wrote is not a green suite. Before you call
 the change done, run the project's test command (bare `pytest`,
 `npm test`, `cargo test`, whatever the repo uses), even when your task
 named only one test file. A scope statement in your task bounds what you
-deliver, not what you verify. Report every failure that run shows by
+deliver and does not bound what you verify. Report every failure that run shows by
 name, including ones you didn't cause. Leaving out a failure you saw
 makes the report false.
 
@@ -278,7 +278,7 @@ keep tests honest:
 |--------|---------|
 | "Too simple to test" | Simple code breaks, and the test takes 30 seconds. |
 | "I'll test after" | A test written after the code passes at once, which proves nothing. It may test the wrong thing, test the implementation instead of the behavior, or miss the edge case you forgot. Until you see it fail, you don't know it can catch the bug. For new behavior, write the test first. For a test that can only come after, prove it with a mutant. |
-| "Tests after achieve same goals (spirit not ritual)" | Tests written after answer "what does this do?" Tests written first answer "what should this do?" The code you already wrote biases the tests that follow it: you check the cases you remembered, not the ones you would have found. You get coverage with no proof that the tests work. |
+| "Tests after achieve same goals (spirit not ritual)" | Tests written after answer "what does this do?" Tests written first answer "what should this do?" The code you already wrote biases the tests that follow it: you check the cases you remembered and miss the ones you would have found. You get coverage with no proof that the tests work. |
 | "Already manually tested" | Manual testing is ad hoc. It leaves no record of what you covered, it can't be re-run when the code changes, and cases slip under pressure. "It worked when I tried it" is not coverage. An automated test runs the same way every time. |
 | "Deleting X hours is wasteful" | That is the sunk-cost fallacy: the time is spent either way. The real choice is between rewriting test-first, with high confidence, and keeping code you can't trust with tests bolted on. Keeping it is the waste. |
 | "Keep as reference, write tests first" | You'll adapt it, and that is testing after. Delete it. |
@@ -360,7 +360,7 @@ Before marking work complete:
       when it breaks (trivial code through its consumers; see
       writing-good-tests.md, Your code, not the framework).
 - [ ] You watched each new-behavior test fail before implementing it.
-- [ ] Each test failed for the expected reason (feature missing, not a typo).
+- [ ] Each test failed for the expected reason (feature missing, with no typo).
 - [ ] Each test added after the code failed against a mutant, and you
       read the failure message.
 - [ ] You wrote the least code that passes each test.

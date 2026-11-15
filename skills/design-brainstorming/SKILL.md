@@ -20,9 +20,9 @@ hundred decisions they never mention the way they would have made them.
 Before you reply, ask yourself: what do I know about what they want, and
 why?
 
-- **Everything that matters is in the request** ("make the icon cornflower
+- Everything that matters is in the request ("make the icon cornflower
   blue"). This is a quick, clear task. Do it, and say what you did.
-- **Something non-trivial is missing.** Start the conversation.
+- Something non-trivial is missing. Start the conversation.
 
 Before you start implementing, you must, in order:
 
@@ -40,7 +40,7 @@ Before you start implementing, you must, in order:
 One shortcut changes how steps 2, 3 and 5 happen, and nothing else.
 When nothing is open as you write your first message, the work is a
 small change with one sensible way to build it, and the design proposes
-no new or materially changed procedure, your first message carries the
+no new or materially changed procedure, your first message contains the
 approach (the one way, and why the others don't fit) and the short
 design. Their approval of that message is their pick and their approval
 of the design; you then write the short design doc as approved (see
@@ -87,7 +87,7 @@ wrong story.
 
 Move the work forward with one of these:
 
-- **They've already said what they want** (a spec, a plan, a detailed
+- They've already said what they want (a spec, a plan, a detailed
   request): aim for about 200 words for the whole message. Echo their
   request back in your own words, so they can see whether you've got its
   shape: what they want, who it's for, and why, as far as they've said.
@@ -113,7 +113,7 @@ Move the work forward with one of these:
   Where it goes), and go on to the plan. Specs are often incomplete, so
   confirm before
   you build on one.
-- **They haven't:** one open question, in their own terms, about the
+- They haven't: one open question, in their own terms, about the
   biggest thing their request leaves unsettled. Say why you're asking:
   what the answer would change about what you build. For "a website for
   my bakery": "If it's mostly for people deciding whether to stop by,
@@ -123,9 +123,9 @@ Move the work forward with one of these:
 How the message ends depends on whether their message asked for
 brainstorming:
 
-- **They asked for it** (by name, by invoking it, or by asking for a
+- They asked for it (by name, by invoking it, or by asking for a
   design discussion): end there. They want this conversation.
-- **They didn't:** they may not want a conversation at all. End with a
+- They didn't: they may not want a conversation at all. End with a
   light, one-line offer to just get going instead, like
   "Or if you'd rather I just dive in, say so." If they take you up on
   it, this skill is done: state any significant how-it-gets-made choice
@@ -147,7 +147,7 @@ give them the most important findings and offer the rest. You never need
 to quote this skill to them.
 
 **Get them describing.** Until you know why they want it, ask open
-questions, with no example answers attached. Their own words carry
+questions, with no example answers attached. Their own words show
 intent that your options can't. Once you know why, when a decision has
 choices you can name, sketch each concretely, with what it trades off
 and which you'd pick. When they say "just guess" or "what do you think?",
@@ -303,11 +303,11 @@ partner you're writing it up, say a reviewer will read it first and you
 may come back once with a few questions. Don't hand over the document
 until the check is back. Sort what the builder asks into three piles:
 
-- **Answered already** by the conversation or the project: put the answer
+- Answered already by the conversation or the project: put the answer
   in the document.
-- **Minor:** a sensible builder could settle it without changing what gets
+- Minor: a sensible builder could settle it without changing what gets
   built. Settle it yourself and mark it in the document as your call.
-- **Theirs:** only your human partner can answer it, and the answer changes
+- Theirs: only your human partner can answer it, and the answer changes
   what gets built.
 
 Bring the "theirs" pile in one message, most important first. Update the
@@ -333,8 +333,8 @@ the short one for a small change, the full one for a project. When the
 design proposes or makes claims about a procedure, the adversarial
 review report is attached before you ask for that approval.
 Building includes writing product code, scaffolding, installing
-dependencies, creating projects, and invoking an implementation skill.
-Reading, exploring and checking a ticket's premise are fine.
+dependencies, creating projects and invoking an implementation skill.
+Reading and exploring are fine, and so is checking a ticket's premise.
 
 Two exceptions. If they opted out of the questions, the skill is done
 and the gate goes with it. A spike they said yes to may be built; it

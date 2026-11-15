@@ -44,7 +44,7 @@ the others a lint that parses each module and decides on its syntax
 tree. Each rule states exactly what counts as a finding, so a lint and a
 reviewer draw the same line.
 
-Build such a lint on a parser, not on text matching. A regular
+Build such a lint on a parser. A regular
 expression cannot tell code from a comment or a string, and it misses a
 construct split across lines. Test the lint with a suite of small
 modules, each marked to pass or to fail with a given message, because a
@@ -54,7 +54,7 @@ A new rule lands together with the refactor that satisfies it, with no
 allowlist. When a rule is wrong for some case, change the lint; never
 switch it off at the line. gate-integrity covers that discipline.
 
-## 1. `where`, not `let … in`
+## 1. `where` over `let … in`
 
 A `where` puts the expression first and its parts after it, so the
 reader sees the point before the detail.
@@ -121,15 +121,15 @@ the assembly of a record, stays a local function or a `where` binding.
 
 Two PureScript details bite here; purescript-gotchas has more.
 
-- **A `where` value is computed on every call.** PureScript is eager, so
+- A `where` value is computed on every call. PureScript is eager, so
   logic moved out of a branch into a `where` value runs even on the path
   that never uses it. If it is costly, make it a function of what it
   reports on. In Haskell the value is lazy and this cost does not arise.
-- **A `where` after guards scopes over the last guard alone** (as of
+- A `where` after guards scopes over the last guard alone (as of
   purs 0.15; Haskell's covers every guard). A value several guards share
   must be bound by an inner function instead.
 
-## 4. Use the eliminator, not a two-arm match
+## 4. Use the eliminator instead of a two-arm match
 
 A `case` on `Just` and `Nothing`, or on `Left` and `Right`, whose arms
 only hand the value to a function or return a fallback, is `maybe` or
@@ -191,11 +191,11 @@ Each top-level declaration stays within these budgets.
 | Lines | 30 |
 | `where` bindings | 8 |
 
-Each figure was set at the knee of a measured distribution: count every
-declaration's depth, branches, lines and bindings across the tree, and
+Each figure was set at the knee of a measured distribution. Count the
+depth, branches, lines and bindings of every declaration across the tree, and
 put the budget where the curve bends, so it catches the tail and leaves
-the bulk alone. For another codebase, measure that tree before choosing,
-rather than adopting these numbers unexamined.
+the bulk alone. For another codebase, measure that tree before choosing.
+Do not adopt these numbers unexamined.
 
 A branch counts only when its body does something. Arms whose bodies
 are bare names or literals form a lookup table, and splitting one would
@@ -214,12 +214,12 @@ is. Test modules are exempt.
 
 These are two separate rules with separate checks.
 
-- **File length:** aim for about 100 physical lines per module, with a
+- File length: aim for about 100 physical lines per module, with a
   hard limit of 250. Comments and blank lines count: both are part of
   what a reader navigates. Tests and tooling count too.
-- **Line width:** 80 columns. Count characters, not bytes, because `∷`
+- Line width: 80 columns. Count characters, because `∷`
   is one column and three bytes. A formatter's width setting is the
-  width it lays code out to, not a limit it enforces: it may leave a
+  width it lays code out to. It does not enforce a limit: it may leave a
   long comment, string or signature alone and still pass. Split a long
   string into pieces joined with `<>`, so its value does not change.
   Rewrap a long comment without rewording it.
@@ -231,8 +231,8 @@ then exported functions, then private ones. It may move forward through
 those sections as often as it likes, and never back. Do not order the
 body by the export list, which is often alphabetical.
 
-Tell a constant from a function by its signature, not by its arguments.
-A point-free function takes no arguments and is still a function. A
+Tell a constant from a function by its signature. A point-free function
+has no arguments and is still a function. A
 value with no arguments is a constant even when its type is an action.
 
 Test modules are exempt, since they read as a list of cases with each
@@ -243,8 +243,8 @@ fixture beside the test that uses it.
 Spell out the word a name shortens. The test is whether the name would
 be acceptable in a newspaper article.
 
-Enforce this with a denylist, not a minimum length. The same letter is a
-placeholder in one function and a terse concept in the next: `x` means
+Enforce this with a denylist. A minimum length fails, because the
+same letter is a placeholder in one function and a terse concept in the next: `x` means
 any value in `square x = x * x` and a position elsewhere. No length
 threshold separates those, so deciding which short names stand for a
 concept takes a reader. The list holds what a lint can catch, for
@@ -306,11 +306,11 @@ holds in both.
 
 ## Writing docstrings and comments
 
-- **Write docstrings plainly.** Use short declarative sentences and
+- Write docstrings plainly. Use short declarative sentences and
   exact terms, and state the reason once. Drop metaphor and drama:
   flourish costs clarity, and it can hide a false claim, such as a
   comment saying a range check rejects NaN when it does not.
-- **Comments say why.** The code already says what it does.
+- Comments say why. The code already says what it does.
 - **Keep necessary technical notation, and use words where words
   serve.** A formula the code implements, a standard's own symbols and a
   domain's established terms stay. Elsewhere write "the weights add up

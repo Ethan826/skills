@@ -55,9 +55,9 @@ The base branch is the one this work forked from. The plan, the conversation or 
 Do this before presenting the menu, so your human partner chooses with the records already up to date. Skip the parts that don't apply: a change with no issue has no issue comment.
 
 1. **Comment on the issue.** Walk its acceptance criteria one by one, and give the evidence for each: the test, the command and its output, the commit. Say plainly which criteria you could not verify and why. A comment that only says "done" leaves the reviewer to redo your verification. Posting it is a remote write: post it if authorized, otherwise draft it locally and include it in the one request for an OK (decisions-as-issues, "Record follow-ups instead of offering to").
-2. **Read the issue state back from the tracker.** Check that the comment posted and that the state, labels and links are what you expect. Don't trust that a write landed until you have read it back.
-3. **Sweep every record the change made stale.** Look at the backlog, product docs, AGENTS.md or the project's equivalent instruction file, READMEs, and related issues. Update each one, or say why it needs no change.
-4. **Record out-of-scope follow-ups.** When you find work that belongs outside this branch, file the issue and link it if filing is authorized. If it is not, write a prepared issue draft or a backlog row locally, and list the drafts in one request for the OK. decisions-as-issues, "Record follow-ups instead of offering to", has the full rule. An offer with nothing written down only hands your human partner a chore.
+2. **Read the issue state back from the tracker.** Check that the comment posted and that the state, the labels and the links are what you expect. Don't trust that a write landed until you have read it back.
+3. **Sweep every record the change made stale.** Look at the backlog, the product docs, AGENTS.md or the project's equivalent instruction file, the READMEs, and related issues. Update each one, or say why it needs no change.
+4. **Record out-of-scope follow-ups.** When you find work that belongs outside this branch, file the issue and link it if filing is authorized. If it is not, write a prepared issue draft or a backlog row locally, and list the drafts in one request for the OK. decisions-as-issues, "Record follow-ups instead of offering to", has the full rule. An offer with nothing written down hands your human partner a chore.
 5. **Collect the rulings list.** If a plan executor recorded rulings it made along the way, gather them for your human partner, and copy any that must outlive the branch into the issue.
 6. **Retire the plan file.** If the plan lived in `.superpowers/plans/` (the working-file location used when the project keeps plans in issues), it is deleted when the branch lands: at the end of Option 1, or when the pull request merges. Options 2 and 3 keep it until then.
 
@@ -110,7 +110,7 @@ git -C "$WORKTREE_PATH" rebase <base-branch>
 If the local base and the remote base have both moved, stop and ask your human partner which one to land on. If the rebase stops on a conflict, resolve it in the worktree, or abort with `git rebase --abort` and report.
 
 3. **Run the full check again in the worktree,** for every platform, even after a clean rebase. A rebase without conflicts can still drop an import or leave a stale dependency list.
-4. **Commit any fix in the worktree before fast-forwarding.** `merge --ff-only` moves commits, not a working tree's uncommitted edits, so a fix left uncommitted never reaches the base. Stage files by explicit path, never a directory, and before committing compare `git status --short` with the snapshot taken at the start of the session (see isolated-workspaces), so your human partner's own untracked files are left alone.
+4. **Commit any fix in the worktree before fast-forwarding.** `merge --ff-only` moves commits and leaves a working tree's uncommitted edits behind, so a fix left uncommitted never reaches the base. Stage files by explicit path, never a directory, and before committing compare `git status --short` with the snapshot taken at the start of the session (see isolated-workspaces), so your human partner's own untracked files are left alone.
 5. **Fast-forward the base:**
 
 ```bash
@@ -221,13 +221,13 @@ Carry out the choice, then remove the worktree.
 
 A push publishes work and can start CI runs and deploys, and none of that can be taken back the way a local commit can. CI runs can also cost your human partner money. So:
 
-- **Defer every push when CI or deploys are billed.** If AGENTS.md (or the project's equivalent instruction file) says CI, CD or deploys cost money, are billed per run or are expensive, do not offer pushes as you go. Commit, say what is committed and unpushed, and wait until your human partner asks for a push. Batching ten commits into one push costs one run instead of ten.
-- **Get an explicit OK for each push.** An earlier OK covers the push it was given for and nothing after it.
-- **"Commit" means commit.** It does not mean push.
-- **Name the push before offering it.** Say whether it is a branch push, a pull request, or a push to the base branch, and what CI runs and deploys it triggers, if the project's workflows say. Pushing a branch often runs little or nothing; opening a PR usually runs CI; pushing to the base may deploy.
-- **Offer one push for a batch.** When several commits are ready, offer to push them together.
-- **Treat drift reports as information.** A status line such as "3 commits unpushed" tells you the state. It doesn't ask you to push.
-- **Don't force-push to fix a rejection.** A rejected push means the remote moved. Investigate, and force-push only when your human partner asks for it.
+- Defer every push when CI or deploys are billed. If AGENTS.md (or the project's equivalent instruction file) says CI, CD or deploys cost money, are billed per run or are expensive, do not offer pushes as you go. Commit, say what is committed and unpushed, and wait until your human partner asks for a push. Batching ten commits into one push costs one run instead of ten.
+- Get an explicit OK for each push. An earlier OK covers the push it was given for and nothing after it.
+- "Commit" means commit. It does not mean push.
+- Name the push before offering it. Say whether it is a branch push, a pull request, or a push to the base branch, and what CI runs and deploys it triggers, if the project's workflows say. Pushing a branch often runs little or nothing; opening a PR usually runs CI; pushing to the base may deploy.
+- Offer one push for a batch. When several commits are ready, offer to push them together.
+- Treat drift reports as information. A status line such as "3 commits unpushed" tells you the state. It doesn't ask you to push.
+- Don't force-push to fix a rejection. A rejected push means the remote moved. Investigate, and force-push only when your human partner asks for it.
 
 ## Small Follow-Up Fixes
 
@@ -271,13 +271,13 @@ They review the list and delete what they choose with `git branch -D <name>...`.
 | "Tests passed earlier this session" | Run the check on the tree you are about to land. A green run only proves the tree it ran on. |
 | "It passes on one platform, so it passes" | Run every platform's full check. A pass on one platform doesn't cover the others. |
 | "The rebase was clean, so the check can wait" | A conflict-free rebase can still drop an import or leave a stale dependency list. Run the full check. |
-| "I'll fix it on the base after the fast-forward" | Commit the fix in the worktree first. `merge --ff-only` moves commits, not uncommitted edits. |
+| "I'll fix it on the base after the fast-forward" | Commit the fix in the worktree first. `merge --ff-only` moves commits and leaves uncommitted edits behind. |
 | "`--ff-only` refused, a normal merge will do" | Never create a merge commit. Rebase onto the moved base and run the check again. |
 | "`git pull` is the quick way to update the base" | A pull merges into the checked-out tree, dirty or not. Fetch, then rebase. |
 | "They obviously want it merged" | Integration is your human partner's decision. Present the menu and wait. |
 | "They OK'd a push earlier" | That OK covered that push. Ask again for this one. |
 | "They said commit, and pushing is the obvious next step" | Commit doesn't mean push. |
-| "The status line says commits are unpushed" | That is information, not an instruction. |
+| "The status line says commits are unpushed" | That is information and gives no instruction. |
 | "The issue comment can just say it's done" | Walk the acceptance criteria against evidence, and name what you could not verify. |
 | "I'll offer to file the follow-up" | File it and link it if filing is authorized; otherwise write the draft first, then ask once with the list. |
 | "This small fix deserves its own PR" | Put it in the next branch as its own commit. History needs to stay clean; PR scope doesn't. |

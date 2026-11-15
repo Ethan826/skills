@@ -26,10 +26,10 @@ fails on drift.
 ## When to Use
 
 - You are setting up a project for agent work.
-- A project's instruction file lacks these rules, or carries an older
+- A project's instruction file lacks these rules, or has an older
   version of them.
 - A subagent broke a rule it was never shown.
-- A rule in the block changed, and every project that carries it needs
+- A rule in the block changed, and every project that uses it needs
   the new wording.
 - A project keeps a second always-loaded file beside AGENTS.md, because
   one harness reads its own file and not AGENTS.md, and the two must
@@ -60,11 +60,11 @@ detail:
 |---|---|
 | Own every failure | A failure that each agent treats as someone else's is never fixed. A rerun pass, a written-down limitation and a loosened tolerance each hide a failure without removing it. |
 | No escape hatches | A suppression with a confident reason attached still hides the bug it suppresses. A mistake can be fixed; a rule the agent overrides on its own judgment is a rule nobody can rely on. |
-| Stricter option in coding practice | Choosing strict over partial needs no ruling from your human partner. Product trade-offs do. |
+| Stricter option in coding practice | Choosing strict over partial does not require a ruling from your human partner. Product trade-offs do. |
 | Evidence before claims | An unverified "done" costs your human partner a review to find out. See verify-before-claiming. |
 | Stage explicit paths | `git add <dir>` sweeps the user's untracked drafts into a commit. |
-| No push or remote action without an explicit OK | Pushes, publications and remote issues are visible to others, can be billed, and are hard to take back. See landing-a-branch. |
-| Stop on a denied tool call | A denial carries a policy. Reaching the same result another way defeats it. |
+| No push or remote action without an explicit OK | Pushes, publications and remote issues are visible to others and are hard to take back. They can also cost money. See landing-a-branch. |
+| Stop on a denied tool call | A denial expresses a policy. Reaching the same result another way defeats it. |
 | Brief subagents as if they see only this file and their brief | Whether a subagent inherits memory or the conversation depends on the harness and how it was dispatched. A rule that reaches it only by inheritance is missing wherever inheritance is off. See dispatching-agents. |
 | Cost before expensive agent work | A status question should not trigger a large unrequested sweep. |
 | Durable record for findings | Findings left in chat or in an agent report are lost when the session ends. See decisions-as-issues. |
@@ -97,15 +97,15 @@ rerun it.
 `personal.example.md` holds preferences that belong to a person rather
 than a project. Its defaults are the skill author's:
 
-- Text published under the owner's name: facts as bullets, not drafted
-  narrative, unless asked.
+- Text published under the owner's name: facts as bullets; drafted
+  narrative only when asked.
 - Spelling: American.
 - Notation: words over mathematical notation, unless the notation is
   necessary.
 - Prose review: the humanized-prose-review skill.
 
 Copy the file somewhere you keep your own configuration, edit the items
-(each one carries a comment saying how), and install it as a second
+(each one has a comment saying how), and install it as a second
 block:
 
 ```bash
@@ -129,7 +129,7 @@ block file byte for byte, version line included. It exits 1 when:
 
 On a difference it prints the diff and the `install` command that
 repairs it. A failing check means the block was edited in place or the
-source moved on. Either way, the fix is to reinstall, not to edit the
+source moved on. Either way, reinstall. Do not edit the
 copy until it matches.
 
 Run `check`, and `check-sync` if there is a second file, in the
@@ -174,21 +174,21 @@ Treat AGENTS.md as the source and the other file as a generated copy:
 "$SKILL/scripts/baseline.sh" check-sync AGENTS.md OTHER.md
 ```
 
-`sync` copies every marked section from the source into the copy,
-replacing sections already there and appending new ones. Text outside
+`sync` copies every marked section from the source into the copy. It
+replaces sections already there and appends new ones. Text outside
 the markers in the copy, such as harness-specific notes, stays put. If
-the copy holds a section the source lacks, `sync` stops and names it,
-rather than delete text you may want. Add it to the source or delete it
+the copy holds a section the source lacks, `sync` stops and names it
+instead of deleting text you may want. Add it to the source or delete it
 from the copy, then rerun.
 
 `check-sync` exits 1 when the two files disagree: a section differs, or
 appears in only one file. It also fails in two cases that a plain
 comparison would pass:
 
-- **Either file has no marked sections.** Two files that both lack every
+- Either file has no marked sections. Two files that both lack every
   section compare equal, and a check that only compares them passes. A
-  real drift check had exactly this bug: it passed on two empty files.
-- **A pinned section is missing from either file.** `--expect` names the
+  real drift check had this bug: it passed on two empty files.
+- A pinned section is missing from either file. `--expect` lists the
   sections that must be present, comma separated, and defaults to
   `agent-baseline`. If the project syncs more sections, pin all of them:
 
@@ -196,8 +196,8 @@ comparison would pass:
 baseline.sh check-sync --expect agent-baseline,agent-personal AGENTS.md OTHER.md
 ```
 
-Without the pin, deleting a section from both files at once would pass.
-With it, the check fails and names the missing section.
+Without the pin, a section deleted from both files at once would pass.
+With it, the check fails and reports the missing section.
 
 ### Adopting it where marked copies already exist
 
@@ -224,7 +224,7 @@ change, never a side effect of another commit:
 
 ## Versioning the Block
 
-The start marker carries the version: `<!-- agent-baseline:start v2 -->`.
+The start marker holds the version: `<!-- agent-baseline:start v2 -->`.
 When you change the block:
 
 1. Edit `baseline.md` in the skill, and only there.
@@ -238,7 +238,7 @@ When you change the block:
    project has a second file. Review the diff before committing it.
 
 Any change to the text already makes stale copies fail `check`. The
-version adds two things: a reader can tell which rules a project carries
+version adds two things: a reader can tell which rules a project uses
 without diffing, and the commit history can say what each version
 added.
 
@@ -282,7 +282,7 @@ bump the version.
 3. If there is a second always-loaded file, does `check-sync` pass, run
    in the same suite, and pin every synced section with `--expect`?
 4. Are project-specific rules outside the markers?
-5. Was the block installed by the script, not pasted by hand?
+5. Was the block installed by the script rather than pasted by hand?
 6. If the block changed, was the version bumped and the change
    described?
 7. Is the personal block, if present, in a project its owner alone

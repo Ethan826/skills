@@ -66,10 +66,10 @@ Put the table in the design before asking for approval.
 
 ### 3. Run soundness and completeness as separate passes
 
-- **Soundness pass:** try to make the procedure accept something invalid.
+- Soundness pass: try to make the procedure accept something invalid.
   Start from the rules and look for an input that satisfies the checks
   but violates the meaning.
-- **Completeness pass:** start from a valid construction and try to make
+- Completeness pass: start from a valid construction and try to make
   the procedure reject it. Build the valid case first, by hand, from the
   semantics; then run the procedure on it.
 
@@ -96,14 +96,14 @@ enumerates small inputs and evaluates the semantics directly, by brute
 force, without using any of the procedure's logic. Compare the two on
 every input.
 
-- **Fix the oracle's grammar and bounds before running it.** Write down
+- Fix the oracle's grammar and bounds before running it. Write down
   which inputs it generates and how large they get. "Exhaustive" means
   exhaustive within that grammar and nothing more. If you change the
   grammar after a run, label the change and report the results from
   before and after.
-- **Cross-check fast searches.** Before trusting a fast search's "none
+- Cross-check fast searches. Before trusting a fast search's "none
   found", run it against brute force on inputs small enough for both.
-- **Say that the evidence is bounded.** Passing on every input up to size
+- Say that the evidence is bounded. Passing on every input up to size
   five is strong evidence and still not a proof.
 
 ### 6. Make results explicit, and classify every failure
@@ -135,7 +135,7 @@ a claim too, and it needs its own evidence.
   fails, in both orders. Also test that making the failing part
   compatible makes the whole input pass.
 - When the procedure is unsure, it keeps the failure's own message
-  instead of guessing at a culprit.
+  and does not guess at a culprit.
 - Review "rejects the right inputs" and "explains the rejection
   correctly" separately. An oracle for the first says nothing about the
   second.
@@ -147,7 +147,7 @@ restrictions table and the oracle results. Its task is "find a false
 statement or a missing case", not "check whether this looks right". If
 you dispatch an agent, the dispatching-agents skill covers the brief.
 
-The reviewer's counterexamples are arguments, not conclusions. Check each
+The reviewer's counterexamples are arguments and settle nothing yet. Check each
 one yourself, against the semantics, before acting on it.
 
 ### 9. Close findings with checks
@@ -165,8 +165,8 @@ Return the review in this shape:
 4. **Completeness pass:** the valid constructions tried and what
    happened.
 5. **Distinguishing examples**, one or more per claim.
-6. **Oracle:** grammar, bounds and results, including any change of
+6. **Oracle:** its grammar, its bounds and its results, including any change of
    grammar after a run.
 7. **Open items:** each one an argument not yet checked, or a finding
    not yet closed.
-8. **Verdict:** approve, approve with fixes, or reject.
+8. **Decision:** approve, approve with fixes, or reject.

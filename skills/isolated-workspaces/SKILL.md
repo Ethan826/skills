@@ -166,7 +166,7 @@ Ready to implement <feature-name>
 
 **A long-lived scratch worktree belongs to the host.** Your human partner may keep a worktree for experiments that outlives any one branch. Never clean it up or remove it. When a test needs a particular commit, point the scratch worktree at that commit (`git -C <scratch-worktree> checkout --detach <commit>`) instead of creating a new one.
 
-**Copies made for agents go in scratch space, without build caches.** When an agent needs its own copy of the repo rather than a worktree, put the copy in the harness's scratch or temporary directory, not inside the repo. Leave out build caches and build output (compiler caches, `target/`, `dist/`, `.cache/` and the like). They are often the largest part of a checkout, and the agent can rebuild what it needs.
+**Copies made for agents go in scratch space, without build caches.** When an agent needs its own copy of the repo and a worktree will not do, put the copy in the harness's scratch or temporary directory and keep it out of the repo. Leave out build caches and build output (compiler caches, `target/`, `dist/`, `.cache/` and the like). They are often the largest part of a checkout, and the agent can rebuild what it needs.
 
 ## Quick Reference
 
