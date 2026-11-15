@@ -11,8 +11,8 @@ row that never changes, tables of facts that only grow, and a view that
 folds the facts into current state. Application code inserts; it never
 issues UPDATE or DELETE.
 
-History comes free, "who changed this and when" is a query rather than
-an audit-log side table, and concurrent writers append rows instead of
+History comes free, "who changed this and when" is a query on the facts and
+needs no audit-log side table, and concurrent writers append rows instead of
 overwriting each other. The cost is unfamiliar writes, and a few
 problems (ordering, erasure, side effects) that need deliberate answers
 a mutable schema would have hidden.
@@ -37,16 +37,16 @@ Current state is a fold over facts: for each kind of fact take the
 latest row, then join the results to the identity. Fact tables come in
 two flavours, and one entity often uses both.
 
-- **Full-state snapshot.** Each row carries the entity's whole mutable
+- Full-state snapshot. Each row holds the entity's whole mutable
   state. An edit reads the current row, merges the caller's partial
   input over it and appends the result. Use it when many fields are
   edited independently, as in a profile or a configuration.
-- **Single-fact ledger.** Each row records one narrow fact: a status
+- Single-fact ledger. Each row records one narrow fact: a status
   change, a login, an archival. Reads take the latest row or ask whether
   any row exists. Use it for a fact with its own lifecycle.
 
 An order might have a snapshot table for its editable details and a
-ledger of status events. Archiving is a fact as well: carry an
+ledger of status events. Archiving is a fact as well: put an
 `archived` field in the snapshot, or keep an archive ledger. Never add a
 mutable flag to the identity table.
 
@@ -63,19 +63,19 @@ LEFT JOIN LATERAL (                  -- optional fact: left join
   ORDER BY version DESC LIMIT 1) s ON true;
 ```
 
-- **Reads go through the view.** Repositories never read raw fact tables
+- Reads go through the view. Repositories never read raw fact tables
   for current state, so "current" has one definition, in the schema.
-- **Inner-join the facts an entity cannot lack.** A half-created entity
+- Inner-join the facts an entity cannot lack. A half-created entity
   then stays invisible. A left join would surface it with nulls that
   fail later, somewhere else.
-- **Order by a per-entity version, never by the ID.** Each fact row
-  carries `version`, allocated under the entity lock (see Ordering).
+- Order by a per-entity version, never by the ID. Each fact row
+  has a `version` column, allocated under the entity lock (see Ordering).
   The UUID is identity only.
-- **Declare `UNIQUE (entity_id, version)` on each fact table.** Its index
+- Declare `UNIQUE (entity_id, version)` on each fact table. Its index
   serves every "latest" lookup, and it rejects two writers that claim
   the same version. Fix slow reads with indexes or materialized views,
   never by putting a mutable column back.
-- **Rebuild the view in the migration** that adds a fact column.
+- Rebuild the view in the migration that adds a fact column.
 
 ## The rule, and the gate that enforces it
 
@@ -87,19 +87,19 @@ An unchecked rule erodes. One deliberate UPDATE, defended in a comment,
 becomes the template for the next. Enforce the rule with a test in the
 normal suite:
 
-- **Read the syntax tree, not the text.** Parse each source file. Flag
-  calls to the query builder's update, delete, merge and upsert methods,
+- Read the syntax tree; matching text is not enough. Parse each source file. Flag
+  calls to the query builder's update and delete methods, and to its merge and upsert methods,
   and string or template literals containing `UPDATE ... SET`,
   `DELETE FROM`, `TRUNCATE` or `DO UPDATE`. A text search flags those
   words in a comment, and formatting defeats it, as when a call chain is
   split across lines.
-- **Scan every non-test source file.** Migrations and tests sit outside
+- Scan every non-test source file. Migrations and tests sit outside
   the scan by construction.
-- **Pin each exception to an exact count per file, with its reason.** A
+- Pin each exception to an exact count per file, with its reason. A
   third delete in a file allowed two fails like a first delete anywhere
   else. A shared test helper may delete only if the gate also asserts
   that no application module imports it.
-- **Check that the gate can still see.** A scanner that matches nothing
+- Check that the gate can still see. A scanner that matches nothing
   passes forever. Assert a minimum number of files scanned and that a
   known file is among them. Run a positive probe holding every spelling
   the gate claims to catch, and assert the exact count. Run a negative
@@ -125,8 +125,8 @@ decision and gets the review a schema change gets.
 
 | Exception | Why it may mutate |
 |---|---|
-| Test cleanup | It is infrastructure, not application code. |
-| Migrations that reshape storage | Rewriting the schema is their job. Turning a mutable column into a ledger means building the table, backfilling it, rebuilding the view and dropping the column. |
+| Test cleanup | It is infrastructure and is not application code. |
+| Migrations that reshape storage | Rewriting the schema is their job. Turning a mutable column into a ledger means building the table and backfilling it. Then rebuild the view and drop the column. |
 | Erasure | A ledger cannot forget, and the law or the person may require that it does. |
 
 Nothing else may mutate. "It is only a flag" and "it is only a counter"
@@ -140,10 +140,10 @@ code runs during a cascade, so nothing above the database can make up
 for a key declared wrong. Every foreign key that points at a person is
 therefore a decision about erasure. Classify each one:
 
-- **Subject: whose data this is.** The row exists because the person
+- Subject: whose data this is. The row exists because the person
   does and means nothing without them: their addresses, their own
   history, their settings. Declare it `NOT NULL ON DELETE CASCADE`.
-- **Actor: who did this.** The row belongs to someone else or to the
+- Actor: who did this. The row belongs to someone else or to the
   organization, and the reference is provenance: who approved, who
   tagged, who wrote a shared template. Declare it nullable with
   `ON DELETE SET NULL`, or retain the reference where retention law or
@@ -163,9 +163,9 @@ nulls everything fails as loudly as one that cascades everything.
 
 Erasure must not:
 
-- **rewrite other people's facts.** It removes the person and severs
+- rewrite other people's facts. It removes the person and severs
   references to them. It does not edit or redact anyone else's rows.
-- **leave derived copies behind.** Caches, search indexes, exports,
+- leave derived copies behind. Caches, search indexes, exports,
   analytics stores and copies at external processors hold the person's
   data too. List each beside the classification table, give it an
   erasure step, and record which steps succeeded.
@@ -198,14 +198,14 @@ COMMIT;
 A writer queued behind another merges over what the first one wrote, so
 both edits survive.
 
-- **The merge keeps every field the caller omitted.** A clearable field needs three
+- The merge keeps every field the caller omitted. A clearable field needs three
   states (absent, a value, null), which spreading the input over the row
   cannot distinguish.
-- **Test the outcome, not the wait.** The foreign key already makes the
+- Test the outcome and skip the wait. The foreign key already makes the
   insert block on a held lock, so "it blocked" proves nothing. Commit a
   write while the update waits, then assert both changes are in the
   final row.
-- **A blind write skips the merge, not the lock.** When the caller
+- A blind write skips the merge but still takes the lock. When the caller
   supplies the whole state, last write wins is the intent, but the write
   still needs the next version, and "last" means last under the lock.
 
@@ -239,26 +239,26 @@ other, and the identity-row lock does not change that.
 `ORDER BY id DESC` then serves the earlier write as current, and nothing
 errors.
 
-So every fact table carries a version per entity:
+So every fact table has a version per entity:
 
-- **Allocate it inside the locked transaction.** Read the latest row
+- Allocate it inside the locked transaction. Read the latest row
   under the identity-row lock and insert `version + 1`, or 1 for the
   first fact. A ledger append can compute
   `coalesce(max(version), 0) + 1` in the insert itself, after the lock.
-- **Let the unique constraint catch a writer that skipped the lock.**
+- Let the unique constraint catch a writer that skipped the lock.
   Two writers computing the same version collide on
   `UNIQUE (entity_id, version)`. Retry the whole read-merge-append;
   never drop the constraint.
-- **Use it everywhere "latest" is decided:** the resolved view, every
+- Use it everywhere "latest" is decided: the resolved view, every
   index, the override resolver and outcome folds. A query that orders
   facts by ID or by a timestamp is a bug, however rarely it shows.
-- **Keep the UUID as identity.** Where IDs double as bearer tokens
+- Keep the UUID as identity. Where IDs double as bearer tokens
   (session IDs, reset links), sequential IDs are enumerable; the version
   is an internal ordering key, never an identifier.
-- **Do not rely on a native generator for order.** As of PostgreSQL 18,
+- Do not rely on a native generator for order. As of PostgreSQL 18,
   the documentation for `uuidv7()` documents no ordering guarantee
   across sessions.
-- **Test that the later write wins despite a smaller ID.** Make two
+- Test that the later write wins despite a smaller ID. Make two
   independent generator states, give both the same injected time, and
   seed or redraw until the second write's ID sorts below the first's.
   Append both through the repository in order, assert that the IDs are
@@ -297,18 +297,18 @@ tenants' overrides; with `version DESC` ahead of the rank, whichever
 scope has written more rows wins, and re-seeding the defaults can
 replace a tenant's customization.
 
-- **The tenant is always an explicit parameter,** passed by the caller
+- The tenant is always an explicit parameter, passed by the caller
   from the authenticated request, never read from ambient state inside
   the data layer. A method that touches tenant data without a tenant
   parameter is a bug.
-- **Use one shared resolver** for every read path, never a copy per call
+- Use one shared resolver for every read path, never a copy per call
   site. Version rows per `(entity_id, tenant_id)` under the entity lock,
   and declare `UNIQUE NULLS NOT DISTINCT (entity_id, tenant_id, version)`
   so the default rows, whose tenant is null, are checked too.
-- **Append tenant rows only.** Application code never writes a default.
+- Append tenant rows only. Application code never writes a default.
   A tenant's first override merges over the default, so untouched fields
   keep the platform's values.
-- **Test isolation.** Tenant A sees its override. Tenant B sees the
+- Test isolation. Tenant A sees its override. Tenant B sees the
   default and never A's override. A default written after A's override
   does not displace it.
 

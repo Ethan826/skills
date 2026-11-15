@@ -15,13 +15,13 @@ callers to take care protects none of them.
 This is "make illegal states unrepresentable" applied to argument
 position. Three shapes let a wrong call compile:
 
-- **Transposable arguments.** Two parameters accept each other's values,
+- Transposable arguments. Two parameters accept each other's values,
   so `assign(reviewer, author)` compiles as readily as
   `assign(author, reviewer)`.
-- **Positional booleans and optionals.** `archive(id, true, false)` says
+- Positional booleans and optionals. `archive(id, true, false)` says
   nothing at the call site, and an omitted optional leaves no trace
   there at all.
-- **Ambient context.** The tenant, the actor or the clock is read from
+- Ambient context. The tenant, the actor or the clock is read from
   somewhere the call site cannot see, so a call made without it still
   compiles.
 
@@ -32,17 +32,17 @@ shapes are worth adopting, but only tests can enforce them.
 ## Scope
 
 The rules apply to anything callable from outside its module: exported
-functions, interface and port definitions, use cases, repository and
-gateway methods, SDK surfaces, and the types of injected callbacks. A
+functions; interface and port definitions; use cases; repository and
+gateway methods; SDK surfaces; and the types of injected callbacks. A
 callback type is a signature too. If an interface method takes
 `(owner, member)` and a helper one layer up accepts it as an injected
-function with the same parameter list, fixing only the interface leaves
+function with the same parameter list, fixing only the interface still leaves
 the hazard at the injection site.
 
 Two things are exempt:
 
-- **Internal single-use closures.** They have one caller, in plain view.
-- **Established library idioms,** such as the data-first and data-last
+- Internal single-use closures. They have one caller, in plain view.
+- Established library idioms, such as the data-first and data-last
   forms of a pipeable combinator. That is one idiom with two calling
   conventions, and replacing it makes your code read unlike the library
   it is built on.
@@ -91,14 +91,14 @@ from the count limit in Rule 4.
 
 ## Rule 2: no positional booleans, no positional optionals
 
-- **A boolean goes in a record field,** or becomes a two-case type:
+- A boolean goes in a record field, or becomes a two-case type:
   `{ includeArchived: true }`, or `Visibility = "all" | "active"`.
   `list(id, true)` can only be read by opening the definition.
-- **An optional parameter is not positional.** Put it in the record. Where
+- An optional parameter is not positional. Put it in the record. Where
   absence means something ("no exclusion", "no deadline"), make the
   field an explicit `Option` or `Maybe` rather than `?` or a nullable, so
   the caller writes `none` and the reader sees the choice.
-- **No optional record of optional fields.** `opts?: { flag?: boolean }`
+- No optional record of optional fields. `opts?: { flag?: boolean }`
   gives three ways to say the same thing. Make the record required and
   give its fields explicit defaults or explicit `Option`s.
 
@@ -111,28 +111,28 @@ state. Identity is a parameter, in the same position in every signature,
 and that position is first; a capability may instead be a typed
 environment, as below.
 
-- **Explicit,** because a missing context then fails to compile at every
+- Explicit, because a missing context then fails to compile at every
   call site. Read from a request-local global, a thread-local or
   async-local storage, it is invisible to the type checker: a background
   job, a retry or a test runs without it, or with whatever an earlier
   request left behind, and still compiles. For the tenant case and what
   goes wrong when it is ambient, see multi-tenant-security-review.
-- **Identity is a parameter; capabilities may be a typed environment.**
+- Identity is a parameter; capabilities may be a typed environment.
   A required environment that the types track, such as Effect's `R`
   channel or a Reader, is not ambient: running a program before it is
   provided is a compile error. Even so, this collection passes
   request-scoped identity (the tenant, the acting user) as explicit
-  parameters. That is a security policy, not a type-safety argument: it
+  parameters. That is a security policy and has nothing to do with type safety: it
   keeps the scope of every operation visible at the call site and in
   review. Capabilities, such as the clock, a repository or a logger, may
   come through the project's chosen typed Reader or Effect environment
   instead; purescript-rows-and-newtypes teaches that design.
-- **First,** because a fixed position stops drift, where some signatures
+- First, because a fixed position stops drift, where some signatures
   lead with the tenant and others trail it. When the rule lands, move
   every signature that trails, including the ones whose types make them
   safe. A rule the codebase visibly breaks on the day it is written tells
   the next reader that the rules here are decorative.
-- **The clock is context.** A function that reads the current time
+- The clock is context. A function that reads the current time
   takes a clock or an instant as a parameter, or a clock capability from
   a typed environment, so tests can pin it.
   decision-core-architecture covers why the core never reads time
@@ -189,16 +189,16 @@ declared public from TypeScript 5.4 (checked against the shipped
 where it is present). Before 5.4 it existed only as an undeclared
 internal.
 
-- **Write a new gate as an assignability gate.**
+- Write a new gate as an assignability gate.
 - **Count a pair as colliding when either type is assignable to the
   other.** Strict mutual assignability misses a subtype: with
   `fit(outer: Shape, inner: Square)`, a caller holding two squares can
   swap them silently. The cost is that a branded ID beside its own base
   type (`OrderId` beside `string`) is flagged too. Brand the other
   parameter or use a record.
-- **A written-type gate is acceptable only if it states its blind spot**
-  in a comment beside the rule and in the instruction file, naming the
-  cases it misses. Otherwise readers assume it covers them.
+- A written-type gate is acceptable only if it states its blind spot
+  in a comment beside the rule and in the instruction file, and the comment
+  lists the cases it misses. Otherwise readers assume it covers them.
 
 ### What the gate must prove about itself
 
@@ -217,7 +217,7 @@ is broken. Give it three self-checks in the same test file:
    two fields share a type, or an internal closure inside a public
    function, and assert no findings. This catches a detector that flags
    everything, or one that reaches past the public surface.
-3. **A minimum number of signatures read.** Count signatures, not files,
+3. **A minimum number of signatures read.** Count signatures instead of files,
    and assert a floor near the real number. A file count stays green
    when the walker stops descending into interfaces. Raise the floor as
    the API grows. A floor met by one form can hide a form never read,
@@ -232,7 +232,7 @@ or a type does not resolve.
 Also check that the test runner collects the gate at all. A new test
 file that matches no runner's include pattern is run by nobody, and so
 it never fails. When the gate lands, fix every existing violation it
-finds, not only the ones that prompted it.
+finds, including those beyond the ones that prompted it.
 
 ### Illustration
 
@@ -270,20 +270,20 @@ fault was in authorization, and nothing failed loudly.
 
 The fix and what it found:
 
-- **The signature took a record,** `{ author, reviewer }`, and the
+- The signature took a record, `{ author, reviewer }`, and the
   compiler then pointed at every call site. Per-role brands were
   rejected for the reason in Rule 1: a user can be both.
-- **A scan for the class found more than the reported bug:** a time
+- A scan for the class found more than the reported bug: a time
   window passed as two positional dates, so that swapping them inverted
   an overlap check; a rate limit taking `(limit: number, windowMs:
   number)`; and an injected `canReview(workspace, authorId, reviewerId)`
   callback one layer above the repository. When you fix one instance,
   scan for the whole class.
-- **The first gate compared written types.** It caught the
+- The first gate compared written types. It caught the
   `UserId`-beside-`UserId` case and passed when someone added
   `type Approver = UserId` beside a `UserId`. Its only self-check was a
   file count, so a broken detector would also have passed. The
-  replacement asks the type checker and carries the three probes above.
+  replacement asks the type checker and includes the three probes above.
 
 ## Review checklist
 
@@ -305,7 +305,7 @@ The fix and what it found:
 6. Does the gate state its kind? If it compares written types, does it
    name what it misses beside the rule?
 7. Does the gate find the surface from the exports, plant a violation in
-   each syntax form asserting exactly one finding each, carry a near-miss
+   each syntax form asserting exactly one finding each, include a near-miss
    probe asserting none, fail on parse and type errors, and put a floor
    on signatures read?
 8. When the rule or gate landed, were all existing violations fixed,

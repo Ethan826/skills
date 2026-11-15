@@ -51,36 +51,36 @@ gate measures a proxy, and the gap needs a test or a written limit.
 - A rule that no gate checks yet may stand as a **review convention**,
   if it is listed, labelled as a convention and given a reason why no
   gate exists. Each convention is a candidate for a gate. A budget with a
-  standing exception is a convention, not a gate.
+  standing exception is a convention and does not count as a gate.
 
-## 2. Decide on structure, not text
+## 2. Decide on structure
 
 A semantic claim ("nothing imports the internal module", "every handler
 checks authorization") needs a parser: the syntax tree, the compiler's
-module graph or the type checker. Report what binds a name, not what
-mentions it.
+module graph or the type checker. Report what binds a name; a name that is only mentioned does not
+count.
 
-- **Fail closed on anything the gate cannot resolve:** a dynamic import,
+- Fail closed on anything the gate cannot resolve: a dynamic import,
   a file that does not parse, a region with no marker. An unresolved
   case is a failure with a named message, never a skip.
-- **Code inside strings and comments must not trigger the gate,** and
+- Code inside strings and comments must not trigger the gate, and
   must not satisfy it either.
-- **Keep every miss as a permanent case.** When a gate moves from text
+- Keep every miss as a permanent case. When a gate moves from text
   matching to a parser, each thing the old check missed becomes a
   fixture.
 - **Text checks are allowed only as conservative over-matching within a
   defined scope.** Such a check may raise a false alarm; it may never
   miss. Write the scope and the over-matching down beside it. A text
   check that can miss a violation must move to a parser.
-- **Text-native rules need no parser.** Line width (counted in
-  characters, not bytes), a final newline and a file encoding are
+- Text-native rules need no parser. Line width (counted in
+  characters; bytes do not count), a final newline and a file encoding are
   properties of the text itself.
 
 ## 3. The gate's own gate
 
 A checker is code, and an untested checker hides its own bugs well,
-because they read as success. Every checker carries this block, as
-tests that run in the same command as the checker:
+because they read as success. Every checker has this block, as tests
+that run in the same command as the checker:
 
 ```
 STANDARD BLOCK: required tests for every checker
@@ -145,18 +145,18 @@ agent-baseline).
 
 A threshold is a ratio, and either side can move.
 
-- **Pin the denominator as well as the threshold.** Hash the exclusion
+- Pin the denominator as well as the threshold. Hash the exclusion
   list, count the inline ignore pragmas, and fail when either changes
   without a matching record.
-- **Thresholds ratchet up only.** A decrease requires the owner's
+- Thresholds ratchet up only. A decrease requires the owner's
   explicit approval. Changing the pinned record and writing a reason is
   not approval.
-- **Measure against the inventory.** A file that nothing loads is often
+- Measure against the inventory. A file that nothing loads is often
   absent from a coverage report rather than shown at zero. Compare the
   report's file list with the source tree.
-- **Coverage is optional, and it is a signal, never the goal.** Where a
+- Coverage is optional, and it is a signal, never the goal. Where a
   project uses it, the rules above apply.
-- **Label each budget as measured or fiat.** A measured budget sits at a
+- Label each budget as measured or fiat. A measured budget sits at a
   knee of an observed distribution; a fiat budget is a chosen limit. Say
   which one each is, so a later reader knows what evidence would justify
   moving it.
@@ -167,7 +167,7 @@ A threshold is a ratio, and either side can move.
 test passes is not enough; show that it fails with the defect present.
 
 1. Where the project's harness supports mutant rows, add one. The row
-   restores the defect in an isolated copy, names the test and states
+   restores the defect in an isolated copy, lists the test and states
    the expected failure.
 2. Where it does not, record an equivalent reproduction in the fix's
    record: the command, the failing output against the defective
@@ -175,10 +175,10 @@ test passes is not enough; show that it fails with the defect present.
 3. A defect that takes several edits to restore still needs evidence.
    Restore it across those edits, or reproduce it on the commit before
    the fix. Difficulty is not an exemption.
-4. The expected failure names the defect's symptom, so an unrelated
+4. The expected failure must match the defect's symptom, so an unrelated
    failure cannot satisfy the mutant.
-5. The mutant goes where the defect is raised, not upstream of it.
-   Breaking an earlier stage makes the test fail for a different reason
+5. The mutant goes where the defect is raised. Breaking an upstream
+   stage makes the test fail for a different reason
    and proves nothing about the fix.
 
 The mechanics (isolated copies, verifying the clone, timeouts for probes
@@ -192,18 +192,18 @@ declarations and a built library, an API schema and its handlers, a
 document and the code it describes), a contract test checks one against
 the other.
 
-- **Check the declaration against the built artifact,** not against
-  another hand-written copy.
-- **Read the inventory from the source of truth,** such as the exported
-  API object or the server's handler registry, not from a hand-kept list.
-- **Check every list in both directions:** everything declared exists,
+- Check the declaration against the built artifact. Another
+  hand-written copy is not a check.
+- Read the inventory from the source of truth, such as the exported
+  API object or the server's handler registry. A hand-kept list can drift.
+- Check every list in both directions: everything declared exists,
   and everything that exists is declared.
-- **Assert that the test is not vacuous:** the number of items compared
+- Assert that the test is not vacuous: the number of items compared
   is at least a stated floor, and a named member is among them.
-- **Pin a drift check's inventory.** List the sections or names it must
+- Pin a drift check's inventory. List the sections or names it must
   find. A drift check over an unpinned inventory passes when the
   inventory is empty.
-- **Assert the exact expected outcome per item.** A check that accepts
+- Assert the exact expected outcome per item. A check that accepts
   either of two outcomes passes when the thing it checks has been
   deleted.
 
@@ -218,59 +218,59 @@ longer where it looks.
 Replace such a gate with a rule that cannot be satisfied vacuously: one
 that checks the precondition itself, fails on anything outside it, and
 keeps the scan floor from the standard block. When a gate's scan count
-drops sharply, treat that as a failure to investigate, not as progress.
+drops sharply, treat that as a failure to investigate; it is not progress.
 
 ## 9. Cost, placement and modes
 
-- **The authoritative place runs every gate.** That is CI where it
+- The authoritative place runs every gate. That is CI where it
   exists. Without CI, it is the documented local check command, and
   "this belongs in CI" does not excuse a gate from it.
-- **Hooks are never the only place a gate runs.** A hook is a
+- Hooks are never the only place a gate runs. A hook is a
   convenience and can be skipped. Hooks that guard billed pushes serve a
   different purpose; see landing-a-branch and agent-baseline.
-- **The routine check always runs in full.** Price a check before making
+- The routine check always runs in full. Price a check before making
   it routine. An expensive check may be separate only if it names its
   triggers and the evidence it must produce when triggered: for example,
   "changes to matching, stored state or saved formats run the replay
   corpus and report the diff count".
-- **Report-only suites may be permanent** when they gather exploratory
+- Report-only suites may be permanent when they gather exploratory
   evidence. Label them report-only. A report-only failure is still
   investigated and tracked in a durable record, never left to scroll
   past.
-- **Required correctness checks gate.** A required check does not become
+- Required correctness checks gate. A required check does not become
   report-only to escape its failures, and it does not stay as a gate
   that sometimes fails. Make it deterministic: serial phases, ratios
   with their preconditions asserted, waits on conditions instead of
   sleeps.
-- **Timing checks stay noisy.** A serial phase and a bound set as a
+- Timing checks stay noisy. A serial phase and a bound set as a
   multiple of the median of several warm runs, or a ratio gate, reduce
   the noise. They do not make the measurement dependable, so a timing
   failure is investigated, never rerun until green.
-- **Warnings that never fail are report-only.** A rule the project
+- Warnings that never fail are report-only. A rule the project
   requires runs at error level, or the run fails on any warning.
-- **Cheap gates close tool gaps:** a final newline, width in characters,
+- Cheap gates close tool gaps: a final newline, width in characters,
   a pinned compiler version after a measured crash rate.
 
 ## 10. Enforcement limits
 
 State these where gates are documented, so nobody over-trusts them:
 
-- **Syntactic blind spots.** Aliased or re-exported names, dynamic
+- Syntactic blind spots. Aliased or re-exported names, dynamic
   imports, checks of direct imports only, and code generated at build
   time escape structural gates unless the gate handles them explicitly.
-- **Nominal comparison is not a type query.** Two identical written
+- Nominal comparison is not a type query. Two identical written
   types are not the same claim as mutual assignability.
-- **Oracles and exhaustive runs are bounded.** "Exhaustive" means within
+- Oracles and exhaustive runs are bounded. "Exhaustive" means within
   the stated grammar and size.
-- **A mutant proves only the defect it restores.**
-- **Hooks can be bypassed,** for example with `git commit --no-verify`.
+- A mutant proves only the defect it restores.
+- Hooks can be bypassed, for example with `git commit --no-verify`.
   An owner-only allowlist relies on someone reviewing the diff.
-- **Review conventions are unenforced by definition.**
-- **Directories a gate does not scan are outside it,** including any test
+- Review conventions are unenforced by definition.
+- Directories a gate does not scan are outside it, including any test
   code that lives there.
-- **Timing on shared hosts is noisy.** Ratios and serial phases reduce
+- Timing on shared hosts is noisy. Ratios and serial phases reduce
   the noise; they do not make a timing measurement dependable.
-- **A drift or contract check is only as good as its inventory.** Pin
+- A drift or contract check is only as good as its inventory. Pin
   the expected sections or names, or an empty inventory passes.
 
 A failing chained check that stops at its first failing step is not
@@ -299,7 +299,7 @@ must-fail cases. skill-update covers registering that check.
 2. Does every semantic check use a parser and fail closed on what it
    cannot resolve? Is every text check scoped, over-matching and
    documented as such?
-3. Does every checker carry the standard block, including the empty
+3. Does every checker have the standard block, including the empty
    input case against its declared inventory and a scan floor with a
    named member?
 4. Is the allowlist empty by decision, or reviewed and pinned by the

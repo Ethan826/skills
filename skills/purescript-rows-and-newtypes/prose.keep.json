@@ -1,0 +1,8 @@
+[
+  {
+    "rule": "arrow",
+    "text": "mkPercent ∷ ∀ r. Number → Either",
+    "count": 1,
+    "reason": "literal PureScript type signature inside a code example; the arrow is the language's syntax"
+  }
+]
