@@ -1130,8 +1130,9 @@ from any of the three. The three names are also never introduced (O29).
 
 > Koka, Unison and Effekt are research languages whose type checkers
 > track side effects. In Koka, a function that prints to the console and
-> can throw has the type `() -> <console,exn> int`: the type itself
-> lists the printing and the throwing. Waxwing takes the same approach.
+> can throw an exception has the type `() -> <console,exn> int`. The
+> `<console,exn>` part says that the function may print and may throw.
+> Waxwing takes the same approach.
 
 **Mechanizable:** partly. "inform(s) the", "shape(s) the", "lineage",
 "heritage" and "DNA" are matchable as notes; whether the sentence says
@@ -1237,9 +1238,9 @@ object itself ("what the function may do") is still abstract.
 
 **Rewrite:**
 
-> In Koka, a function that prints to the console and can throw has the
-> type `() -> <console,exn> int`: the type itself lists the printing and
-> the throwing.
+> In Koka, a function that prints to the console and can throw an
+> exception has the type `() -> <console,exn> int`. The `<console,exn>`
+> part says that the function may print and may throw.
 
 **Mechanizable:** no.
 
@@ -1273,3 +1274,28 @@ doesn't show.
 
 **Checklist:** Does a metaphor ("inherit", "carry over", "build on")
 stand for a logical relation the text should state plainly?
+
+### O45. Gerunds as a parallel flourish
+
+**Observed:** 2026-11-15, the coordinator's own rewrite of O43.
+
+**Example:**
+
+> the type itself lists the printing and the throwing.
+
+**Why:** "The printing and the throwing" turns two verbs into gerund
+nouns for a neat parallel. The result is vaguer than saying what the
+type says, and "itself" adds emphasis with no content.
+
+**Rewrite:**
+
+> The `<console,exn>` part says that the function may print and may
+> throw.
+
+**Mechanizable:** partly. "the X-ing and the Y-ing" is matchable as a
+note.
+
+**Status:** open
+
+**Checklist:** Has a pair of verbs been turned into "the X-ing and the
+Y-ing"? Say what happens instead.
