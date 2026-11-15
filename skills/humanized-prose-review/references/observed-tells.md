@@ -986,3 +986,72 @@ environment type for each combination."
 
 **Checklist:** Does one sentence mix what is true ("can", "does") with
 what is wanted ("should", "will")?
+
+### O35. Conditional chain for a plan
+
+**Observed:** 2026-11-15, Waxwing design prose.
+
+**Example:**
+
+> Planned inference would collect the row from the operations a
+> function calls. Construction requirements and failures would be
+> accounted for where a service is constructed. Adding a service or
+> error family would no longer require copying its name through every
+> caller. Explicit signatures would still limit what a function is
+> allowed to do.
+
+**Why:** Every sentence uses "would", so a plan reads as a hypothetical
+and the paragraph hedges throughout. Four sentences in the same mood
+also fall into the same rhythm. The passage also shows O1 and O4
+("Planned inference" as status label and actor), O8 and O25 ("the row"
+before any definition), O10 (gerund subject), O17 (noun stack) and O31
+(a new abstract subject in each sentence).
+
+**Rewrite:**
+
+> We plan to have the compiler work out a function's requirements for
+> you. It will look at the services and operations the function uses
+> and add them to the function's type, in the part of the type called
+> its row. When code constructs a service, the compiler will add that
+> service's own requirements and possible errors to the constructing
+> code's type. So when you add a new service or a new kind of error, you
+> won't have to write its name into the type of every function that
+> calls it. If you write a function's type yourself, the compiler still
+> checks the body against it and rejects any service or error the type
+> doesn't list.
+
+**Mechanizable:** partly. Several consecutive sentences built on
+"would" are countable; whether the text describes a plan needs the
+meaning.
+
+**Status:** open
+
+**Checklist:** Does a plan read as a string of "would" sentences? State
+it once ("We plan to …") and then use "will".
+
+### O36. Vague verb with a hidden actor
+
+**Observed:** 2026-11-15, Waxwing design prose (same passage as O35).
+
+**Example:**
+
+> Construction requirements and failures would be accounted for where a
+> service is constructed.
+
+**Why:** "Accounted for" names no action the reader can picture, and
+the passive hides who does it. The reader can't tell what changes, or
+where.
+
+**Rewrite:**
+
+> When code constructs a service, the compiler will add that service's
+> own requirements and possible errors to the constructing code's type.
+
+**Mechanizable:** partly. "accounted for", "taken care of", "handled"
+and "addressed" in the passive are matchable; whether a concrete action
+is named nearby needs the meaning.
+
+**Status:** open
+
+**Checklist:** Could a reader say exactly what happens, and who does
+it? Replace "accounted for", "handled" and "addressed" with the action.
