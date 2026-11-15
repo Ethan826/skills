@@ -1128,9 +1128,10 @@ from any of the three. The three names are also never introduced (O29).
 
 **Rewrite:**
 
-> Waxwing's effect system borrows from Koka, Unison and Effekt, three
-> research languages that record in a function's type what the function
-> may do.
+> Koka, Unison and Effekt are research languages whose type checkers
+> track side effects. In Koka, a function that prints to the console and
+> can throw has the type `() -> <console,exn> int`: the type itself
+> lists the printing and the throwing. Waxwing takes the same approach.
 
 **Mechanizable:** partly. "inform(s) the", "shape(s) the", "lineage",
 "heritage" and "DNA" are matchable as notes; whether the sentence says
@@ -1156,11 +1157,10 @@ decides and why. The five-item subject also buries the verb (O18), and
 
 **Rewrite:**
 
-> Waxwing should list each kind of effect separately instead of lumping
-> everything under one type the way Haskell's IO does: which services a
-> function needs, which errors it can return, whether it talks to the
-> outside world, whether it changes state, and whether it might never
-> finish.
+> A function's type will list the services it needs, the errors it can
+> return, whether it reads or writes outside the program, whether it
+> changes state, and whether it might run forever, instead of putting
+> all of that under one IO type as Haskell does.
 
 **Mechanizable:** partly. "deserve(s)" with a non-person subject is
 matchable as a note.
@@ -1185,10 +1185,11 @@ decision someone made? Say who decided what.
 earlier; the second "their" means the contracts. A reader carrying the
 first referent misreads the second sentence.
 
-**Rewrite:** Name the referent at least once in each sentence: "The
-three languages guarantee different things … Neither Waxwing's current
-effect rows nor the other languages' proofs establish what Waxwing's
-rules guarantee."
+**Rewrite:** Name the referent in each sentence: "Each of the three
+languages proves its own properties about its effect types, and those
+proofs say nothing about Waxwing's rules. We still have to write
+Waxwing's rules for pure functions and for these five kinds of effect,
+and prove what they guarantee."
 
 **Mechanizable:** no.
 
@@ -1211,8 +1212,8 @@ the stative "still need design" (O20) add to the fog.
 
 **Rewrite:**
 
-> We still have to design Waxwing's own rules for pure functions and
-> for each kind of effect, and prove what those rules guarantee.
+> We still have to write Waxwing's rules for pure functions and for
+> these five kinds of effect, and prove what they guarantee.
 
 **Mechanizable:** no.
 
@@ -1220,3 +1221,55 @@ the stative "still need design" (O20) add to the fog.
 
 **Checklist:** Does every comparative ("stronger", "better", "simpler")
 name what it is compared with?
+
+### O43. Verb split from its object
+
+**Observed:** 2026-11-15, the coordinator's own rewrite of O39.
+
+**Example:**
+
+> three research languages that record in a function's type what the
+> function may do.
+
+**Why:** A prepositional phrase ("in a function's type") sits between
+the verb and its object, so the object arrives last and dangles. The
+object itself ("what the function may do") is still abstract.
+
+**Rewrite:**
+
+> In Koka, a function that prints to the console and can throw has the
+> type `() -> <console,exn> int`: the type itself lists the printing and
+> the throwing.
+
+**Mechanizable:** no.
+
+**Status:** judgment-only
+
+**Checklist:** Does a phrase separate a verb from its object? Does the
+sentence show a concrete instance, or only describe one?
+
+### O44. Figurative verb for a logical relation
+
+**Observed:** 2026-11-15, the coordinator's own rewrite of O41.
+
+**Example:**
+
+> The three languages guarantee different things, so Waxwing can't
+> inherit their results.
+
+**Why:** "Inherit their results" dresses a logical point (their proofs
+don't apply to Waxwing's rules) as a family metaphor, and "different
+things" names nothing. The "so" asserts a causal link the sentence
+doesn't show.
+
+**Rewrite:**
+
+> Each of the three languages proves its own properties about its
+> effect types, and those proofs say nothing about Waxwing's rules.
+
+**Mechanizable:** no.
+
+**Status:** judgment-only
+
+**Checklist:** Does a metaphor ("inherit", "carry over", "build on")
+stand for a logical relation the text should state plainly?
