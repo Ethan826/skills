@@ -23,23 +23,23 @@ exactly, prove each step with a test you watched fail and then pass, and
 leave a record that will outlast your own memory of the session.
 
 Between tool calls, narrate at most one short line. The ledger and the
-tool results carry the record.
+tool results hold the record.
 
 **Dependencies.** This skill's scripts are self-contained: `scripts/`
-carries its own copies of the repository, workspace, brief and
+contains its own copies of the repository, workspace, brief and
 review-package helpers, identical to subagent-plan-execution's. The final review uses
 requesting-review's `code-reviewer.md`, and the steps below load
 test-first, verify-before-claiming, root-cause-debugging,
 isolated-workspaces and landing-a-branch by name. Install those skills
 alongside this one. If requesting-review is missing, say so to your human
-partner before the final review rather than improvising a reviewer brief.
+partner before the final review, and do not improvise a reviewer brief.
 
 Do not stop to check in with your human partner between tasks. They
 chose inline execution to spend less, and asking "should I continue?"
 after every task spends their time instead. Run every task in the plan
 without pausing.
 
-## Rulings, not stalls
+## Rulings Instead of Stalls
 
 Decide conflicts, ambiguities and plan defects yourself. The spec is the
 binding authority, the plan is the argument built on it, and your
@@ -56,11 +56,11 @@ partner.
 - A side effect outside this worktree that norms say you ask about first,
   such as a merge, a push to a shared branch or a publish.
 - A plan so broken that every path forward is a guess.
-- **A product decision the spec does not settle:** a choice a user of the
+- A product decision the spec does not settle: a choice a user of the
   software would recognize and could disagree with, such as a threshold,
   a default or a behavior on an unforeseen input. Coding practice is not
   in this class: rule on it, and take the stricter option.
-- **A project rule that blocks the work.** Report the rule and the line.
+- A project rule that blocks the work. Report the rule and the line.
   Do not rule your way around it.
 
 If a tool call is denied, stop and report the exact denial text. Never
@@ -161,13 +161,13 @@ This is set per project. Read AGENTS.md, or the project's equivalent
 instruction file, for a line such as `Plans: docs/plans/` or
 `Plans: issues`.
 
-- If it names a directory, the plan is a committed file there.
+- If it gives a directory, the plan is a committed file there.
 - If it says `issues`, or says nothing:
   - The spec is the issue. Name the comment that is the spec; often it is
     the last one.
   - The plan is a working file at `.superpowers/plans/<issue>-<slug>.md`,
     kept out of git by `printf '*\n' > .superpowers/plans/.gitignore`.
-  - Decisions that must outlive the branch go in the issue, not the plan.
+  - Decisions that must outlive the branch go in the issue, and the plan does not hold them.
   - The plan file outlives the workspace: landing-a-branch deletes it
     when the branch lands.
 
@@ -189,14 +189,15 @@ midway and the new one resumes from the same ledger.
   working tree you're executing in. It prints the plan's git-ignored
   directory
   (`<repo-root>/.superpowers/sdd/<plan-basename>/`), which holds every
-  artifact for this plan: ledger, briefs and review packages. Another
+  artifact for this plan. The ledger sits there, and so do the briefs and
+  the review packages. Another
   plan's directory is never yours to read or write.
 - Look for this plan's ledger at `<workspace>/progress.md`. If its first
   line names your plan file, every task with a `Task <N>: complete` line
   is done. Do not redo it; resume at the first task without one. Those
   commits exist in git even when your context no longer remembers making
   them, so after compaction, trust the ledger and `git log` over your own
-  recollection. A ledger whose first line names a different plan file
+  recollection. A ledger whose first line shows a different plan file
   records another plan's progress. Leave it alone and start your own.
 - Create the ledger with its identity as the first line:
   `# SDD ledger — plan: <plan file path>`.
@@ -223,7 +224,7 @@ that share nothing get no row, and a plan whose tasks share nothing gets
 the single line `Pre-flight: no shared interfaces`. Rule on each conflict
 a row turns up, with the spec as the binding authority, record the ruling
 beside its row, and start Task 1. You check each task's own text when you
-read its brief, not here.
+read its brief, and you skip that check here.
 
 ## The Task Loop
 
@@ -238,10 +239,10 @@ plan.
   path, from the working tree you're executing in. N is the task's ID as
   its heading spells it (`3`, `6b`, `A1`). In one call it prints the
   brief's path and BASE, the commit the task's range is cut from. The
-  brief opens with the plan's Global Constraints, verbatim, and then the
-  task's own text; both bind the task. If task-start fails, its exit
-  status and message say why. Fix the cause and run it again,
-  recording any change to the plan as a ruling in the ledger:
+  brief opens with the plan's Global Constraints, verbatim. The task's
+  own text follows, and both bind the task. If task-start fails, its exit
+  status and message say why. Fix the cause and run it again.
+  Record any change to the plan as a ruling in the ledger:
   - exit 2: a usage error, or the current directory is not inside a git
     working tree with at least one commit. The message says which.
   - exit 3: no `Task N` heading. When the plan's task headings use
@@ -279,16 +280,15 @@ and the rule.
 Every step that runs a command has an `Expected:` line. Run the command,
 read its output and compare. There are three outcomes.
 
-- **It matches.** Go to the next step.
-- **The code is wrong.** Use root-cause-debugging. Find the cause; never
+- It matches. Go to the next step.
+- The code is wrong. Use root-cause-debugging. Find the cause; never
   patch the symptom so that the output matches.
-- **The plan is wrong.** A step contradicts the spec, an interface from
+- The plan is wrong. A step contradicts the spec, an interface from
   an earlier task does not match what this task consumes, or a command
   cannot work. Rule on the smallest change that satisfies the spec,
   ledger it as `Task <N>: Ruling: <finding> — <what you decided and why>`,
-  and continue. The ledger carries the ruling forward: later tasks that
-  touch the same interface read it there instead of relying on your
-  memory.
+  and continue. Later tasks that touch the same interface read the
+  ruling in the ledger instead of relying on your memory.
 
 Commit as the plan's commit steps say. A task may span several commits;
 BASE is what the review range is cut from, never `HEAD~1`.
@@ -349,7 +349,7 @@ Name the model explicitly. A dispatch that omits it inherits the
 session's model, which may not be the most capable. This review is the
 one fresh context the whole run buys, so dispatch it fresh. If your
 harness can fork an agent with this session's history, don't: a fork
-carries your blind spots along with your context. Do not skip the review,
+inherits your blind spots along with your context. Do not skip the review,
 and do not replace it with your own read of the diff.
 
 **Without a subagent tool:** read code-reviewer.md and perform that
@@ -383,18 +383,17 @@ decides; you do not.
 Sort the findings before you act on any of them. The reviewer's severity
 labels are advice; the gate is yours. Its "Declined to judge" list is
 yours as well. Every line on it is a ruling you make and ledger, exactly
-as you would a plan conflict: `Final: Ruling: <behavior the reviewer set
-aside> — <what a reasonable person using this software gets, and why that
-stands or why it is now a finding> — <cost if wrong>`.
+as you would a plan conflict: 
+`Final: Ruling: <behavior the reviewer set aside> — <what a reasonable person using this software gets, and why that stands or why it is now a finding> — <cost if wrong>`.
 
 Re-grade first, by effect. The spec is a vision document. A finding's
 grade is what a reasonable person using this software gets if it ships,
-whether or not the spec names the input that triggers it. A reviewer who
-rated a finding Minor because the spec was silent has graded the spec,
-not the effect. Then:
+whether or not the spec mentions the input that triggers it. A reviewer who
+rated a finding Minor because the spec was silent has graded the spec
+instead of the effect. Then:
 
-- **Critical and Important** findings enter the fix pass.
-- **Minor** findings go to the ledger as
+- Critical and Important findings enter the fix pass.
+- Minor findings go to the ledger as
   `Final: minor (deferred): <one-liner>` and to your final message under
   "Deferred minors". Minors never enter the fix pass and never become
   rulings. A ruling decides a conflict; declining a polish suggestion is
@@ -402,9 +401,9 @@ not the effect. Then:
 
 ### The fix pass
 
-Fix the Critical and Important findings yourself, since you are the
-implementer, in one pass. The never-list above still holds. Test-first
-verifies each fix, not a second reviewer: write the test that reproduces
+You are the implementer, so make one pass over the Critical and
+Important findings and fix them yourself. The never-list above still holds. Test-first
+verifies each fix; a second reviewer does not: write the test that reproduces
 the finding, watch it fail, make it pass, then run the whole suite.
 Record each fix in the ledger as
 `Final: fixed <finding> — <test name> RED→GREEN, suite <N>/<N>`. A fix
@@ -444,14 +443,14 @@ Use landing-a-branch.
 |--------|---------|
 | "I remember what Task N says" | You remember a summary. The brief has the exact values. Read it. |
 | "The plan's code is right, skip watching the test fail" | A test you never saw fail proves nothing. It is one step. Run it. |
-| "I'll run the full suite at the end instead of per step" | Per-step runs are how you learn which step broke it. The end-of-task run is the contract, not a substitute. |
+| "I'll run the full suite at the end instead of per step" | Per-step runs are how you learn which step broke it. The end-of-task run is the contract and does not replace per-step runs. |
 | "The plan is wrong here, I'll just do the right thing" | Do the right thing and ledger the ruling. Unledgered deviation is a decision made in secret. |
 | "I'll write the ledger lines after a few tasks" | Compaction does not wait for a convenient moment. One line per task, in the same message as the commit. |
 | "Let me check in before the next task" | They chose inline to spend less. Progress prompts spend their time instead. Only the six stops stop you. |
 | "This one suppression comment is harmless" | You are the implementer; the never-list binds you. Stop and report the line and the rule. |
 | "I read my own diff carefully; the final reviewer is redundant" | Same author, same blind spots. The reviewer is the only fresh context this run buys. |
 | "Tests should pass, the change was trivial" | "Should" is not evidence. The contract requires the command and its output. |
-| "Subagents are slow and expensive, I'll skip the final review too" | Inline already removed the per-task reviewers. One review of the whole branch is the floor, not the ceiling. |
+| "Subagents are slow and expensive, I'll skip the final review too" | Inline already removed the per-task reviewers. One review of the whole branch is the floor. |
 | "The reviewer said Minor, so it's Minor" | The label graded the spec's silence. Grade what the person gets. Re-grade, then gate. |
 | "The fix is obvious, no need for a failing test first" | The failing test is the only proof the finding was real and is now gone. Without it you have a diff and a hope. |
 | "I'll fix the minors too while I'm in there" | Every minor you fix is a test, a fix, and a suite run your partner did not ask for. Ledger them; your partner decides. |

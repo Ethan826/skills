@@ -1,0 +1,7 @@
+[
+  {
+    "rule": "arrow",
+    "all": true,
+    "reason": "the arrows are type-signature syntax inside the indented Haskell-like code sketches (step and render), which must stay verbatim"
+  }
+]

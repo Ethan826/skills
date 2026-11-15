@@ -51,12 +51,12 @@ So file the issue with a title that says what it is, add the backlog
 row, and only then put the detail in a comment.
 
 **Which comment is the spec.** When an issue's design or acceptance
-criteria live in a comment rather than the body, which is common once a
+criteria live in a comment instead of the body, which is common once a
 design has been revised, say so in the body: "Spec: the comment of
 <date> headed 'Revised design'", or a link to it. Often it is the last
 comment, but a later reader cannot know that. Without the pointer, an
 agent implements the original body and the revision is lost. Decisions
-that must outlive a branch go in the issue, not in a plan file that is
+that must outlive a branch go in the issue, because a plan file is
 deleted when the branch lands.
 
 ## Structure: epics, tiers and status labels
@@ -66,19 +66,19 @@ the deferred and the undecided ones. A decision that sits only in a
 product document or a conversation is one nobody can link to, assign or
 close.
 
-- **Epics.** Group related issues under a parent issue labelled `epic`.
+- Epics. Group related issues under a parent issue labelled `epic`.
   Use the tracker's sub-issue feature where it has one. Where it does
   not, the epic's body keeps a task list linking each child.
-- **Tiers.** Label each issue with when it ships, such as `tier: 1` to
-  `tier: 3`, matching the ranking in the product document, if there is
-  one. Keep the two in step: when either changes, update the other in the
+- Tiers. Label each issue with when it ships, such as `tier: 1` to
+  `tier: 3`. The label matches the ranking in the product document, if
+  there is one. Keep the two in step: when either changes, update the other in the
   same pass.
-- **Status labels.** An issue that is not plain committed work carries
+- Status labels. An issue that is not plain committed work has
   one of these:
 
 | Label | Meaning | The issue must say |
 |---|---|---|
-| `spike` | An investigation, not a build | The question it answers and what would end it |
+| `spike` | An investigation that builds nothing | The question it answers and what would end it |
 | `deferred` | Decided: not now | Why, and what would reopen it |
 | `candidate` | Found (by research, review or survey), not yet decided | Where it came from and what deciding needs |
 
@@ -99,14 +99,14 @@ Revisit: when a second customer asks, or when the permissions model ships.
 ```
 
 An idea your human partner declined for now still gets recorded as
-deferred rather than dropped. The reasoning is the valuable part, and
+deferred instead of being dropped. The reasoning is the part worth keeping, and
 it stops the same idea being proposed again from scratch.
 
 **Ordering costs.** When a fix is cheap now and expensive once some
 other ticket ships, say so in both tickets and order the backlog
 accordingly. Nothing else records a cost that depends on sequence.
 
-**Known failures are recorded, not hidden.** A test you know fails, a
+**Known failures are recorded and stay visible.** A test you know fails, a
 criterion you could not meet, or a feature left out of scope goes in the
 issue with a concrete next action. Leaving something out of scope is a
 legitimate decision, provided the issue says so.
@@ -131,8 +131,8 @@ take it.
 
 ## Record a wrong premise
 
-A ticket is a claim about the system, written by someone who may have
-read code rather than run it, often weeks ago. verify-before-claiming
+A ticket claims something about the system, and its writer may have
+read code instead of running it, often weeks ago. verify-before-claiming
 covers checking the claim. This section covers what to do when the
 claim is wrong.
 
@@ -142,8 +142,8 @@ otherwise draft it locally and ask): what the ticket claimed, what you observed
 and how (the request you captured, the query you ran, the test that
 failed against the old code), and what the real defect is, if there is
 one. Then correct the issue body or title and the backlog row so that
-neither carries the false premise forward. Don't quietly close it or
-implement around it. The correction is the more useful half of the
+neither repeats the false premise. Don't close it or implement around
+it without saying so. The correction is the more useful half of the
 work, because the next reader who meets the same symptom will otherwise
 reach the same wrong conclusion.
 
@@ -156,20 +156,20 @@ with "want me to file that?" or "not filed, your call" leaves a finding
 that disappears with the conversation, and hands your human partner a
 chore.
 
-Authorization for remote writes belongs to agent-baseline: filing,
+agent-baseline governs authorization for remote writes. Filing,
 commenting on or editing an issue in a remote tracker needs an OK for
 that action. Recording the finding does not wait for it.
 
-- **Filing is authorized** when the owner's standing instruction (in
+- Filing is authorized when the owner's standing instruction (in
   AGENTS.md or the project's equivalent instruction file) says to file
   follow-ups, or when your human partner has given an OK for these
   issues. File them, link them and report them, without asking again.
-- **Filing is not yet authorized:** write each finding durably in the
+- Filing is not yet authorized: write each finding durably in the
   repository first. Use the project's local record (a backlog row or
   ledger entry) where one exists; otherwise write a prepared issue
-  draft to a file, with its title, body and labels ready to file
-  unchanged. Then ask once, listing every draft by path and title, and
-  file them all when the OK comes. That OK covers the drafts it was
+  draft to a file, with the title and body written and the labels
+  chosen, ready to file unchanged. Then ask once. List every draft by
+  path and title, and file them all when the OK comes. That OK covers the drafts it was
   given for; a finding added afterwards needs its own.
 
 Either way, the finding never lives only in chat. A draft on disk
@@ -193,9 +193,9 @@ date: the backlog row, the in-progress issue's current state, and any
 instruction-file change the work implied. If the session dies there,
 nothing is lost.
 
-- Update guidance files early in a session, while there is budget, not
-  in a final pass that may never run.
-- Don't carry uncommitted work across the start of a new issue. Commit
+- Update guidance files early in a session, while there is budget instead
+  of in a final pass that may never run.
+- Don't bring uncommitted work across the start of a new issue. Commit
   or stash it first.
 - When handing off mid-issue, write in the issue what is done, what
   remains, which decisions were made and which questions are open. A
@@ -223,10 +223,10 @@ unbuilt, an instruction file quoting an old type, an issue whose
 criterion the new code contradicts) is the drift the records exist to
 prevent.
 
-Where the project rebase-merges, what lands is the commits, not the
-pull request. A small sync or docs fix then needs no pull request of its
-own. Make it a focused commit that builds and passes alone, and let the
-next branch carry it. landing-a-branch covers the merge and the branch
+Where the project rebase-merges, the commits are what lands, and the
+pull request itself does not. A small sync or docs fix then does not
+need a pull request of its own. Make it a focused commit that builds
+and passes alone, and let the next branch include it. landing-a-branch covers the merge and the branch
 cleanup that follows.
 
 ## Rules subagents need go into the instruction file
@@ -257,7 +257,7 @@ issue with one row per finding, and follow three rules:
 2. **Rows leave only by being shipped or dropped.** A shipped row names
    what shipped it (the issue, commit or artifact). A dropped row gives
    the owner's reason. Your own judgement that something is not worth
-   doing makes it a proposal to drop, not a drop.
+   doing makes it a proposal to drop. It is not yet a drop.
 3. **Never delete the ledger.** Not even when its first batch has
    shipped. Its value is the history of what was found and decided.
 

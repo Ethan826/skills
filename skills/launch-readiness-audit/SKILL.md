@@ -11,7 +11,7 @@ today, and is it enough for the next tier? Readiness documents tend to
 answer an easier one, what was true when someone last looked, and they
 drift. A row marked fixed whose fix never landed, a row still marked as a
 blocker weeks after the fix shipped, and a summary that disagrees with
-its own body are all common, and each comes from carrying a row forward
+its own body are all common, and each comes from copying a row forward
 instead of checking it again.
 
 This skill applies verify-before-claiming to a whole system at once. The
@@ -41,13 +41,13 @@ Give every row exactly one level.
 
 Two rules apply to every level.
 
-- **Code evidence is not live evidence.** Code that sets a header, a
+- Code evidence is not live evidence. Code that sets a header, a
   retention period or a feature flag says what should happen. Only the
   deployed system shows what does, because a deploy can lag, a parameter
   can be overridden, and an environment can hold another environment's
   values. Write "verified in code; live check not done" when that is the
   state, and leave the row there.
-- **A failed lookup is not evidence.** If a probe errors, times out, hits
+- A failed lookup is not evidence. If a probe errors, times out, hits
   the wrong name or returns nothing, the row stays UNVERIFIED. Two lookups
   that both fail compare as equal, which can make a missing value look
   like a match. Check that each side of a comparison returned a real
@@ -117,11 +117,11 @@ defaults suit most products that take money or hold personal data:
 |---|---|
 | P0 | The core transaction cannot happen at all: users cannot sign up, pay, or do the one thing the product is for. |
 | P1 | The core transaction has never been proven end to end in production. It might work, and nobody has seen it work. |
-| P2 | A promise already published to users (terms, privacy policy, marketing copy, a status page) that the system does not yet keep. |
+| P2 | A promise already published to users (the terms, the privacy policy, the marketing copy or a status page) that the system does not yet keep. |
 | P3 | Product quality with some legal or reputational exposure, such as accessibility or error handling on secondary paths. |
-| Not a blocker | Real, recorded and deliberately deferred. List these by name with the reason, so a reader can see each deferral was decided. |
+| Not a blocker | Real and recorded, and deferred on purpose. List these by name with the reason, so a reader can see each deferral was decided. |
 
-A band is a statement about risk, not a measure of how much effort the
+A band states risk and says nothing about how much effort the
 fix takes. State plainly which bands could slip and on what condition.
 For example, P2 can ship only if your human partner is willing to say
 out loud which promise is not yet kept.
@@ -163,13 +163,13 @@ multi-tenant-security-review.
 Some properties can be shown only by exercising them. Configuration that
 claims to provide them is not evidence.
 
-- **Backup restore.** Restore into a fresh instance, then count what
+- Backup restore. Restore into a fresh instance, then count what
   arrived and compare it with production: databases, tables, views, row
   counts for the tables that matter, and the latest applied migration.
   Spot-check content in a few rows. An empty restore starts, accepts
   connections and passes a health check, and it often finishes faster
   than a real one, so speed and health say nothing. A retention setting
-  describes a policy, not the history that exists. After an instance is
+  describes a policy and says nothing about the history that exists. After an instance is
   replaced, the backup history can start over while the setting reports
   the same number of days. Check the age of the newest backup against
   the instance's creation time.
@@ -183,17 +183,17 @@ claims to provide them is not evidence.
   GROUP BY 1, 2;
   ```
 
-- **Rollback.** Rehearse it, and record what it does not undo. An image
+- Rollback. Rehearse it, and record what it does not undo. An image
   rollback usually leaves schema migrations in place. Rolling back to a
   mutable tag can deploy something other than the build that was tested.
   Prefer pinning an immutable build identifier, and check which one is
   running.
-- **Alerts.** Trigger each alert on purpose (stop a health endpoint,
+- Alerts. Trigger each alert on purpose (stop a health endpoint,
   breach a threshold in a safe way) and confirm that the message reached
   the person who will act on it. An alert wired to an unread inbox or an
   unconfirmed subscription is the same as having no alert.
-- **Recovery paths.** Run the runbook's commands, not your memory of
-  them. A runbook step that names a renamed resource fails during the
+- Recovery paths. Run the runbook's commands instead of relying on your
+  memory of them. A runbook step that uses a resource's old name fails during the
   incident it was written for.
 
 ## Infrastructure claims
@@ -205,7 +205,7 @@ current value, the headers on a real response. Infrastructure-as-code,
 environment files and console screenshots describe intent. Take the
 answer from the tool of record (see verify-before-claiming).
 
-Probe for content, not status. A catch-all route that serves the app's
+Probe the response content. A status code alone misleads. A catch-all route that serves the app's
 index page with a success code for every unknown path makes a missing
 file look present. Check what the response contains.
 
@@ -234,7 +234,7 @@ names a row that already covers it or becomes a new row.
 1. **What fails silently?** Look for errors caught and logged while the
    caller is told it succeeded, retries that eventually give up with no
    alarm, and jobs that skip records they cannot process.
-2. **Which assumption is load-bearing but untested?** That an alert
+2. **Which assumption is critical but untested?** That an alert
    reaches someone, that the smallest database tier copes, that a proxy
    rewrites paths the way the code expects.
 3. **What is the likeliest first incident?** Write it as a short story:
@@ -245,7 +245,7 @@ names a row that already covers it or becomes a new row.
    set for a demo.
 5. **What would a new operator not know?** Which command is the only
    way in, which rollback does not undo migrations, which setting reports
-   a policy rather than a fact. Whatever the answer, it belongs in the
+   a policy instead of a fact. Whatever the answer, it belongs in the
    runbook.
 6. **What surprised you?** Anything unexpected found while reading the
    code or the environment is a lead.
@@ -255,10 +255,10 @@ names a row that already covers it or becomes a new row.
 Before the audit ends, every row not at VERIFIED LIVE or VERIFIED IN CODE
 (where code evidence is all the tier requires) has an issue, linked from
 the row, in the launch milestone, with the band as its priority. The
-same holds for each answer to the questions above that names a real
+same holds for each answer to the questions above that describes a real
 risk. A gap recorded only in the audit document is lost the moment
-someone works from the tracker instead. Tell people to work the issues,
-not the document's row numbers. See decisions-as-issues for how to write
+someone works from the tracker instead. Tell people to work the issues
+and to ignore the document's row numbers. See decisions-as-issues for how to write
 them.
 
 ## The output
@@ -294,11 +294,11 @@ section from the rows, and do not copy it from the previous report.
 
 ## Reviewing an audit against this skill
 
-1. Does every row carry one evidence level, with a date and method from
+1. Does every row have one evidence level, with a date and method from
    this pass?
 2. Is code evidence kept separate from live evidence, and does each tier
    get the kind it requires?
-3. Were the restore, rollback and alert drills actually run, and did the
+3. Were the drills for restore, rollback and alerts actually run, and did the
    restore check counts and content?
 4. Are infrastructure rows checked against deployed state?
 5. Are the blocker bands defined, and does each open row's band fit its
@@ -308,6 +308,6 @@ section from the rows, and do not copy it from the previous report.
 7. Is every security or privacy claim in published text backed by a
    row?
 8. Were the "what am I missing?" questions answered, with each answer
-   tied to a row?
-9. Does the output end with one tier verdict and the critical path to
-   the next tier?
+   recorded as a row?
+9. Does the output end by stating which tier the product has reached and
+   the critical path to the next tier?

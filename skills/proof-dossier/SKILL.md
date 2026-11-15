@@ -54,7 +54,7 @@ Write the statements, and let them set the scope.
 
 ## 1. Exhaust prior art first
 
-A statement that has already been published is cited, not proved again.
+A statement that has already been published is cited and not proved again.
 A result that is already mechanized in a prover library is imported, and
 the import goes through dependency-intake like any other dependency.
 
@@ -87,8 +87,8 @@ Only published and derived statements count as established. Anything
 built on an experimentally checked or unresolved statement says so.
 
 Every claim in the prose around the statements follows the rule in
-verify-before-claiming: it names the theorem, fixture or oracle property
-that backs it, or it carries the label "argument, not yet checked".
+verify-before-claiming: it cites the theorem, fixture or oracle property
+that backs it, or it has the label "argument, not yet checked".
 
 Before asking for approval, run the parts of adversarial-procedure-review
 that apply to statements. That means a restrictions table for the model,
@@ -101,12 +101,12 @@ the statements out often exposes a false one before any proof starts.
 
 **The default is two approvals.**
 
-- **Statements.** Your human partner approves the definitions and
+- Statements. Your human partner approves the definitions and
   statements. That authorizes investigating and proving them, and
   nothing more: no implementation, no adoption.
-- **Completed dossier.** Your human partner reviews the finished
+- Completed dossier. Your human partner reviews the finished
   dossier before any machinery built on it is adopted. By then it
-  carries the proofs, the axioms report, the definitional choices the
+  contains the proofs, the axioms report, the definitional choices the
   proofs forced, and the model-to-implementation gap.
 
 Specialist review of the statements is welcome, but it is not a
@@ -133,13 +133,13 @@ statement changed later needs approving again.
 Keep the proof project outside the production build, with its own
 pinned toolchain.
 
-- **No unfinished proofs.** No `sorry` or `admit`, or the equivalent
+- No unfinished proofs. No `sorry` or `admit`, or the equivalent
   placeholder in your prover. Avoid any escape hatch that trusts
   unchecked code: declared axioms, and tactics that evaluate with the
   compiler instead of the kernel (in Lean 4, `native_decide`, which adds
   its own axiom). If you need one, it goes in the dossier with its
   reason, and it is approved like a statement.
-- **Report the axioms.** For each theorem the dossier names, run the
+- Report the axioms. For each theorem the dossier names, run the
   prover's command that lists what the theorem depends on, and commit
   its output. In Lean 4 that is `#print axioms <name>`. Coq (Rocq) has
   `Print Assumptions`. Isabelle's `thm_oracles` lists the oracles a
@@ -151,20 +151,20 @@ pinned toolchain.
   use which axioms and why. For example, a classical definition in the
   semantics makes every theorem about it classical, even when the
   decision procedure is computable.
-- **Show the theorems are not vacuous.** A theorem whose hypotheses
+- Show the theorems are not vacuous. A theorem whose hypotheses
   nothing satisfies proves nothing. Prove that the intended cases
   inhabit the model: construct witnesses for the hypotheses, state the
   motivating examples as instances, and add negative controls that the
   model rejects. Where the prover can evaluate, check executable
   examples in the proof project itself.
-- **Define what each result guarantees.** If the mechanized procedure
-  can give up, its results are solved, contradiction and unresolved, as
+- Define what each result guarantees. If the mechanized procedure
+  can give up, its results are `solved`, `contradiction` or `unresolved`, as
   adversarial-procedure-review describes. A contradiction needs a proof
   of impossibility. An incomplete procedure that gives up answers
   unresolved.
-- **Record the definitional choices.** Some choices shape what the
+- Record the definitional choices. Some choices shape what the
   theorems mean: whether a structure is assumed finite, which side wins
-  a tie, a function defined classically rather than computably. List
+  a tie, a function defined classically instead of computably. List
   each one for the dossier review.
 
 Illustration only, Lean 4. The axioms file names every theorem in the
@@ -234,7 +234,7 @@ pass after a failed build.
 
 ## 6. Bounded oracles and the implementation gap
 
-**A bounded enumerator is a test oracle, not a complete reference.**
+**A bounded enumerator serves as a test oracle and is no complete reference.**
 Checking every input up to some size is evidence. It is not a proof,
 unless you argue a finite reduction: an argument, ideally mechanized,
 that a counterexample of any size implies one within the bound. Domains
@@ -247,10 +247,10 @@ are about the definitions in the proof project. The code that ships is
 a separate artifact, often in a different language. The dossier states
 which link connects the two:
 
-- **Translation:** the implementation is extracted or generated from
+- Translation: the implementation is extracted or generated from
   the proved definitions.
-- **Refinement:** a proof that the implementation implements the model.
-- **Differential checks:** the implementation and an executable model
+- Refinement: a proof that the implementation implements the model.
+- Differential checks: the implementation and an executable model
   run on the same generated inputs, and their answers are compared.
   Alternatively, the implementation's test cases are exported into the
   proof project and checked there by a verified checker.
@@ -267,14 +267,14 @@ model:
 
 1. **One owner writes the interface.** It is a file of shared
    definitions and exact statements, written as named propositions with
-   no proofs. In Lean, `def Sound : Prop := ...`. It needs no `sorry`,
+   no proofs. In Lean, `def Sound : Prop := ...`. It does not use `sorry`,
    because it states propositions without proving them.
 2. **Agents work in separate worktrees** (isolated-workspaces). Each
    one checks its worktree's base first: a new worktree may start from
-   the default branch rather than the working branch.
+   the default branch instead of the working branch.
 3. **Agents do not edit the interface.** An agent that finds a
-   statement false, or missing an assumption, stops and reports it with
-   the counterexample or the missing hypothesis. It does not weaken the
+   statement false or missing an assumption stops. It reports the
+   counterexample or the missing hypothesis. It does not weaken the
    statement, add a hypothesis or prove a neighbouring result instead.
    Changing the interface is the owner's decision, and it goes back for
    approval.
@@ -298,9 +298,9 @@ model:
    counterexamples yourself.
 
 After integration, remove the worktrees and keep the branches. Each
-agent's brief carries everything dispatching-agents requires, including
+agent's brief includes everything dispatching-agents requires, including
 the denial rule, plus the interface path, the statements it owns and the
-instruction to report a false statement rather than work around it.
+instruction to report a false statement and never work around it.
 
 ## Dossier template
 
@@ -314,7 +314,7 @@ when you start a dossier.
 ## Review checklist
 
 - [ ] Prior-art searches are recorded, and every published statement is
-      cited rather than proved again.
+      cited and not proved again.
 - [ ] Every statement was written and labelled before its proof, and the
       labels match the evidence.
 - [ ] The approvals the project's rule requires are on record, and no
@@ -322,7 +322,7 @@ when you start a dossier.
 - [ ] The sources contain no `sorry`, `admit` or unapproved escape hatch,
       and a clean build has no warnings about them.
 - [ ] The axioms report is regenerated, matches the committed file, and
-      names every public theorem in the sources, as read back from the
+      lists every public theorem in the sources, as read back from the
       prover. Each axiom that appears is explained.
 - [ ] Every theorem has a non-vacuity witness and negative controls.
 - [ ] Every bounded oracle is labelled as evidence, with its grammar and
@@ -334,4 +334,4 @@ when you start a dossier.
       dependent results were instantiated at integration, and the
       combined statements had an adversarial review.
 - [ ] Every review finding is closed by a theorem, fixture or oracle
-      property, not by a document edit alone.
+      property, and a document edit alone does not close it.

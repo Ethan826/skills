@@ -6,12 +6,12 @@ license: MIT
 
 # A decision core under a technology shell
 
-The architecture separates decisions from technology. A decision is a choice
-the product's user would recognize and could disagree with: what to show,
+The architecture separates decisions from technology. The product's user would recognize a decision and could disagree with
+it: what to show,
 whether an invoice is overdue, when to send a reminder, how a figure is
 rounded. Technology is how a decision reaches the world: pixels, markup,
 gestures, storage, the network, the OS. Decisions live in the core and
-technology lives in the shell. The facade between them contains no decisions.
+technology lives in the shell. The facade between them makes no decisions.
 
 The line does not fall between frontend and backend. A drag or a key press
 can lead to a decision, and that decision still belongs in the core.
@@ -19,7 +19,7 @@ can lead to a decision, and that decision still belongs in the core.
 These rules govern implementation only in a project that has adopted the
 architecture, or when the user asks to design or evaluate one. In a project
 built another way, follow its existing structure. Proposing a move to this
-one is a separate decision for the user, not part of an ordinary task.
+one is a separate decision for the user and falls outside an ordinary task.
 
 Code sketches below use a Haskell-like notation. `∀ r` means "for any `r`",
 and `| r` leaves a record or row open to further fields. For the same rules
@@ -127,16 +127,16 @@ that discipline.
 ## The core is pure and total
 
 - Domain and Features contain no partial functions. Anything that can fail
-  returns the failure as a value. Crashes, throws and unchecked casts are
-  allowed only at the edges.
+  returns the failure as a value. Only the edges may crash or throw, and only they may use
+  unchecked casts.
 - Smart constructors establish invariants once, so any value that exists is
   valid. When bad input could either be refused with an error that every
-  caller must carry or made unrepresentable by a type, use the type. A line
-  item's quantity, for example, should be positive by construction rather
-  than a number checked wherever it is used.
+  caller must propagate or made unrepresentable by a type, use the type. A line
+  item's quantity, for example, should be positive by construction instead
+  of a number checked wherever it is used.
 - Use an exact representation wherever a law must hold. If amounts must add
-  associatively, store an integer count of the smallest unit, not floats
-  whose sums depend on the order of addition.
+  associatively, store an integer count of the smallest unit; floats
+  have sums that depend on the order of addition.
 - A type class is justified when it has laws you can state and test, or when
   it must dispatch on a type that appears only in the result (`mempty`,
   `pure`), which a record cannot do. Two instances are enough to justify a
@@ -149,24 +149,24 @@ Every stateful use case is a step function:
     step : Settings → Context → State → Input → Result (State, Output)
 
 - `State` is plain data, so the shell can keep it, persist it and pass it
-  back. The core holds no state between calls.
+  back. The core keeps no state between calls.
 - `step` validates the state it receives, just as it validates the input.
 - After a crash or relaunch, the shell rebuilds the state by folding the
   persisted inputs through the same `step`. There is no separate recovery
   path.
 - Tests need no fakes. Fold a recorded input sequence through `step` and
-  assert on the whole output sequence, not only the final value. Build the
+  assert on the whole output sequence, including the final value. Build the
   hard cases on purpose: an edit undone and then redone, two edits that
   arrive out of order, a session that stops halfway through a command.
 - Related watchers, such as reminders or validation warnings, have the same
-  shape. Each sits beside the main step and reads its output rather than
-  recomputing it.
+  shape. Each sits beside the main step and reads its output and does not
+  recompute it.
 
 Compute each derived quantity in one place. If several views depend on one
 underlying number, derive every view from that number. Never add a second
 computation to cover a timing gap, because the two will disagree.
 
-## Dependencies are values, not type classes
+## Dependencies are values instead of type classes
 
 Inject each capability (clock, logger, HTTP client) as a record in an
 environment, and make each function ask for exactly the part it reads, never
@@ -178,12 +178,12 @@ for one application-wide environment:
 
 - Capabilities compose as ordinary functions: a `LogSink → LogSink` filters
   by level, and an `Http → Http` adds retries.
-- A test passes a different value, not a different monad: a sink that
+- A test passes a different value and keeps the same monad: a sink that
   writes to a buffer, or a stopped clock so that timestamps can be compared
   for equality.
 - A function's signature states everything it depends on, and the compiler
   holds it to that. When signatures grow unwieldy, widen an existing part of
-  the environment before naming a new combination.
+  the environment before defining a new combination.
 - A capability has no laws, so by the rule above it is not a type class. Use
   a class only where a record cannot dispatch.
 
@@ -192,8 +192,8 @@ imported rows, are not capabilities. The shell passes them to `step`, so the
 core never has to ask for them.
 
 Choose environment-specific implementations at the composition root, and
-nowhere else. Production, test and development differ by which values
-Program builds, not by flags the code checks. A line such as
+nowhere else. Each environment differs by which values Program builds.
+It never differs by flags the code checks. A line such as
 `if (isProduction)` or `let live = true` inside a layer is a decision about
 wiring made in the wrong place: tests can no longer reach the other branch,
 and the branch the tests skip is the one that ships. Program builds the live
@@ -206,10 +206,10 @@ built: a small web page, a command-line tool or a notebook that calls the
 same facade the real app will call. Because it runs the real core, what you
 see in it is what the product will decide.
 
-- The feedback shell imports only the facade. It holds no decisions of its
+- The feedback shell imports only the facade. It makes no decisions of its
   own, for the same reason the app shell holds none.
 - Where a feature the core does not have yet is needed to try something,
-  the shell uses a stand-in, and each stand-in names the issue that will
+  the shell uses a stand-in, and each stand-in cites the issue that will
   replace it (`// stand-in until #42: fixed tax rate`). Stand-ins live in
   the feedback shell only, never in the facade or the core, so nothing
   shipped can come to depend on one.
@@ -223,12 +223,12 @@ and composing two functions merges their rows without converting either
 one. In TypeScript the equivalent is a union of tagged error types, which is
 how Effect's error channel combines them.
 
-- Give each error type one label, not one label per failure. The label
-  carries the whole error type.
+- Give each error type one label instead of one label per failure. The label
+  covers the whole error type.
 - Leave rows open in the core. Close them only where errors are handled: at
   the boundary that reports them (the facade, a CLI) and in tests.
 - Wrap an error only to add context it lacks, such as which row of an import
-  or which line of a config file failed. The wrapper carries that context and
+  or which line of a config file failed. The wrapper holds that context and
   the inner error, which is still a row. Otherwise errors pass through
   unwrapped.
 - Never report a failure that can only be a bug as an ordinary outcome such
@@ -236,8 +236,8 @@ how Effect's error channel combines them.
 
 ## The facade
 
-- Only plain data crosses. Records, arrays, numbers and strings cross
-  unchanged. Sum types cross as discriminated unions `{ type, value }`.
+- Only plain data crosses. Records and arrays cross unchanged, as do numbers and
+  strings. Sum types cross as discriminated unions `{ type, value }`.
   Optional values cross as the host language's `undefined` or `null`, never
   as the core's `Maybe` or `Option`. Inside the core, absence stays a
   `Maybe` or `Option`; the facade converts in both directions. Where a
@@ -247,7 +247,7 @@ how Effect's error channel combines them.
   internal invariants) goes in a private field of an opaque handle, which
   shows nothing to serializers, reflection or loggers. Never persist a
   handle. Persist the source and rebuild the value on launch.
-- The facade contains no logic. If facade code branches on what a value
+- The facade has no logic. If facade code branches on what a value
   means, that branch is a decision and belongs in Features.
 - The facade has a typed declaration for every core export it calls, and a
   contract test checks those declarations against the build, so no cast is

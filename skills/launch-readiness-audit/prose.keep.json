@@ -1,0 +1,14 @@
+[
+  {
+    "rule": "dash",
+    "text": "-- Illustration, PostgreSQL",
+    "count": 1,
+    "reason": "SQL comment marker inside a fenced code block that sits in a list item, so the linter does not treat it as a code block; the code must stay verbatim"
+  },
+  {
+    "rule": "dash",
+    "text": "-- instance, and compare.",
+    "count": 1,
+    "reason": "SQL comment marker on the second line of the same indented code block; the code must stay verbatim"
+  }
+]
