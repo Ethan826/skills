@@ -1113,3 +1113,110 @@ The three terms also form a forced triad.
 
 **Checklist:** Is a benefit stated only as an absence? Say what the
 reader can do, and explain any outside jargon used for contrast.
+
+### O39. Vague relational verb with a figurative object
+
+**Observed:** 2026-11-15, Waxwing design prose.
+
+**Example:**
+
+> Koka, Unison and Effekt inform the effect system's lineage.
+
+**Why:** "Inform" and "lineage" say that an influence exists without
+saying what came from where. The reader can't name one idea Waxwing took
+from any of the three. The three names are also never introduced (O29).
+
+**Rewrite:**
+
+> Waxwing's effect system borrows from Koka, Unison and Effekt, three
+> research languages that record in a function's type what the function
+> may do.
+
+**Mechanizable:** partly. "inform(s) the", "shape(s) the", "lineage",
+"heritage" and "DNA" are matchable as notes; whether the sentence says
+what was borrowed needs the meaning.
+
+**Status:** open
+
+**Checklist:** Does a verb like "inform", "shape" or "underpin" stand
+where the text should say what was taken, from where?
+
+### O40. Moralizing verb for a design decision
+
+**Observed:** 2026-11-15, Waxwing design prose.
+
+**Example:**
+
+> Dependencies, expected failures, external interaction, state and
+> divergence deserve precise descriptions instead of one catch-all IO.
+
+**Why:** "Deserve" casts a design choice as a moral claim, and hides who
+decides and why. The five-item subject also buries the verb (O18), and
+"divergence" and "catch-all IO" are unexplained (O25).
+
+**Rewrite:**
+
+> Waxwing should list each kind of effect separately instead of lumping
+> everything under one type the way Haskell's IO does: which services a
+> function needs, which errors it can return, whether it talks to the
+> outside world, whether it changes state, and whether it might never
+> finish.
+
+**Mechanizable:** partly. "deserve(s)" with a non-person subject is
+matchable as a note.
+
+**Status:** open
+
+**Checklist:** Does "deserves", "merits" or "calls for" stand in for a
+decision someone made? Say who decided what.
+
+### O41. One pronoun, different antecedents in adjacent sentences
+
+**Observed:** 2026-11-15, Waxwing design prose.
+
+**Example:**
+
+> Their effect systems make different promises. Waxwing's stronger
+> purity and effect-kind contracts still need design; their guarantees
+> do not follow from its existing effect rows or from another
+> language's proofs.
+
+**Why:** The first "their" means the three languages from two sentences
+earlier; the second "their" means the contracts. A reader carrying the
+first referent misreads the second sentence.
+
+**Rewrite:** Name the referent at least once in each sentence: "The
+three languages guarantee different things … Neither Waxwing's current
+effect rows nor the other languages' proofs establish what Waxwing's
+rules guarantee."
+
+**Mechanizable:** no.
+
+**Status:** judgment-only
+
+**Checklist:** When the same pronoun appears in neighboring sentences,
+does it refer to the same thing both times?
+
+### O42. Comparative with no baseline
+
+**Observed:** 2026-11-15, Waxwing design prose (same example as O41).
+
+**Example:**
+
+> Waxwing's stronger purity and effect-kind contracts still need design
+
+**Why:** "Stronger" invites the question "than what?", and the text
+doesn't answer. The noun stack ("purity and effect-kind contracts") and
+the stative "still need design" (O20) add to the fog.
+
+**Rewrite:**
+
+> We still have to design Waxwing's own rules for pure functions and
+> for each kind of effect, and prove what those rules guarantee.
+
+**Mechanizable:** no.
+
+**Status:** judgment-only
+
+**Checklist:** Does every comparative ("stronger", "better", "simpler")
+name what it is compared with?
