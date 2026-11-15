@@ -1160,8 +1160,8 @@ decides and why. The five-item subject also buries the verb (O18), and
 
 > A function's type will list the services it needs, the errors it can
 > return, whether it reads or writes outside the program, whether it
-> changes state, and whether it might run forever, instead of putting
-> all of that under one IO type as Haskell does.
+> changes state, and whether it might run forever. Haskell puts every
+> one of these under a single type, `IO`.
 
 **Mechanizable:** partly. "deserve(s)" with a non-person subject is
 matchable as a note.
@@ -1299,3 +1299,30 @@ note.
 
 **Checklist:** Has a pair of verbs been turned into "the X-ing and the
 Y-ing"? Say what happens instead.
+
+### O46. Summarizing demonstrative after a long list
+
+**Observed:** 2026-11-15, the coordinator's own rewrite of O40.
+
+**Example:**
+
+> … whether it changes state, and whether it might run forever, instead
+> of putting all of that under one IO type as Haskell does.
+
+**Why:** "All of that" points back at a five-item list, so the reader
+has to reassemble the list to know what "that" means. The contrast
+also hides at the tail of an already long sentence.
+
+**Rewrite:**
+
+> … whether it changes state, and whether it might run forever. Haskell
+> puts every one of these under a single type, `IO`.
+
+**Mechanizable:** partly. "all of that", "all of this" and "all this"
+are matchable as notes; whether the referent is a long list needs the
+meaning.
+
+**Status:** open
+
+**Checklist:** Does "that", "this" or "all of that" point back at a
+list or a long passage? End the list, then name the subject again.
