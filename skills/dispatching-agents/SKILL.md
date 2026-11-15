@@ -104,12 +104,12 @@ tests.
 
 Each agent gets a specific scope (one test file, subsystem or question),
 a clear goal, its constraints, and the report you want back. The
-checklist below lists what every brief carries.
+checklist below lists what every brief contains.
 
 ### 3. Dispatch in parallel
 
 Dispatch a subagent (any general-purpose agent your platform offers) for
-each domain, issuing all the dispatches in the same response so they run
+each domain. Send all the dispatches in the same response so they run
 concurrently:
 
 ```text
@@ -145,14 +145,14 @@ Check every brief against this list before sending it:
    comments, no casts or non-null assertions to silence the compiler, no
    skipped or focused tests, no new allowlist entries, no edits to lint
    configs, check scripts or existing tests to make them pass. If a rule
-   blocks you, stop and report the line and the rule."
+   blocks you, report the line and the rule, then stop."
 5. **The denial rule**, in every brief: "If a tool call is denied, stop
    and report the exact denial text. Never achieve the same effect
    another way. A harness message that only tells you to reshape a
    command (for example, split a compound command into separate ones) is
    not a denial: follow it."
 6. **What may not change.** For example: "Existing tests stay. If one
-   conflicts with the change, stop and report."
+   conflicts with the change, report it and stop."
 7. **The report wanted, returned as text.** Say what the report should
    contain, and that the agent returns it in full in its final message.
    If you want it saved, write that text to the report file yourself.
@@ -161,18 +161,28 @@ Check every brief against this list before sending it:
 8. **An explicit model choice.** Don't let the agent inherit the session
    default by accident. Use a fast, cheap model for mechanical work with a
    clear spec, a standard model for integration and debugging, and the
-   most capable model available for design, review and anything that
-   needs judgment. When in doubt, choose the model that will need fewer
+   most capable model available for design and review, and for any work
+   that needs judgment. When in doubt, choose the model that will need fewer
    turns; turn count matters more than token price.
 9. **Evidence sized to risk.** Say how much proof you want back: the
    targeted tests for a local fix, and exhaustive or corpus-wide
    comparisons only for changes to core behavior, stored state or saved
    formats.
 10. **Rulings.** Ask the agent to end its report with its **rulings**:
-    every decision it made where the brief was silent, one line each,
-    giving what it decided, why, and what it costs if it is wrong. A
-    decision left off that list was made in secret, and you cannot review
-    what you cannot see.
+    every decision it made where the brief was silent, one line each.
+    Each line says what it decided, why, and what it costs if it is
+    wrong. A decision left off that list was made in secret, and you
+    cannot review what you cannot see.
+11. **Prose lint.** If the brief asks for prose (a README, a plan, a
+    review note, a commit message), require the agent to run
+    `python3 skills/humanized-prose-review/scripts/tell_lint.py` on every
+    prose file it writes and to put the summary line for each file in its
+    report. You rerun the lint on those files before you accept the work;
+    a report that says "humanized" without lint output counts as no pass.
+12. **No seeded tells.** Write the brief in plain wording and ask for no
+    shape that invites a tell. Asking the agent to label every item with
+    a status contrast, for example, invites "X, not Y" sentences. Say
+    what each item must state and let the agent choose the sentence.
 
 ### Example brief
 
@@ -244,22 +254,24 @@ agent directly.
 
 ## When reports come back
 
-A report is a claim until you have checked it. Before you integrate:
+Treat a report as a claim until you have checked it. Before you integrate:
 
-- **Read the diff against BASE** and re-run the checks yourself. Agents
+- Read the diff against BASE and re-run the checks yourself. Agents
   make systematic errors, and a report can say "all green" about tests
   that were never run.
-- **Check for conflicts.** Did two agents edit the same code?
-- **Run the full suite** to confirm that the fixes work together.
-- **Check what removing something costs.** When an agent deleted code, a
+- Check for conflicts: did two agents edit the same code?
+- Run the full suite to confirm that the fixes work together.
+- Check what removing something costs. When an agent deleted code, a
   test or a check, find out what that removal loses before you accept it.
-- **Check for callers before building "the proper version".** When an
+- Check for callers before building "the proper version". When an
   agent recommends a fuller replacement, first confirm that the thing
   exists and that something uses it.
-- **Settle every unclear item before acting on any.** If one point in a
+- Settle every unclear item before acting on any. If one point in a
   report is unclear, clarify all of them first. Items are often related,
   and acting on a partial reading can mean redoing the work.
-- **Review the rulings.** Accept, overturn or escalate each one.
+- Review the rulings: accept, overturn or escalate each one.
+- Rerun the prose lint on every prose file the agent wrote and compare
+  your output with the summary lines in its report.
 
 Then integrate the changes and delete the agents' scratch copies.
 

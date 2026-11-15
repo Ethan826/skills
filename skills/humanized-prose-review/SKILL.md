@@ -37,7 +37,10 @@ each.
 `scripts/tell_lint.py` checks the catalog's listed phrases. Run it on
 every draft; it needs only Python 3.9 or later. Judge each finding
 yourself. An empty result shows only that those phrases are
-absent, so the lint never replaces the audit. Add `--plain` when the
+absent, so the lint never replaces the audit. A prose pass counts only
+with `tell_lint.py` output: run it on every file you touched and record
+each file's summary line in your report or commit message. Reading this
+skill is not a pass. Add `--plain` when the
 target is plain text, such as a commit message.
 
 ## Required workflow

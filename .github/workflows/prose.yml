@@ -1,0 +1,16 @@
+name: prose
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  prose:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Python version
+        run: python3 --version
+      - name: Prose gate
+        run: python3 scripts/prose_gate.py
