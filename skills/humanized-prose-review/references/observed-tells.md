@@ -1158,10 +1158,10 @@ decides and why. The five-item subject also buries the verb (O18), and
 
 **Rewrite:**
 
-> A function's type will list the services it needs, the errors it can
-> return, whether it reads or writes outside the program, whether it
-> changes state, and whether it might run forever. Haskell puts every
-> one of these under a single type, `IO`.
+> A function's type will list five kinds of effect: the services it
+> needs, the errors it can return, whether it reads or writes outside
+> the program, whether it changes state, and whether it might run
+> forever. Haskell gives all five the single type `IO`.
 
 **Mechanizable:** partly. "deserve(s)" with a non-person subject is
 matchable as a note.
@@ -1315,8 +1315,9 @@ also hides at the tail of an already long sentence.
 
 **Rewrite:**
 
-> … whether it changes state, and whether it might run forever. Haskell
-> puts every one of these under a single type, `IO`.
+> A function's type will list five kinds of effect: the services it
+> needs, … whether it changes state, and whether it might run forever.
+> Haskell gives all five the single type `IO`.
 
 **Mechanizable:** partly. "all of that", "all of this" and "all this"
 are matchable as notes; whether the referent is a long list needs the
@@ -1324,5 +1325,7 @@ meaning.
 
 **Status:** open
 
-**Checklist:** Does "that", "this" or "all of that" point back at a
-list or a long passage? End the list, then name the subject again.
+**Checklist:** Does "that", "this" or "every one of these" point back
+at a list or a long passage? Name the category before the list ("five
+kinds of effect: …"), then refer back with that noun ("all five").
+A demonstrative with no head noun ("these", "those") is still a gap.
