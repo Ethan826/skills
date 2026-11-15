@@ -12,17 +12,17 @@ Write implementation plans for an engineer who has not seen this codebase or thi
 
 **Announce at start:** "I'm using the implementation-planning skill to create the implementation plan."
 
-If the work runs in an isolated worktree, that worktree is created with the isolated-workspaces skill when execution starts, not while you plan.
+If the work runs in an isolated worktree, that worktree is created with the isolated-workspaces skill when execution starts, and planning never creates it.
 
 ## Where the Plan Lives
 
 Where the spec and plan live is set per project. Read AGENTS.md or the project's equivalent instruction file for a `Plans:` line.
 
-- If it names a directory, the design spec and the plan are committed files in that directory: `<date>-<topic>-design.md` and `<date>-<topic>-plan.md`.
+- If it gives a directory, the design spec and the plan are committed files in that directory: `<date>-<topic>-design.md` and `<date>-<topic>-plan.md`.
 - If it says `issues`, or says nothing:
   - The design spec is the issue, and the design is posted as a comment on it. Name that comment as the spec; often it is the last one.
   - The plan is a working file at `.superpowers/plans/<issue>-<slug>.md`, kept out of git by `printf '*\n' > .superpowers/plans/.gitignore`.
-  - Decisions that must outlive the branch go in the issue, not the plan.
+  - Decisions that must outlive the branch go in the issue and stay out of the plan.
   - The plan file is deleted with the workspace when the branch lands.
 
 Your human partner's stated preference for a plan location overrides both.
@@ -37,16 +37,15 @@ Before defining tasks, list the files you will create or modify and what each on
 
 - Design units with clear boundaries and well-defined interfaces. Give each file one clear responsibility.
 - You reason best about code you can hold in context at once, and your edits are more reliable when files are focused. Prefer smaller, focused files over large ones that do too much.
-- Files that change together should live together. Split by responsibility, not by technical layer.
+- Files that change together should live together. Split by responsibility instead of by technical layer.
 - In an existing codebase, follow its established patterns. If it uses large files, don't restructure it on your own initiative; but if a file you are modifying has grown unwieldy, a split in the plan is reasonable.
 
 Each task should then produce a self-contained change that makes sense on its own.
 
 ## Task Right-Sizing
 
-A task is the smallest unit that carries its own test cycle and is worth a
-fresh reviewer's gate. When drawing task boundaries: fold setup,
-configuration, scaffolding, and documentation steps into the task whose
+A task is the smallest unit that has its own test cycle and is worth a
+fresh reviewer's gate. When drawing task boundaries: fold the setup work, such as configuration or scaffolding, and the documentation steps into the task whose
 deliverable needs them; split only where a reviewer could meaningfully
 reject one task while approving its neighbor. Each task ends with an
 independently testable deliverable.
@@ -62,7 +61,7 @@ independently testable deliverable.
 
 ## Plan Document Header
 
-Every plan starts with this header. Executors and reviewers read it before any task, and Global Constraints, Provenance and Review Focus apply to every task, so a plan without it leaves each implementer to guess them.
+Every plan starts with this header. Executors and reviewers read it before any task. Global Constraints and Provenance apply to every task, and so does Review Focus, so a plan without it leaves each implementer to guess them.
 
 Keep the heading exactly `## Global Constraints`, and write "None" under it when there are none. The executors' `task-brief` script copies that section verbatim to the top of every task brief, and refuses a plan with any other constraints heading before the first task.
 
@@ -184,18 +183,18 @@ Every commit step stages explicit file paths, as the template does: the files th
 ## What a Step Contains
 
 A step is done when the implementer can write exactly one reasonable thing
-from it. That is the whole requirement: unambiguous, not complete. Each kind
-of step carries what makes it unambiguous and nothing more:
+from it. That is the whole requirement: a step must be unambiguous and need not be complete. Each kind
+of step holds what makes it unambiguous and nothing more:
 
-- **A test step:** the test's name and its assertions, as code, with the
+- A test step: the test's name and its assertions, as code, with the
   spec's exact values in them.
-- **A code step:** the exact signature (name, parameters, return type), the
+- A code step: the exact signature (name, parameters, return type), the
   file it lives in, and the specific values the spec pins. The implementer
   writes the body. A body appears only for an algorithm the signature and
   tests do not determine, or for exact copy the spec fixes.
-- **A verification step:** the command to run and the output that means it
+- A verification step: the command to run and the output that means it
   passed.
-- **A reference to another task:** that task's Interfaces block says what
+- A reference to another task: that task's Interfaces block says what
   to use; the plan does not repeat that task's code.
 
 A plan is the set of decisions the implementer cannot make alone. A plan
@@ -210,11 +209,11 @@ After writing the complete plan, reread the spec and check the plan against it. 
 
 **1. Spec coverage:** Go through each section and requirement of the spec. Can you point to a task that implements it? List any gaps.
 
-**2. Step scan:** Every step must let the implementer write exactly one reasonable thing, and no step may carry more than that. A line that decides nothing is a gap; a function body that the signature and tests already determine is a transcript. Fix both.
+**2. Step scan:** Every step must let the implementer write exactly one reasonable thing, and no step may say more than that. A line that decides nothing is a gap; a function body that the signature and tests already determine is a transcript. Fix both.
 
 **3. Type consistency:** Do the types, method signatures and property names in later tasks match what earlier tasks defined? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
 
-**4. Review Focus:** For each input class or failure mode the spec implies, is there a task whose tests exercise it? The five uncovered ones most likely to bite a person go in the Review Focus section, and each line there gets its test added to the owning task. If the plan implements a procedure that makes claims, does every distinguishing example and oracle check from its adversarial-procedure-review report appear, pinned to a task that has a test for it? An empty section means you checked and found nothing, not that you skipped the check.
+**4. Review Focus:** For each input class or failure mode the spec implies, is there a task whose tests exercise it? The five uncovered ones most likely to bite a person go in the Review Focus section, and each line there gets its test added to the owning task. If the plan implements a procedure that makes claims, does every distinguishing example and oracle check from its adversarial-procedure-review report appear, pinned to a task that has a test for it? An empty section means you checked and found nothing; it does not mean you skipped the check.
 
 **5. Proportion:** Compare the plan's length with the spec's. A plan several times longer than the spec it implements is a transcript of the program. If code blocks make up most of the document, replace bodies with signatures, test names and assertions, and check that each step is still unambiguous.
 
@@ -234,8 +233,8 @@ them to review the plan and choose an execution method before implementation.
 
 Give a rough cost for each option: time, agent dispatches and tokens. Work it out from the plan; it doesn't need to be precise, only close enough for your human partner to choose.
 
-- **Subagent:** count about three dispatches per task (implementer, task reviewer and, often, a fixer) plus one whole-branch review. Tokens are roughly the dispatch count times what each dispatch reads: its task, the files it touches and the diff it reviews.
-- **Inline:** one dispatch, for the whole-branch review. Tokens are this session's context growing over every task, plus that review.
+- Subagent: count about three dispatches per task (implementer, task reviewer and, often, a fixer) plus one whole-branch review. Tokens are roughly the dispatch count times what each dispatch reads: its task, the files it touches and the diff it reviews.
+- Inline: one dispatch, for the whole-branch review. Tokens are this session's context growing over every task, plus that review.
 
 If the spend is substantial, meaning one your human partner would notice (by 2026 prices, more than about 500,000 tokens or more than about ten agent dispatches; revise these figures as prices change), state it and ask for a yes to the spend along with the review. Otherwise state it and go on to the execution choice. Size evidence to risk: run corpus-wide or exhaustive comparisons only for changes to core behavior, stored state or saved formats.
 
@@ -243,8 +242,8 @@ If the spend is substantial, meaning one your human partner would notice (by 202
 
 **"Plan complete and saved to `<plan path>`. Please review the plan. Which execution approach would you prefer?**
 
-- **Subagent** (subagent-plan-execution) - A fresh subagent implements each task and a fresh reviewer checks it before the next one starts, then a whole-branch review at the end. Most thorough; costs a fresh context per task and per review. Rough cost: <time>, <N> dispatches, <tokens>.
-- **Inline** (inline-plan-execution) - I implement every task myself in this session, then one fresh reviewer on the most capable model available checks the whole branch. Cheapest and fastest; no independent review until the end. Runs well with a mid-tier session model, since the plan carries the design. Rough cost: <time>, 1 dispatch, <tokens>.
+- Subagent (subagent-plan-execution) - A fresh subagent implements each task and a fresh reviewer checks it before the next one starts, then a whole-branch review at the end. Most thorough; costs a fresh context per task and per review. Rough cost: <time>, <N> dispatches, <tokens>.
+- Inline (inline-plan-execution) - I implement every task myself in this session, then one fresh reviewer on the most capable model available checks the whole branch. Cheapest and fastest; no independent review until the end. Runs well with a mid-tier session model, since the plan holds the design. Rough cost: <time>, 1 dispatch, <tokens>.
 
 **For this plan I recommend <one of the two>, because <one sentence from the plan: how much the tasks depend on each other's interfaces, how many there are, what a shipped mistake would cost>. Does the plan capture what you want, and which approach should we use?"**
 
@@ -255,7 +254,7 @@ If the spend is substantial, meaning one your human partner would notice (by 202
 When the spend is substantial, end either message by asking for a yes to that cost.
 
 **If Subagent chosen:**
-- **REQUIRED SUB-SKILL:** Use subagent-plan-execution
+- REQUIRED SUB-SKILL: Use subagent-plan-execution
 
 **If Inline chosen:**
-- **REQUIRED SUB-SKILL:** Use inline-plan-execution
+- REQUIRED SUB-SKILL: Use inline-plan-execution

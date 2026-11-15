@@ -94,17 +94,17 @@ findInvoice(tenantId, invoiceId)
 
 Rules that follow from this:
 
-- **Filter by tenant in the query itself,** even when IDs are globally
+- Filter by tenant in the query itself, even when IDs are globally
   unique. "The ID is a UUID, so it cannot collide" is true and beside
   the point. The attacker supplies the ID on purpose.
-- **Resolve the tenant once, at the boundary, from a trusted source**
+- Resolve the tenant once, at the boundary, from a trusted source
   (the session, or a verified host mapping), and pass it down. Never
   take it from a request field the caller controls.
-- **Test the tenant resolution itself.** If the tenant comes from a
+- Test the tenant resolution itself. If the tenant comes from a
   `Host` or forwarded-host header behind a proxy, test which header
   wins and what happens
   when it is missing or names no tenant.
-- **Layered data needs the same care.** Where platform defaults are
+- Layered data needs the same care. Where platform defaults are
   overlaid with per-tenant overrides, the override layer is keyed by
   tenant explicitly, and a read must not fall through to another
   tenant's overrides. append-only-data-model covers layered overrides.
@@ -140,8 +140,7 @@ The cross-tenant pass is the one that tests isolation. Point its
 requests at IDs that exist in tenant A. A request for an ID that names
 nothing tests only the not-found path.
 
-Run the cross-tenant pass under every role, not only B's most privileged
-one. Handlers often branch on role, and each branch can build its own
+Run the cross-tenant pass under every role in tenant B, including those below its most privileged one. Handlers often branch on role, and each branch can build its own
 query: a handler can scope its admin branch to the caller's tenant and
 forget the tenant filter in its member branch. A sweep that sends only
 B's admin across the boundary passes against that handler while any B
@@ -176,39 +175,39 @@ payload are all fixed, so the scenario has exactly one right answer.
 A status alone proves little, so each cell also names two more
 assertions, and the test checks all three:
 
-- **The payload.** What the response body may contain: for a list, which
+- The payload. What the response body may contain: for a list, which
   records and none of another tenant's; for a refusal, no record data in
   the error body.
-- **The side effects.** What must and must not have changed: after a
+- The side effects. What must and must not have changed: after a
   refused write, the record reads back unchanged and no event, email or
   job was emitted; after an allowed write, exactly the intended change
   happened.
 
 Rules for the table:
 
-- **Each scenario expects exactly one status.** "403 or 404" is not an
+- Each scenario expects exactly one status. "403 or 404" is not an
   expectation. A route that no longer exists answers 404, so an
   either-or cell passes while testing nothing. Choose per route. If you
   answer 404 to hide another tenant's records, prove the route exists
   with a control in the same test (the owner's request succeeds).
-- **An empty 200 is not a refusal.** When a request names a target
+- An empty 200 is not a refusal. When a request points at a target
   (an ID in the path, a subject in a filter), a handler that ignores it
   and returns the caller's own records, or nothing, looks identical to
   one that held the boundary. Seed the target with data,
   leave the caller with none, and expect a refusal status.
-- **Pair every refusal with a control.** The same request from a caller
+- Pair every refusal with a control. The same request from a caller
   who is allowed must succeed. Without it, a handler that refuses
   everyone, or that crashes, looks correct. Choose the control's role
   from the use case's actual rule. If only admins may act, a plain
   member is not the control.
-- **Send a valid request.** A malformed body is refused at parsing,
+- Send a valid request. A malformed body is refused at parsing,
   before the authorization check runs. A 400 in a role or cross-tenant
   cell means "not tested", not "refused". Build a well-formed payload
-  for each write route, using IDs that work for the control.
-- **Pin what is allowed on purpose.** A read that a lower role may
+  for each write route, with IDs that work for the control.
+- Pin what is allowed on purpose. A read that a lower role may
   legitimately make belongs in the table as an expected 200, so that a
   later over-tightening fails the sweep too.
-- **No 5xx anywhere.** A refusal is a 4xx. A 500 on a refusal path is
+- No 5xx anywhere. Refusals are 4xx responses, and a 500 on a refusal path is
   a finding.
 
 ### Lists checked in both directions
@@ -225,7 +224,7 @@ ways:
 
 The same goes for the no-success list. A group on it that starts
 succeeding fails the check, and so does a group off it that never
-succeeds. Each entry carries a one-line reason.
+succeeds. Each entry has a one-line reason.
 
 ### Routes that end the session
 
@@ -274,20 +273,20 @@ the main data path, where the route sweep does not look.
 | CSRF on cookie-authenticated writes | Every state-changing route that accepts a cookie session checks the Origin or a CSRF token. Test with a foreign origin. |
 | Sessions not revoked on password reset | A reset revokes every other session for that user. Test with two sessions. |
 | Unauthenticated logout | Logout requires the session it ends. A route that revokes a session by ID without authentication lets anyone sign anyone out. |
-| Tokens or personal data in logs | Request logging redacts cookies, authorization headers, reset and invite tokens, and personal fields. Error bodies do not echo another tenant's IDs or names. |
+| Tokens or personal data in logs | Request logging redacts cookies, authorization headers, reset tokens, invite tokens and personal fields. Error bodies do not echo another tenant's IDs or names. |
 | Guessable IDs used as bearer secrets | A sequential or guessable ID must never be the only thing protecting a resource (a share link, an invite, a download). Bearer secrets are long and random, and expire. |
 | Caches and search indexes keyed without the tenant | Every cache key and every search query includes the tenant. Test by warming a cache as tenant A and reading as tenant B. |
-| Background jobs that drop the tenant | Jobs, queues, scheduled tasks and webhooks carry the tenant in their payload and pass it explicitly to every data call. A job that runs "for all tenants" iterates over tenants and does not query across them. |
+| Background jobs that drop the tenant | Jobs, queues, scheduled tasks and webhooks include the tenant in their payload and pass it explicitly to every data call. A job that runs "for all tenants" iterates over tenants and does not query across them. |
 
 ## Minting test sessions
 
-Create test sessions through the data layer, not through the login
+Create test sessions through the data layer and skip the login
 route. Insert the user, their role and a live session record directly
 in test setup, and send the resulting cookie or token. A sweep issues
 one request per route for every caller. If each caller logs in first,
 the login rate limiter trips, the sweep runs with no session, and every
 route reports 401, which looks like a wiring fault and is not one. Test
-the real login path, rate limiter included, once and on its own.
+the real login path, rate limiter included, once on its own.
 
 Keep the helper honest: it must write exactly what the real login
 writes (expiry, role, disabled flag), or the sweep tests a session the
@@ -299,12 +298,12 @@ Return the report in three parts.
 
 **1. Findings,** each with a severity:
 
-- **Critical:** a cross-tenant read or write, privilege escalation, or
+- Critical: a cross-tenant read or write, privilege escalation, or
   any 200 where the table expects a refusal. A release blocker.
-- **Important:** a leak-checklist item that fails, a refusal that
+- Important: a leak-checklist item that fails, a refusal that
   answers 5xx, an authorization decision outside the use case, or a
   data access without an explicit tenant.
-- **Minor:** hardening that reduces exposure without closing a known
+- Minor: hardening that reduces exposure without closing a known
   path, such as an error message that names a record type it need not.
 
 Give each finding the route or code location, the request that shows

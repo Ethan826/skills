@@ -16,25 +16,25 @@ documentation for `CREATE VIEW` and `CREATE FUNCTION`; nothing here was
 tested at runtime on 17.
 
 For what shape the tables themselves should take, see
-append-only-data-model. For pushing the deploy that carries a migration,
+append-only-data-model. For pushing the deploy that contains a migration,
 see landing-a-branch.
 
 ## The loop
 
-1. **Scaffold** the file with the runner's own command, so the name gets
+1. Scaffold the file with the runner's own command, so the name gets
    a correctly ordered prefix (see "Filenames sort, and order is
    permanent").
-2. **Write `up` and a real `down`.** The down undoes exactly what the up
+2. Write `up` and a real `down`. The down undoes exactly what the up
    did. "Rolling back: local versus production" says why it must be real
    even though production never runs it.
-3. **Apply it locally,** against a local database named explicitly (see
+3. Apply it locally, against a local database named explicitly (see
    "Local database hygiene").
-4. **Prove the down:** roll back one step, then apply again. Both
+4. Prove the down: roll back one step, then apply again. Both
    directions must succeed, and the schema after the second apply must
    match the first.
-5. **Regenerate the generated types,** if the project generates
+5. Regenerate the generated types, if the project generates
    application types from the live schema.
-6. **Commit the migration and the regenerated types together,** with the
+6. Commit the migration and the regenerated types together, with the
    migration's hash recorded in the lock (see "Applied migrations are
    immutable").
 
@@ -90,13 +90,13 @@ safe.
 
 ### When a deploy fails partway through a migration
 
-1. **Stop.** Do not rerun the deploy, and do not run a down. Neither is
+1. Stop. Do not rerun the deploy, and do not run a down. Neither is
    safe until you know what state the database is in.
-2. **Find out what applied.** Read the runner's history table in that
+2. Find out what applied. Read the runner's history table in that
    environment, and inspect the schema itself. Runners usually record a
    migration only after it commits, so the last row is the last
    migration that fully applied.
-3. **Work out what the failed migration left behind.** If the runner
+3. Work out what the failed migration left behind. If the runner
    wrapped it in a transaction and the database has transactional DDL
    (PostgreSQL does), it left nothing. Without a transaction (MySQL,
    which commits each DDL statement implicitly; a runner set to run
@@ -105,11 +105,11 @@ safe.
    one), some of its statements may have taken effect. Check each one.
    Runners that apply a batch of migrations in one go differ on whether
    the earlier ones in the batch committed, so check those as well.
-4. **Restore service.** If the database is back on the previous schema,
+4. Restore service. If the database is back on the previous schema,
    the previous image matches it and is safe to redeploy. If the
    database is partly migrated, confirm that the previous code works
    against it before rolling back.
-5. **Fix forward.** A runner that stops at the first failure will hit
+5. Fix forward. A runner that stops at the first failure will hit
    the same failure on every start, and a later migration cannot run
    first. That leaves two fixes:
    - Change the database so the migration succeeds, for example by
@@ -119,18 +119,18 @@ safe.
    - Correct the failed migration itself. That counts as editing a
      migration, so two conditions must both hold. First, the history
      table of every persistent database shows the migration never
-     applied; check each environment's table, not your memory. Second,
+     applied; check each environment's table and do not rely on memory. Second,
      you have inspected and reconciled whatever the failed run left
      behind (step 3) in every environment where it ran: each partial
      effect is reversed, or the corrected migration is written to expect
      it. A clean history row does not mean a clean schema. Make the change
      and its one lock entry a commit of its own that says why.
-6. **Verify the schema,** including every view and derived object the
+6. Verify the schema, including every view and derived object the
    migration touched, before you call the incident over.
 
 ## Applied migrations are immutable
 
-Runners record applied migrations by name, not by content. Editing a
+Runners record applied migrations by name and ignore content. Editing a
 migration that has already run changes what a fresh database gets and
 does nothing to the databases that ran the old version. The two diverge
 for good, with no error and no warning, and no later migration
@@ -148,14 +148,14 @@ So the fix for a wrong migration is another migration. Enforce this with
 a content-hash lock, a committed file that maps each migration's name to
 a hash of its bytes, checked in CI:
 
-- **No missing file:** every migration has a recorded hash.
-- **No orphaned entry:** every recorded name still has a file. Deleting
+- No missing file: every migration has a recorded hash.
+- No orphaned entry: every recorded name still has a file. Deleting
   an applied migration is the same defect as editing one, since the
   databases that ran it keep its effects.
-- **Byte-identical:** every file hashes to its recorded value.
-- **Fail on an empty directory.** A wrong path or a broken glob would
+- Byte-identical: every file hashes to its recorded value.
+- Fail on an empty directory. A wrong path or a broken glob would
   otherwise find nothing and pass every check.
-- **Record new files only.** The command that updates the lock adds
+- Record new files only. The command that updates the lock adds
   hashes for files it has not seen, and refuses if any recorded hash no
   longer matches. Offer no command that rewrites every hash. That command
   would become the way people silence the check.
@@ -232,27 +232,27 @@ mistake in one. Give the function's behavior a test of its own.
 
 ## Additive by default
 
-- **New columns are nullable or have a default.** A `NOT NULL` column
+- New columns are nullable or have a default. A `NOT NULL` column
   without one fails on any table that has rows. In PostgreSQL 11 and
-  later, adding a column with a non-volatile default does not rewrite
+  later, a column added with a non-volatile default does not rewrite
   the table.
-- **Backfill inside the change.** When no running code depends on the
+- Backfill inside the change. When no running code depends on the
   old shape, one migration can create the new structure, copy the data
   across and then remove the old structure. Dropping a column on its own
   is a breaking change. It belongs in the step that finishes moving the
   column's data elsewhere.
-- **Expand, migrate, contract.** When running code does depend on the
+- Expand, migrate, contract. When running code does depend on the
   old shape, use separate releases:
   1. *Expand:* add the new column or table. Code writes both shapes and
      reads the old.
   2. *Migrate:* backfill, then switch reads to the new shape.
   3. *Contract:* drop the old shape, once no running code reads it and
      no release you might roll back to needs it.
-- **Know what your runner wraps in a transaction.** Some operations
+- Know what your runner wraps in a transaction. Some operations
   refuse to run inside one, such as PostgreSQL's
   `CREATE INDEX CONCURRENTLY`. If a runner wraps every migration, those
-  operations need a deliberate change to how that migration runs, not a
-  keyword added quietly.
+  operations need a deliberate change to how that migration runs, and a
+  keyword added in passing is not enough.
 
 ## Filenames sort, and order is permanent
 
@@ -272,23 +272,23 @@ by refusing a file that sorts before the newest recorded one.
 
 ## Local database hygiene
 
-- **Name the connection target explicitly.** A connection string left
+- Name the connection target explicitly. A connection string left
   in your shell, aimed at a container hostname or at another
   environment, silently redirects every command that reads it. Give local
   commands a pinned local target, or variants that ignore the ambient
   value. A default that falls back to a port with nothing listening shows
-  up as "connection refused", which is a configuration problem, not a
-  database one.
-- **Destructive scripts check the host first.** Anything that deletes,
+  up as "connection refused", which is a configuration problem and has nothing to do with the
+  database.
+- Destructive scripts check the host first. Anything that deletes,
   truncates or resets checks the target against a short allowlist
   (`localhost`, the local container's service name) and refuses
   everything else, whatever flags it is given.
-- **Treat production access as read-only.** Inspect production to
+- Treat production access as read-only. Inspect production to
   diagnose. Change it through migrations, or through a reviewed and
   recorded manual step during an incident.
-- **Take migration status from the runner.** "Is it applied?" is a fact
-  the runner owns (see verify-before-claiming). Ask it rather than
-  inferring the answer from the schema or from memory.
+- Take migration status from the runner. "Is it applied?" is a fact
+  the runner owns (see verify-before-claiming). Ask it, and do not infer the answer
+  from the schema or from memory.
 
 ## Checklist
 

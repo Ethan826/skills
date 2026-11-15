@@ -6,8 +6,8 @@ license: MIT
 
 # Dependency intake
 
-A dependency is an architectural decision. It decides what your code
-imports, which release schedule you follow, which licenses you carry, and
+Adding a dependency is an architectural decision. It settles what your code
+imports, which release schedule you follow, which licenses apply to you, and
 for an agent skill, what your agent is told to do. Make the decision on
 purpose, write it down, and review each upgrade as a change in behaviour.
 
@@ -36,19 +36,19 @@ A type that fits is not a reason to import it. A generic library can
 compile cleanly against your types and still be the wrong choice. Ask
 these four questions of every candidate, and write down the answers.
 
-1. **What does it drag in?** List its transitive dependencies. Each one
+1. What does it drag in? List its transitive dependencies. Each one
    is a decision the library makes for you. A date library that pulls in
    a serialization package has picked your serialization format before
    you chose one on its merits.
-2. **What does the import say?** An import tells a reader what the
+2. What does the import say? An import tells a reader what the
    importing module depends on. A pricing module that imports from a
    calendar library announces a dependency on calendars. Layer checks
    can enforce which direction imports go, but nothing checks whether
    they make sense.
-3. **How much of it is wanted?** Compare what you will use with what you
+3. How much of it is wanted? Compare what you will use with what you
    take on. Needing four predicates from a library of several hundred
    lines is a sign to write the forty lines yourself.
-4. **Whose release cycle?** Check the version, how often it ships and
+4. Whose release cycle? Check the version, how often it ships and
    who maintains it. A pre-1.0 library, or one with a single maintainer,
    puts its breaking changes on your schedule, including in code that
    has nothing to do with its purpose.
@@ -79,7 +79,7 @@ not (see "Licenses").
 
 ## The review record
 
-Every change that adds a dependency carries a short review, in a
+Every change that adds a dependency includes a short review, in a
 committed review file or in the pull request description, wherever the
 project keeps them. Keep it to a few lines per heading:
 
@@ -109,16 +109,16 @@ and runtime-resolution risk, and in exchange you do every update by hand.
 
 Vendor when the code is small and stable, and when you need most of what
 you copy. Do not copy a large file in order to delete most of it: writing
-the small part yourself is cheaper and carries no attribution duty.
+the small part yourself is cheaper and brings no attribution duty.
 
 Vendored code must:
 
-- **record its origin:** the upstream repository and the exact version
+- record its origin: the upstream repository and the exact version
   or commit it was copied from;
-- **keep the license notice inside the vendored folder**, next to the
+- keep the license notice inside the vendored folder, next to the
   code, so the notice travels with any copy of that folder;
-- **state what was modified**, file by file, or say that nothing was;
-- **keep its bytes as they arrived.** Exclude vendored folders from
+- state what was modified, file by file, or say that nothing was;
+- keep its bytes as they arrived. Exclude vendored folders from
   formatters and auto-fixers. A repository-wide reformat turns the next
   upstream comparison into thousands of whitespace lines that hide the
   real change.
@@ -152,23 +152,23 @@ caller.
 
 ## Pins and lockfiles
 
-- **Pin version-locked families exactly.** Some packages are released
+- Pin version-locked families exactly. Some packages are released
   together and must match: a framework's core and its plugins, or a
   compiler and its runtime library. Pin each member to the same exact
   version, with no range operator. A range lets one member move ahead of
-  the others, and the mismatch tends to show up at runtime, not at
+  the others, and the mismatch tends to show up at runtime instead of at
   install.
-- **The lockfile is the tool of record.** The package manager writes the
+- The lockfile is the tool of record. The package manager writes the
   lockfile and the installed tree together, so they agree by
   construction. Do not reimplement its hashes or rebuild its manifest to
   check it. Distrust it only for a specific reason. "I have not confirmed
   it myself" is not one. See verify-before-claiming, "The Tool of
   Record".
-- **A stale lockfile is an incomplete commit.** Every change to a
+- A stale lockfile is an incomplete commit. Every change to a
   manifest commits the lockfile the tool wrote for it, in the same
   commit. A manifest without its lockfile builds differently on the next
   machine.
-- **Reinstall after switching branches** when branches differ in their
+- Reinstall after switching branches when branches differ in their
   dependencies and share one installed tree. Otherwise imports resolve
   against the other branch's versions.
 
@@ -190,13 +190,13 @@ an integrity audit of the package manager. For each package that moved:
 
 For a major upgrade, three more rules apply.
 
-- **Set the baseline on the main branch under the new install, first.**
+- Set the baseline on the main branch under the new install, first.
   Install the new versions against the main branch's unchanged code and
   run lint and tests. Some warnings and failures come from the new
-  dependency tree itself, not from your migration. Without this baseline
+  dependency tree itself and have nothing to do with your migration. Without this baseline
   you will "fix" them as migration bugs, or blame the migration for
   them.
-- **A passing type check does not show that runtime behaviour held.** An
+- A passing type check does not show that runtime behaviour held. An
   upgrade can keep a name and tighten what it accepts, so a rename table
   lists it as a plain rename when it is not. Read the semantics of
   anything the guide calls a rename, and run the tests that exercise
@@ -218,19 +218,18 @@ decides.
 Check compatibility before adding anything, and check it for copied text
 as well as packages.
 
-- **Permissive licenses** (MIT, BSD, Apache-2.0) allow reuse with
+- Permissive licenses (MIT, BSD, Apache-2.0) allow reuse with
   attribution. Apache-2.0 also requires you to keep its NOTICE file, if it has one, and
   to state changes in modified files.
-- **Share-alike and copyleft licenses** (the GPL family, CC BY-SA, and
+- Share-alike and copyleft licenses (the GPL family, CC BY-SA, and
   for data, licenses such as ODbL) attach conditions to derived works. A
   snippet or a database extract can bring those conditions into a
   project whose own license is permissive.
-- **Documentation and examples are covered too.** Code copied from a
+- Documentation and examples are covered too. Code copied from a
   tutorial, a reference manual, another project's README or a
-  question-and-answer site carries that source's license. Text on many
-  public wikis and Q&A sites is CC BY-SA. Write your own examples, and
-  borrow ideas rather than wording.
-- **No stated license means no permission.** Ask the author, or leave it
+  question-and-answer site comes under that source's license. Text on many
+  public wikis and Q&A sites is CC BY-SA. Write your own examples, and borrow the ideas and leave the wording.
+- No stated license means no permission. Ask the author, or leave it
   out.
 
 ## Agent skills as dependencies
@@ -247,7 +246,7 @@ early test is not rescued by passing a later one.
    still on the current one.
 2. Is the source credible? A first-party vendor or a known maintainer
    outranks an aggregator that repackages documentation.
-3. Is it adopted? Treat install count as a floor, not a ranking. Below
+3. Is it adopted? Treat install count as a floor and never as a ranking. Below
    the floor, skip an unknown author. Above it, counts stop telling
    candidates apart.
 4. Does it fight the project's conventions? A skill the agent has to be
@@ -295,7 +294,7 @@ roster when a major dependency version changes.
 - [ ] Version-locked families are pinned to one exact version.
 - [ ] The lockfile written by the tool is in the same commit as the
       manifest change, and nobody re-derived its contents.
-- [ ] An upgrade lists the behaviour changes found, not just the new
+- [ ] An upgrade lists the behaviour changes found as well as the new
       versions.
 - [ ] A major upgrade set its baseline on the main branch under the new
       install, counted suppression comments before and after, and did

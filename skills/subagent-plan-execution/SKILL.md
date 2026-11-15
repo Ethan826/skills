@@ -10,11 +10,11 @@ Execute a plan by dispatching a fresh implementer subagent for each task,
 then a task review (spec compliance and code quality) after each one,
 then one broad review of the whole branch at the end.
 
-Dispatch each subagent with a fresh context, not one that inherits your
+Dispatch each subagent with a fresh context and never one that inherits your
 session's history, even where your harness offers inheritance. You give
 it exactly what its task needs, which keeps it focused and keeps your own
 context free for coordination. Between tool calls, narrate at most one
-short line; the ledger and the tool results carry the record.
+short line; the ledger and the tool results hold the record.
 
 **Continuous execution.** Don't pause between tasks to check in with your
 human partner. Run every task in the plan, and stop only for one of the
@@ -25,7 +25,7 @@ only when the work changes category: a fix turning into research, or a
 task turning into a study. Never check in merely because a task is taking
 longer than expected.
 
-**Rulings, not stalls.** A running plan doesn't wait on a human.
+**Rulings over stalls.** A running plan doesn't wait on a human.
 Conflicts, ambiguities, plan defects, a cap you would have asked to
 exceed: decide them. The spec is the binding authority, the plan is its
 argument, and your judgment settles what neither answers. Record every
@@ -41,11 +41,11 @@ These stop you, and only these. For each, stop and ask:
 - a side effect outside this worktree that norms say you ask about first
   (a merge, a push to a shared branch, a publish);
 - a plan so broken that every path forward is a guess;
-- **a product decision the spec does not settle:** a choice a user of the
+- a product decision the spec does not settle: a choice a user of the
   software would recognize and could disagree with, such as a threshold,
   a default or a behavior on an unforeseen input. Coding practice is not
   in this class: rule on it and take the stricter option;
-- **a project rule that blocks the work.** Report the rule and the line.
+- a project rule that blocks the work. Report the rule and the line.
   Do not rule your way around it.
 
 ## When to use
@@ -139,13 +139,13 @@ partner's own untracked files are left alone.
 AGENTS.md (or the project's equivalent instruction file) for a line such
 as `Plans: docs/plans/` or `Plans: issues`.
 
-- If it names a directory, the plan is a committed file there.
+- If it gives a directory, the plan is a committed file there.
 - If it says `issues`, or says nothing:
   - The spec is the issue. Name the comment that is the spec; often it is
     the last one.
   - The plan is a working file at `.superpowers/plans/<issue>-<slug>.md`,
     kept out of git by `printf '*\n' > .superpowers/plans/.gitignore`.
-  - Decisions that must outlive the branch go in the issue, not the plan.
+  - Decisions that must outlive the branch go in the issue and stay out of the plan.
   - The plan file outlives the workspace: landing-a-branch deletes it
     when the branch lands.
 
@@ -210,7 +210,7 @@ existing patterns, debugging): a standard model.
 
 **Architecture and design**: the most capable model available. The final
 whole-branch review belongs here, so dispatch it on the most capable
-model, not on whatever the session defaults to.
+model and never on whatever the session defaults to.
 
 **Review**: choose with the same judgment, scaled to the diff's size,
 complexity and risk. A small mechanical diff does not need the most
@@ -270,7 +270,7 @@ omitted one inherits your session's, usually the most expensive. Read
 [Model selection](#model-selection) before your
 first dispatch.
 
-- **Task brief.** Run this skill's `bash scripts/task-brief PLAN_FILE N`
+- Task brief. Run this skill's `bash scripts/task-brief PLAN_FILE N`
   by its absolute path, from the working tree you're executing in. It
   writes the plan's Global Constraints section, verbatim, followed by the
   task's full text to a uniquely named file and prints the path. N is the
@@ -306,18 +306,18 @@ first dispatch.
   partner set a style or project rule in conversation, write it into
   AGENTS.md (or the equivalent) before dispatching, so every subagent
   gets it.
-- **Report as text.** The implementer returns its full report in its final
+- Report as text. The implementer returns its full report in its final
   message. You write that text to the report file, named after the brief
   (brief `…/task-N-brief.md`, report `…/task-N-report.md`). Some harnesses
   refuse a subagent's writes to report files. Even where they don't, one
   writer per file keeps the workspace consistent.
-- A dispatch describes one task, not the session's history. Don't paste
+- A dispatch describes one task and leaves out the session's history. Don't paste
   summaries of earlier tasks ("state after Tasks 1-3") into it; in one
   real session nearly all of a dispatch was pasted history. A fresh
   subagent needs its task, the interfaces it touches and the global
   constraints.
 - The implementer never dispatches subagents: no helpers, and above all
-  no reviewer (the template carries this contract). Review comes from
+  no reviewer (the template states this contract). Review comes from
   you, after the report. Every reviewer a worker has spawned in practice
   duplicated the task review the controller dispatched anyway.
 - If an earlier task parked a finding in the area this task touches,
@@ -366,18 +366,18 @@ self-review is no substitute.
   never `HEAD~1`, which drops all but the last commit of a multi-commit
   task. Never dispatch a
   task reviewer without a diff file.
-- **Reviewer inputs:** three paths (the brief, the report file you wrote,
+- Reviewer inputs: three paths (the brief, the report file you wrote,
   and the review package) plus the global constraints that bind the task.
 - The global-constraints block is the reviewer's attention lens. Copy the
   binding requirements verbatim from the plan's Global Constraints section
   or the spec: exact values, exact formats, and stated relationships
   between components ("same layout as X", "matches Y"). The reviewer
-  template already carries the process rules (YAGNI, test hygiene, review
+  template already covers the process rules (YAGNI, test hygiene, review
   method); the constraints block is for what this project's spec demands.
 - Don't add open-ended directives such as "check all uses" or "run race
   tests if useful" without a concrete, task-specific reason.
 - Don't ask a reviewer to re-run tests the implementer already ran on the
-  same code. The implementer's report carries the test evidence.
+  same code. The implementer's report contains the test evidence.
 - Don't pre-judge findings for the reviewer, and never tell it to ignore
   or not flag a specific issue. If you think a finding would be a false
   positive, let the reviewer raise it and adjudicate it in the loop. If
@@ -430,7 +430,7 @@ workspace before you use landing-a-branch.
 
 Answer a simple status question cheaply, from the ledger. Never launch a
 sweep they didn't ask for; state its cost and wait. A "stop" applies
-only to the thing they are reacting to, not to the whole run.
+only to the thing they are reacting to and leaves the rest of the run going.
 
 ## Common rationalizations
 
@@ -439,13 +439,13 @@ only to the thing they are reacting to, not to the whole run.
 | "Close enough on spec compliance" | The reviewer found spec gaps, so the task isn't done. Fix them, or reach the cap and adjudicate. Those are the only exits. |
 | "I'll fix it myself, dispatching is overhead" | A controller fix clutters your context and skips review. Resume the implementer. |
 | "One more round will converge" | Past the cap, rounds don't converge, because the failure is structural. Adjudicate and route. |
-| "The reviewer will just find something new anyway" | Scoped re-reviews verify fixes and cannot wander. New findings on untouched code go to the ledger, not the loop. |
+| "The reviewer will just find something new anyway" | Scoped re-reviews verify fixes and cannot wander. New findings on untouched code go to the ledger and stay out of the loop. |
 | "This finding is obviously wrong, I'll drop it" | You adjudicate only at the cap, and every ruling is a ledger entry. Silent discards are forbidden. |
 | "The fix was small, skip the re-review" | Unreviewed fixes are how regressions land. Every round ends with a scoped re-review. |
 | "Reviews slow the loop down" | Without reviews the loop produces unverified changes. Reviews are what tell you a round worked. |
 | "Ledger bookkeeping is overhead" | The ledger is what survives compaction. Controllers without one have re-dispatched entire sequences of completed tasks. |
-| "The implementer spawned its own reviewer, so that's free extra assurance" | It is a duplicate seat on the same diff; the task review is the gate. A reviewer spawned by a worker is a defect to flag, not rigor. |
+| "The implementer spawned its own reviewer, so that's free extra assurance" | It is a duplicate seat on the same diff; the task review is the gate. A reviewer spawned by a worker is a defect to flag and counts for nothing as rigor. |
 | "The implementer can write its own report file and save me the tokens" | Some harnesses refuse a subagent's writes to report files, and even where they don't, one writer per file keeps the workspace consistent. The implementer returns the report as text and you write it. |
 | "One suppression comment gets this green, the reviewer can judge it" | Every implementer brief forbids switching off a check to get green. A rule that blocks the work is a stop condition: report the rule and the line. |
-| "The spec doesn't say, so I'll pick the easiest default" | If a user would recognize the choice and could disagree with it, it is a product decision: stop and ask. If it is coding practice, rule and take the stricter option. |
+| "The spec doesn't say, so I'll pick the easiest default" | If a user would recognize the choice and could disagree with it, it is a product decision: stop and ask. If it is coding practice, rule on it and take the stricter option. |
 | "This task is taking long, I should check in" | Duration alone is never a reason. Check in only when the work changes category, such as a fix turning into research. |
