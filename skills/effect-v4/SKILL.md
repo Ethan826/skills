@@ -112,6 +112,34 @@ have their own iterators for `Option.gen` and `Result.gen`, but
 `Effect.gen` cannot yield them; lift them first (see "Lift Option and
 Result").
 
+## Durations and named numbers
+
+A duration is a `Duration`, built with `Duration.minutes`,
+`Duration.seconds` or `Duration.millis`. Convert it to a number with
+`Duration.toMillis` (or `toSeconds`) only where a format or a schema
+needs one, such as a policy field stored in milliseconds. Never multiply
+out `10 * 60 * 1000` by hand.
+
+Every other number except 0 and 1 is a named constant whose comment
+gives its unit and its source. Write `const freshnessMinutes = 10`, then
+`Duration.minutes(freshnessMinutes)`. A unit conversion with no
+`Duration` function, such as milliseconds to the microseconds of a
+monotonic stamp, is a named constant too (`microsPerMilli`).
+
+```ts
+import { Duration } from "effect"
+
+/** How old a reading may be and still count as fresh, in minutes. */
+const freshnessMinutes = 10
+
+const policy = {
+  freshnessMillis: Duration.toMillis(Duration.minutes(freshnessMinutes)),
+}
+```
+
+Tests may use bare numbers: they are example data, read beside the
+assertion they feed.
+
 ## Reach for the combinator
 
 When you reach for a statement or a native method, find the combinator
@@ -584,6 +612,10 @@ that a machine can check, add a test that fails the build:
   checked against the table in "Reach for the combinator" row by row. One
   that bans only `array[0]`, `.push` and `.length` lets every native
   `.filter` and `.map` through.
+- Named numbers: a number other than 0 or 1 anywhere but the whole
+  initializer of a `const`, including object property values.
+  typescript-eslint's `no-magic-numbers` does this with `ignore: [0, 1]`,
+  `detectObjects` and `enforceConst`.
 - Closed vocabularies: inline literals in `Schema.Literals` and
   `Schema.Literal`, and a vocabulary's values written as string
   literals outside its module.
@@ -600,7 +632,7 @@ that a machine can check, add a test that fails the build:
   green.
 
 [`lint/eslint.rules.js`](lint/eslint.rules.js) is a reference ESLint
-config for the first three items, together with the layer imports of
+config for the first four items, together with the layer imports of
 decision-core-architecture. It does not cover the last three. A project
 copies it and passes its own layer table, core layers, vocabularies and
 import aliases to `buildConfig`; [`lint/README.md`](lint/README.md) gives

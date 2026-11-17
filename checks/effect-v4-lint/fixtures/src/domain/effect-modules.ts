@@ -13,7 +13,7 @@ interface Judged {
 }
 
 const isPositive = (n: number): boolean => n > 0
-const double = (n: number): number => n * 2
+const double = (n: number): number => n + n
 
 export const doubled = (xs: ReadonlyArray<number>): ReadonlyArray<number> =>
   Arr.map(Arr.filter(xs, isPositive), double)

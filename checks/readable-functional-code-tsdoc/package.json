@@ -1,0 +1,8 @@
+{
+  "name": "readable-functional-code-tsdoc-check",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

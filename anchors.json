@@ -24,6 +24,7 @@
     {"id": "effect-v4/typescript (lint)", "skill": "effect-v4", "kind": "tool", "ecosystem": "npm", "package": "typescript", "version": "5.9.3", "row": "typescript (lint)", "check": "checks/effect-v4-lint"},
     {"id": "readable-functional-code/effect", "skill": "readable-functional-code", "kind": "tool", "ecosystem": "npm", "package": "effect", "version": "4.1.4", "row": "effect", "check": "checks/effect-v4"},
     {"id": "readable-functional-code/typescript", "skill": "readable-functional-code", "kind": "tool", "ecosystem": "npm", "package": "typescript", "version": "7.0.2", "row": "typescript", "check": "checks/effect-v4"},
+    {"id": "readable-functional-code/typescript (tsdoc)", "skill": "readable-functional-code", "kind": "tool", "ecosystem": "npm", "package": "typescript", "version": "5.9.3", "row": "typescript (tsdoc gate)", "check": "checks/readable-functional-code-tsdoc"},
     {"id": "purescript-gotchas/purs", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "github-release", "package": "purescript/purescript", "version": "0.15.17", "row": "purs", "check": "checks/purescript-gotchas"},
     {"id": "purescript-gotchas/spago", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "npm", "package": "spago", "version": "1.0.5", "row": "spago", "check": "checks/purescript-gotchas"},
     {"id": "purescript-gotchas/purs-tidy", "skill": "purescript-gotchas", "kind": "tool", "ecosystem": "npm", "package": "purs-tidy", "version": "0.11.1", "row": "purs-tidy", "check": "checks/purescript-gotchas"},

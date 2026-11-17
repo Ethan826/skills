@@ -71,7 +71,7 @@ expect() {
   fi
 }
 
-ok_re='^effect-v4-lint check: OK \(42 must-fail fixtures \(94 expected reports\), 12 clean controls\)$'
+ok_re='^effect-v4-lint check: OK \(43 must-fail fixtures \(97 expected reports\), 12 clean controls\)$'
 run() { "$c/run.sh" --repo "$r" --deps "$scratch/deps"; }
 
 setup clean
@@ -85,6 +85,11 @@ setup no-let-removed
 plant "$r/$rules" 's/^\s*"functional\/no-let": "error",\n//m'
 expect fail 'src/domain/let\.ts: expected functional/no-let' \
   "rule removed: functional/no-let" run
+
+setup magic-numbers-removed
+plant "$r/$rules" 's/^\s*"\@typescript-eslint\/no-magic-numbers": \["error", \{\n(?:.*\n)*?\s*\}\],\n//m'
+expect fail 'src/domain/magic-numbers\.ts: expected @typescript-eslint/no-magic-numbers' \
+  "rule removed: no-magic-numbers" run
 
 setup method-removed
 plant "$r/$rules" 's/"findLastIndex", //'

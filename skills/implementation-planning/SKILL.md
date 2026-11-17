@@ -170,7 +170,18 @@ algorithm they do not determine.
 Run: `pytest tests/path/test.py::test_name -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Document the code this task added or changed**
+
+Write or update the docstring (TSDoc in TypeScript) on every public
+declaration the task touched and on each private helper with a rule in
+it: what it does, its units and edge cases where they matter, and the
+design rule it implements. Name the gate that checks it.
+
+Run: `bun tsdoc-gate.ts --min 60 src` (the project's documentation gate)
+Expected: PASS. Where the project has no such gate, say so here; the
+docstrings then rest on review.
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git add tests/path/test.py src/path/file.py

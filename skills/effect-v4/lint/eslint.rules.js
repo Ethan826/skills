@@ -26,6 +26,13 @@
 //   under an alias not passed in `aliases` is flagged (a false positive: add
 //   the alias); a method reached without naming it (`Reflect.apply`, a
 //   helper outside core) escapes; methods not in the lists below escape.
+// - Named numbers in source (effect-v4, "Durations and named numbers"):
+//   typescript-eslint no-magic-numbers with 0 and 1 allowed, object property
+//   values checked and a literal allowed only as the whole initializer of a
+//   `const`, so `Duration.minutes(10)` is flagged and `const freshnessMinutes
+//   = 10` is the place for it. Tests are out of scope: their numbers are
+//   example data. A number parsed from a string or read from data escapes,
+//   and so does a const whose name says nothing.
 // - Null checks in core layers match the literal `null`, the identifier
 //   `undefined` and `typeof x === "undefined"`; a comparison against a
 //   variable that holds undefined escapes.
@@ -357,6 +364,20 @@ export const buildConfig = ({
         "functional/no-throw-statements": "error",
         "functional/no-let": "error",
         "functional/immutable-data": ["error", { ignoreClasses: true }],
+      },
+    },
+    {
+      files: [`${sourceRoot}/**/*.ts`],
+      rules: {
+        "@typescript-eslint/no-magic-numbers": ["error", {
+          ignore: [0, 1],
+          detectObjects: true,
+          enforceConst: true,
+          ignoreEnums: false,
+          ignoreNumericLiteralTypes: false,
+          ignoreReadonlyClassProperties: false,
+          ignoreTypeIndexes: false,
+        }],
       },
     },
     ...layerNames.map((layer) => ({

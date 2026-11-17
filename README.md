@@ -147,7 +147,7 @@ table and closed vocabularies.
 | [`decision-core-architecture`](skills/decision-core-architecture/SKILL.md) | Niche | Keep a pure core of decisions under a thin shell with no logic in it. Language-neutral, but functional in outlook. |
 | [`purescript-rows-and-newtypes`](skills/purescript-rows-and-newtypes/SKILL.md) | Niche | Track a PureScript function's dependencies and errors in its type. PureScript only. |
 | [`purescript-gotchas`](skills/purescript-gotchas/SKILL.md) | Niche | PureScript compiler and tooling traps that cost a compile cycle to discover, pinned to the versions they were checked against. |
-| [`readable-functional-code`](skills/readable-functional-code/SKILL.md) | Niche | Readability rules for functional code, with budgets and naming rules a lint can check, plus how they apply to TypeScript. |
+| [`readable-functional-code`](skills/readable-functional-code/SKILL.md) | Niche | Readability rules for functional code, with budgets and naming rules a lint can check. A TypeScript reference adds a TSDoc gate. |
 | [`effect-v4`](skills/effect-v4/SKILL.md) | Situational | Write TypeScript with Effect v4: the v3 names that changed, combinators over statements, typed errors, Schema decoding, and services behind Layers that tests substitute. Checked against effect 4.1.4. |
 
 ### Writing
@@ -241,6 +241,11 @@ Six GitHub Actions workflows run the gate and the checks:
   `skills/effect-v4/lint/` at pinned versions and requires each fixture
   to report its expected rule. A planted-defect suite shows that
   removing a rule fails the check.
+- `check-readable-functional-code-tsdoc.yml` runs
+  `checks/readable-functional-code-tsdoc`, which tests the TSDoc gate
+  in `readable-functional-code`: must-fail and must-pass cases with exact
+  findings, and a planted-defect suite that breaks the gate one way at a
+  time.
 - `check-decision-core-diagram.yml` runs `checks/decision-core-diagram`,
   which requires the onion drawing in `decision-core-architecture` to
   equal its generator's output byte for byte.

@@ -1,6 +1,6 @@
 ---
 name: readable-functional-code
-description: Rules for writing functional code that reads top-down and can be tested a piece at a time, in PureScript or Haskell, with a reference that applies them to TypeScript. Covers where over let-in, named transformations and named lambdas, branches that call named functions, maybe and either over two-arm matches, named numbers, per-declaration complexity budgets, file length and line width, module order, a denylist of abbreviations, tail recursion, range bounds, and how docstrings and comments are written. Use it whenever writing, refactoring or reviewing PureScript or Haskell, when a function grows past one screen or a branch holds a formula, when briefing an agent to write functional code, and when building a lint for any of these rules. For TypeScript, its typescript.md applies the house style (budgets, file length and width, named steps, arrow functions, no lint-disable comments) in a project that has adopted it; Effect API names and practice are in effect-v4. These are a house style. In a project with its own conventions, apply them only where the project has adopted them or the user asks.
+description: Rules for writing functional code that reads top-down and can be tested a piece at a time, in PureScript, Haskell or TypeScript (including TypeScript with Effect). Covers where over let-in, named transformations and named lambdas, branches that call named functions, maybe and either over two-arm matches, named numbers, per-declaration complexity budgets, file length and line width, module order, a denylist of abbreviations, tail recursion, range bounds, how docstrings and comments are written, and TSDoc on TypeScript exports with a syntax-tree gate. Use it whenever writing, refactoring or reviewing PureScript, Haskell or TypeScript, including Effect code, when a function grows past one screen or a branch holds a formula, when briefing an agent to write functional code, and when building a lint for any of these rules. For TypeScript, its typescript.md applies the house style (budgets, file length and width, named steps, arrow functions, TSDoc, no lint-disable comments) in a project that has adopted it; Effect API names and practice are in effect-v4. These are a house style. In a project with its own conventions, apply them only where the project has adopted them or the user asks.
 license: MIT
 ---
 
@@ -32,9 +32,13 @@ types record requirements and errors.
 |---|---|
 | effect | 4.1.4 |
 | typescript | 7.0.2 |
+| typescript (tsdoc gate) | 5.9.3 |
 
-The TypeScript examples in typescript.md compile against these versions.
-`checks/effect-v4` in this repository checks them.
+The TypeScript examples in typescript.md compile against effect and
+typescript 7.0.2, and `checks/effect-v4` in this repository checks them.
+The TSDoc gate in [`tsdoc/`](tsdoc/tsdoc-gate.ts) needs the compiler API,
+which TypeScript 7.0 does not yet publish as a stable entry point, so
+`checks/readable-functional-code-tsdoc` runs it with 5.9.3.
 
 ## Lint, or review
 
@@ -316,6 +320,10 @@ holds in both.
   domain's established terms stay. Elsewhere write "the weights add up
   to one", not sigma notation. When a technical term is worth using,
   define it once in a sentence, then go on in plain language.
+
+In TypeScript, every exported declaration and every private helper with
+a rule in it has a TSDoc comment, and a syntax-tree gate checks the exports;
+see "Document with TSDoc" in typescript.md.
 
 humanized-prose-review covers longer prose.
 

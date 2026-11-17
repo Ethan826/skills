@@ -37,6 +37,7 @@
       ["functional/no-loop-statements", "loop"],
       ["no-restricted-syntax", "not while"]
     ],
+    "src/domain/magic-numbers.ts": [["@typescript-eslint/no-magic-numbers", "No magic number: 3"], ["@typescript-eslint/no-magic-numbers", "No magic number: 10"], ["@typescript-eslint/no-magic-numbers", "No magic number: 60_000"]],
     "src/domain/let.ts": [["functional/no-let", "let"]],
     "src/domain/mutate.ts": [["functional/immutable-data", "Modifying an array is not allowed"]],
     "src/domain/parse.ts": [["no-restricted-syntax", "JSON.parse and JSON.stringify throw"]],
